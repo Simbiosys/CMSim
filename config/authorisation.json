@@ -1,0 +1,36 @@
+{
+  "manager": {
+    "enter": {
+      "administrator_rol": true,
+      "manager_rol": true
+    }
+  },
+  "customers": {
+    "list": {
+      "administrator_rol": true,
+      "manager_rol": false
+    },
+    "view": {
+      "administrator_rol": true,
+      "manager_rol": false
+    },
+    "edit": {
+      "administrator_rol": true,
+      "manager_rol": false
+    }
+  },
+  "users": {
+    "list": {
+      "administrator_rol": true,
+      "manager_rol": true
+    },
+    "view": {
+      "administrator_rol": true,
+      "manager_rol": true
+    },
+    "edit": {
+      "administrator_rol": true,
+      "manager_rol": true
+    }
+  }
+}

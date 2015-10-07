@@ -1,0 +1,15 @@
+{
+  "title": "CMSim",
+  "version": "0.0.1",
+  "roles": {
+    "administrator_rol": {
+      "default_path": "/manager/customers"
+    },
+    "manager_rol": {
+      "default_path": "/manager/users"
+    },
+    "user_rol": {
+      "default_path": "/"
+    }
+  }
+}

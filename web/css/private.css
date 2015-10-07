@@ -1,0 +1,13 @@
+/* line 1, ../sass/_base.scss */
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Helvetica, sans-serif;
+}
+
+/* line 7, ../sass/_base.scss */
+.flash {
+  background-color: #eee;
+  padding: 1em 2em;
+  text-align: center;
+}

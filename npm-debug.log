@@ -1,0 +1,138 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '--global',
+1 verbose cli   'singular_sake' ]
+2 info using npm@2.3.0
+3 info using node@v0.10.13
+4 silly cache add args [ 'singular_sake', null ]
+5 verbose cache add spec singular_sake
+6 silly cache add parsed spec { raw: 'singular_sake',
+6 silly cache add   scope: null,
+6 silly cache add   name: 'singular_sake',
+6 silly cache add   rawSpec: '',
+6 silly cache add   spec: '*',
+6 silly cache add   type: 'range' }
+7 verbose addNamed singular_sake@*
+8 silly addNamed semver.valid null
+9 silly addNamed semver.validRange *
+10 silly addNameRange { name: 'singular_sake', range: '*', hasData: false }
+11 silly mapToRegistry name singular_sake
+12 silly mapToRegistry using default registry
+13 silly mapToRegistry registry https://registry.npmjs.org/
+14 silly mapToRegistry uri https://registry.npmjs.org/singular_sake
+15 verbose addNameRange registry:https://registry.npmjs.org/singular_sake not in flight; fetching
+16 verbose request uri https://registry.npmjs.org/singular_sake
+17 verbose request no auth needed
+18 info attempt registry request try #1 at 11:08:15
+19 verbose request id 20f570cdcd29378a
+20 http request GET https://registry.npmjs.org/singular_sake
+21 http 200 https://registry.npmjs.org/singular_sake
+22 silly get cb [ 200,
+22 silly get   { server: 'CouchDB/1.5.0 (Erlang OTP/R16B03)',
+22 silly get     etag: '"9MSAHJFKTJ5XCEUWSCTDKRX4S"',
+22 silly get     'content-type': 'application/json',
+22 silly get     'cache-control': 'max-age=60',
+22 silly get     'content-length': '2098',
+22 silly get     'accept-ranges': 'bytes',
+22 silly get     date: 'Wed, 07 Oct 2015 09:08:19 GMT',
+22 silly get     via: '1.1 varnish',
+22 silly get     age: '0',
+22 silly get     connection: 'keep-alive',
+22 silly get     'x-served-by': 'cache-lcy1129-LCY',
+22 silly get     'x-cache': 'MISS',
+22 silly get     'x-cache-hits': '0',
+22 silly get     'x-timer': 'S1444208899.176950,VS0,VE390',
+22 silly get     vary: 'Accept' } ]
+23 silly addNameRange number 2 { name: 'singular_sake', range: '*', hasData: true }
+24 silly addNameRange versions [ 'singular_sake', [ '1.0.0', '1.0.1' ] ]
+25 verbose addNamed singular_sake@1.0.1
+26 silly addNamed semver.valid 1.0.1
+27 silly addNamed semver.validRange 1.0.1
+28 silly mapToRegistry name singular_sake
+29 silly mapToRegistry using default registry
+30 silly mapToRegistry registry https://registry.npmjs.org/
+31 silly mapToRegistry uri https://registry.npmjs.org/singular_sake
+32 verbose addRemoteTarball https://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz not in flight; adding
+33 verbose addRemoteTarball [ 'https://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz',
+33 verbose addRemoteTarball   'f7d78931729581d68edf7cb5854f3a421ddbce45' ]
+34 info retry fetch attempt 1 at 11:08:16
+35 info attempt registry request try #1 at 11:08:16
+36 http fetch GET https://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz
+37 http fetch 200 https://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz
+38 silly fetchAndShaCheck shasum f7d78931729581d68edf7cb5854f3a421ddbce45
+39 verbose addTmpTarball /tmp/npm-18052-c6b5b803/registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz not in flight; adding
+40 verbose addTmpTarball already have metadata; skipping unpack for singular_sake@1.0.1
+41 silly cache afterAdd singular_sake@1.0.1
+42 verbose afterAdd /home/juan/.npm/singular_sake/1.0.1/package/package.json not in flight; writing
+43 verbose afterAdd /home/juan/.npm/singular_sake/1.0.1/package/package.json written
+44 silly install resolved [ { name: 'singular_sake',
+44 silly install resolved     version: '1.0.1',
+44 silly install resolved     description: 'Singular MVC PHP Framework command line tool',
+44 silly install resolved     main: 'sake.js',
+44 silly install resolved     author: { name: 'Juan Castro Fernández' },
+44 silly install resolved     license: 'ISC',
+44 silly install resolved     preferGlobal: true,
+44 silly install resolved     bin: { sake: 'sake.js' },
+44 silly install resolved     dependencies: { ncp: '*', 'is-there': '*' },
+44 silly install resolved     _id: 'singular_sake@1.0.1',
+44 silly install resolved     scripts: {},
+44 silly install resolved     _shasum: 'f7d78931729581d68edf7cb5854f3a421ddbce45',
+44 silly install resolved     _from: 'singular_sake@*',
+44 silly install resolved     _npmVersion: '2.3.0',
+44 silly install resolved     _nodeVersion: '0.10.35',
+44 silly install resolved     _npmUser:
+44 silly install resolved      { name: 'juan.castro.simbiosys',
+44 silly install resolved        email: 'juan.castro@simbiosys.es' },
+44 silly install resolved     dist:
+44 silly install resolved      { shasum: 'f7d78931729581d68edf7cb5854f3a421ddbce45',
+44 silly install resolved        tarball: 'http://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz' },
+44 silly install resolved     maintainers: [ [Object] ],
+44 silly install resolved     directories: {},
+44 silly install resolved     _resolved: 'https://registry.npmjs.org/singular_sake/-/singular_sake-1.0.1.tgz' } ]
+45 info install singular_sake@1.0.1 into /usr/local/lib
+46 info installOne singular_sake@1.0.1
+47 verbose installOne of singular_sake to /usr/local/lib not in flight; installing
+48 verbose lock using /home/juan/.npm/_locks/singular-sake-4df26a43e94d4c30.lock for /usr/local/lib/node_modules/singular_sake
+49 silly install write writing singular_sake 1.0.1 to /usr/local/lib/node_modules/singular_sake
+50 silly cache addNamed cb singular_sake@1.0.1
+51 verbose unbuild lib/node_modules/singular_sake
+52 verbose gentlyRm vacuuming /usr/local/lib/node_modules/singular_sake
+53 verbose tar unpack /home/juan/.npm/singular_sake/1.0.1/package.tgz
+54 verbose tar unpacking to /usr/local/lib/node_modules/singular_sake
+55 verbose gentlyRm vacuuming /usr/local/lib/node_modules/singular_sake
+56 silly gunzTarPerm modes [ '755', '644' ]
+57 error tar.unpack untar error /home/juan/.npm/singular_sake/1.0.1/package.tgz
+58 verbose unlock done using /home/juan/.npm/_locks/singular-sake-4df26a43e94d4c30.lock for /usr/local/lib/node_modules/singular_sake
+59 verbose fstream_path /usr/local/lib/node_modules/singular_sake
+60 verbose fstream_type Directory
+61 verbose fstream_class DirWriter
+62 verbose stack Error: EACCES, mkdir '/usr/local/lib/node_modules/singular_sake'
+63 verbose fstream_stack /usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:36:23
+63 verbose fstream_stack /usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:46:53
+63 verbose fstream_stack Object.oncomplete (fs.js:107:15)
+64 verbose cwd /mnt/simbionas/cmsim
+65 error Linux 2.6.43.8-1.fc15.x86_64
+66 error argv "node" "/usr/local/bin/npm" "install" "--global" "singular_sake"
+67 error node v0.10.13
+68 error npm  v2.3.0
+69 error path /usr/local/lib/node_modules/singular_sake
+70 error code EACCES
+71 error errno 3
+72 error Error: EACCES, mkdir '/usr/local/lib/node_modules/singular_sake'
+72 error  { [Error: EACCES, mkdir '/usr/local/lib/node_modules/singular_sake']
+72 error   errno: 3,
+72 error   code: 'EACCES',
+72 error   path: '/usr/local/lib/node_modules/singular_sake',
+72 error   fstream_type: 'Directory',
+72 error   fstream_path: '/usr/local/lib/node_modules/singular_sake',
+72 error   fstream_class: 'DirWriter',
+72 error   fstream_stack:
+72 error    [ '/usr/local/lib/node_modules/npm/node_modules/fstream/lib/dir-writer.js:36:23',
+72 error      '/usr/local/lib/node_modules/npm/node_modules/mkdirp/index.js:46:53',
+72 error      'Object.oncomplete (fs.js:107:15)' ] }
+73 error Please try running this command again as root/Administrator.
+74 verbose exit [ 3, true ]
+75 verbose unbuild lib/node_modules/singular_sake
+76 verbose gentlyRm vacuuming /usr/local/lib/node_modules/singular_sake
