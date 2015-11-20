@@ -1,0 +1,21 @@
+.languages {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    float: left;
+    margin-right: 1em;
+    padding-right: 1em;
+    border-right: 1px solid #ccc;
+
+    &:last-child {
+      border: none;
+    }
+  }
+}
+
+.active-language {
+  color: #000;
+  text-decoration: underline;
+}

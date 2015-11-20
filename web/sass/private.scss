@@ -1,4 +1,12 @@
 @import "compass/css3";
 
 @import "base";
+
+@import "common/language_selector";
+@import "common/colours";
+@import "common/admin_bar";
+
 @import "private/private_base";
+@import "private/left_bar";
+@import "private/header";
+@import "private/detail";

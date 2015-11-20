@@ -1,0 +1,20 @@
+<div class="container margin-top-20">
+  <section class="content-body">
+    <h2 class="margin-top-10 margin-bottom-30">{{labels.news}}</h2>
+    <table class="table">
+      <tbody>
+        {{#data}}
+          <tr>
+            <td>
+              {{#information_translations}}
+                <a href="{{@root.page.host}}/{{@root.page.language}}/news/{{../informations.id}}/{{path}}">
+                  {{title}}
+                </a>
+              {{/information_translations}}
+            </td>
+          </tr>
+        {{/data}}
+      </tbody>
+    </table>
+  </section>
+</div>

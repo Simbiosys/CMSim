@@ -1,0 +1,39 @@
+<?php return function ($in, $debugopt = 1) {
+    $cx = array(
+        'flags' => array(
+            'jstrue' => false,
+            'jsobj' => false,
+            'spvar' => true,
+            'prop' => false,
+            'method' => false,
+            'mustlok' => false,
+            'echo' => false,
+            'debug' => $debugopt,
+        ),
+        'constants' =>  array(
+            'DEBUG_ERROR_LOG' => 1,
+            'DEBUG_ERROR_EXCEPTION' => 2,
+            'DEBUG_TAGS' => 4,
+            'DEBUG_TAGS_ANSI' => 12,
+            'DEBUG_TAGS_HTML' => 20,
+        ),
+        'helpers' => array(),
+        'blockhelpers' => array(),
+        'hbhelpers' => array(),
+        'partials' => array(),
+        'scopes' => array(),
+        'sp_vars' => array('root' => $in),
+        'lcrun' => 'LCRun3',
+'funcs' => array(
+)
+
+    );
+    
+    return '<div class="container margin-top-20">
+  <section class="content-body">
+    <h1 class="text-center">Winter is coming!</h1>
+  </section>
+</div>
+';
+}
+?>

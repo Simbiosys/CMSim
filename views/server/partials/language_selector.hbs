@@ -1,0 +1,7 @@
+<ul class="pull-left languages">
+  {{#page.languages}}
+    <li>
+      <a href="{{@root.page.host}}/language/{{this}}" class="{{selected_language this @root.page.language}}" data-language-selector>{{language_name @root.labels this}}</a>
+    </li>
+  {{/page.languages}}
+</ul>

@@ -1,0 +1,26 @@
+.admin-bar {
+  background-color: $admin-bar-background-colour;
+  color: $admin-bar-foreground-colour;
+  padding: 0.5em 1em;
+  overflow: hidden;
+}
+
+.admin-navigation {
+  float: right;
+  margin: 0;
+  list-style: none;
+  width: 20%;
+}
+
+.admin-title {
+  margin-top: 0.4em;
+  display: inline-block;
+}
+
+.admin-icon {
+  height: 25px;
+}
+
+.customer-selector {
+
+}

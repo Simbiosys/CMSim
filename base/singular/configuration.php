@@ -1,15 +1,26 @@
 <?php
+  /**
+  * Singular's Configuration
+  */
   namespace Singular;
 
+  /**
+  * Singular's Configuration Class
+  */
   class Configuration {
+    /** @var Object|null $api Slim instance. */
     protected static $api = NULL;
+    /** @var Object|null $configuration Singleton's instance for framework settings. */
     protected static $configuration = NULL;
+    /** @var Object|null $app_settings Singleton's instance for application settings. */
     protected static $app_settings = NULL;
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                            Get API instance
-    ////////////////////////////////////////////////////////////////////////////
-    public static function obtener_api() {
+    /**
+      * Returns Slim API instance.
+      *
+      * @return Object
+      */
+    public static function get_api() {
       if (empty(static::$api)) {
         static::$api = new \Slim\Slim();
       }
@@ -17,28 +28,33 @@
       return static::$api;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                            Get configuration
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the framework configuration for the active mode.
+      *
+      * @return Object
+      */
     public static function get_configuration() {
       return self::get_current_configuration();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                                 Get index
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the host.
+      *
+      * @return string
+      */
     public static function get_index() {
-      //$index = self::get_configuration_element("index");
-      $host = self::get_host();
-
-      //return "$host$index";
-      return $host;
+      return self::get_host();
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                            Get app settings
-    ////////////////////////////////////////////////////////////////////////////
-    public static function get_app_settings($properties = NULL) {
+    /**
+      * Returns the app configuration.
+      *
+      * @param Object|null $properties Property chain to follow.
+      * @param string|null $default Default value.
+      *
+      * @return Object
+      */
+    public static function get_app_settings($properties = NULL, $default = NULL) {
       if (empty(static::$app_settings)) {
         static::$app_settings = self::load_app_settings();
       }
@@ -59,7 +75,7 @@
         $property = $properties[$i];
 
         if (!isset($value[$property])) {
-          return NULL;
+          return $default;
         }
 
         $value = $value[$property];
@@ -68,9 +84,11 @@
       return $value;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                          Get full configuration
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the whole framework configuration.
+      *
+      * @return Object
+      */
     private static function get_full_configuration() {
       if (empty(static::$configuration)) {
         static::$configuration = self::load_configuration();
@@ -79,9 +97,11 @@
       return static::$configuration;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                        Get current configuration
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the framework configuration for the active mode.
+      *
+      * @return Object
+      */
     private static function get_current_configuration() {
       if (empty(static::$configuration)) {
         static::$configuration = self::load_configuration();
@@ -90,93 +110,163 @@
       return static::$configuration['current'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                             Debug enabled
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns True if debug is enabled in active mode.
+      *
+      * @return boolean
+      */
     public static function debug_enabled() {
       $config = self::get_current_configuration();
       return isset($config['debug']) ? $config['debug'] : FALSE;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                             Get root path
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the root for active mode.
+      *
+      * @return string
+      */
     public static function get_root() {
       $config = self::get_current_configuration();
       return $config['root'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                                  Get host
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the host for active mode.
+      *
+      * @return string
+      */
     public static function get_host() {
       $config = self::get_current_configuration();
       return $config['host'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                          Get controller path
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the path where app controllers are stored.
+      *
+      * @return string
+      */
     public static function get_controller_path() {
       return self::get_configuration_path("controllers");
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                             Get model path
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the path where app models are stored.
+      *
+      * @return string
+      */
     public static function get_model_path() {
       return self::get_configuration_path("models");
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                            Get service path
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the path where app services are stored.
+      *
+      * @return string
+      */
     public static function get_service_path() {
       return self::get_configuration_path("services");
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                             Get view path
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the path where app views are stored.
+      *
+      * @return string
+      */
     public static function get_view_path() {
       return self::get_configuration_path("views");
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                           Get authentication
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the path where app language files are stored.
+      *
+      * @return string
+      */
+    public static function get_languages_path() {
+      return self::get_configuration_path("languages", FALSE);
+    }
+
+    /**
+      * Returns the list of available languages for the app.
+      *
+      * @return Array
+      */
+    public static function get_available_languages() {
+      return self::get_configuration_element('available_languages', FALSE);
+    }
+
+    /**
+      * Returns app default language.
+      *
+      * @return string
+      */
+    public static function get_default_language() {
+      return self::get_configuration_element('default_language', FALSE);
+    }
+
+    /**
+      * Returns the path where app layouts are stored.
+      *
+      * @return string
+      */
+    public static function get_layout_path() {
+      return self::get_configuration_path("layouts");
+    }
+
+    /**
+      * Returns the app authentication configuration.
+      *
+      * @return string
+      */
     public static function get_authentication() {
       $configuration = self::get_current_configuration();
       return $configuration['authentication'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                           Get authorisation
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the app authorisation configuration.
+      *
+      * @return string
+      */
     public static function get_authorisation() {
       $configuration = self::get_current_configuration();
       return $configuration['authorisation'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                             Get dababase
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the app helper configuration.
+      *
+      * @return string
+      */
+    public static function get_helpers() {
+      $configuration = self::get_current_configuration();
+      return $configuration['helpers'];
+    }
+
+    /**
+      * Returns the app database configuration.
+      *
+      * @return Object
+      */
     public static function get_database_configuration() {
       $configuration = self::get_current_configuration();
       return $configuration['database'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                              Get cache
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Returns the app cache configuration.
+      *
+      * @return Object
+      */
     public static function get_cache() {
       $configuration = self::get_current_configuration();
       return $configuration['cache'];
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                           Load App settings
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Loads app settings.
+      *
+      * @return Object
+      */
     private static function load_app_settings() {
       $configuration = self::get_full_configuration();
       $settings_path = $configuration['settings'];
@@ -193,9 +283,11 @@
       return json_decode(file_get_contents($settings_path), TRUE);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                           Load configuration
-    ////////////////////////////////////////////////////////////////////////////
+    /**
+      * Loads and checks the framework configuration file.
+      *
+      * @return Object
+      */
     private static function load_configuration() {
       $path = \getcwd();
       $configuration_file = "$path/singular.json";
@@ -232,33 +324,63 @@
       return $configuration_file;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                        Load configuration path
-    ////////////////////////////////////////////////////////////////////////////
-    private static function get_configuration_path($element) {
+    /**
+      * Returns a configuration path, prefixes the root path.
+      *
+      * @param string $element Configuration's key.
+      * @param boolean $required Determines whether the key is mandatory.
+      *
+      * @return string|null
+      */
+    private static function get_configuration_path($element, $required = TRUE) {
       $root = self::get_root();
-      $element_path = self::get_configuration_element($element);
+      $element_path = self::get_configuration_element($element, $required);
+
+      if (empty($element_path)) {
+        return NULL;
+      }
 
       if (is_string($element_path)) {
         return "$root$element_path";
       }
       else {
         foreach ($element_path as $element => $value) {
-          $element_path[$element] = "$root$value";
+          if (is_array($element_path[$element])) {
+            $result = array();
+
+            foreach ($element_path[$element] as $item) {
+              array_push($result, "$root$item");
+            }
+
+            $element_path[$element] = $result;
+          }
+          else {
+            $element_path[$element] = "$root$value";
+          }
         }
 
         return $element_path;
       }
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                        Load configuration element
-    ////////////////////////////////////////////////////////////////////////////
-    private static function get_configuration_element($element) {
+    /**
+      * Returns a configuration element.
+      *
+      * @param string $element Configuration's key.
+      * @param boolean $required Determines whether the key is mandatory.
+      *
+      * @return Object|null
+      */
+    private static function get_configuration_element($element, $required = TRUE) {
       $configuration = self::get_full_configuration();
 
       if (!isset($configuration[$element])) {
-        throw new \Exception("singular.json has no attribute '$element'.");
+      	if ($required) {
+          throw new \Exception("singular.json has no attribute '$element'.");
+        }
+        else {
+          return NULL;
+        }
       }
 
       return $configuration["$element"];

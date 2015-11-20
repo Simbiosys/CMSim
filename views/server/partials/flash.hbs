@@ -1,5 +1,11 @@
+{{#if page.debug}}
+<div class="debug">
+  {{page.debug}}
+</div>
+{{/if}}
+
 {{#if page.flash}}
-<div class="flash">
-  {{page.flash}}
+<div class="flash {{page.flash.code}}">
+  {{page.flash.message}}
 </div>
 {{/if}}

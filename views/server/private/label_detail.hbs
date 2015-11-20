@@ -1,0 +1,82 @@
+<section class="width-container">
+  {{> web_left_bar}}
+
+  <form method="POST" class="inner-body"
+    {{#if data.labels.id}}
+      action="{{page.host}}/manager/labels/{{data.labels.id}}/save"
+    {{else}}
+      action="{{page.host}}/manager/labels/new"
+    {{/if}}>
+    <header class="navbar-form navigation-bar width-container" role="">
+      <div class="width-container">
+        <a href="{{page.host}}/manager/labels" class="pull-left">
+          <i class="fa fa-angle-left fa-3x return-back"></i>
+        </a>
+        <h1 class="page_title pull-left">
+          {{#if data.labels.id}}
+            {{get_translation @root.data.label_translations page.language 'name'}}
+          {{else}}
+            {{labels.new_label}}
+          {{/if}}
+        </h1>
+        <nav class="pull-right">
+          {{#if data.labels.id}}
+          <a href="{{page.host}}/manager/labels/{{data.labels.id}}/delete" class="btn btn-cancel margin-right-8">
+            <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
+          </a>
+          {{/if}}
+          <button type="submit" class="btn btn-default">
+            <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <input type="hidden" name="id" value="{{data.labels.id}}" />
+
+    <div class="width-container margin-top-10">
+      <section class="content-body">
+
+        <div class="row">
+          <div class="col-md-5 col-md-offset-7 text-right">
+            <label for="parent" class="padding-top-5 margin-right-10">{{labels.label_parent}}</label>
+            <select class="form-control width-50 pull-right" id="parent" name="parent_id">
+              <option value="NULL">{{labels.none}}</option>
+              {{#data.other_labels}}
+                <option value="{{labels.id}}" {{select_equals labels.id @root.data.labels.parent_id}}>{{get_translation label_translations @root.page.language 'name'}}</option>
+              {{/data.other_labels}}
+            </select>
+          </div>
+        </div>
+
+        <ul class="nav nav-tabs">
+          {{#page.languages}}
+            <li role="presentation" class="{{equals @index 0 'active'}}">
+              <a href="#" data-tab="{{this}}">
+                {{language_name @root.labels this}}
+              </a>
+            </li>
+          {{/page.languages}}
+        </ul>
+
+        {{#page.languages}}
+          <div class="row language-content" data-content="{{this}}">
+
+            <input type="hidden" name="label_translations.id#{{this}}" value="{{get_translation @root.data.label_translations this 'id'}}" />
+
+            <div class="col-xs-12 margin-top-20">
+              <label for="name">{{@root.labels.name}} ({{language_name @root.labels this}})</label>
+              <input type="text" class="form-control" id="name" name="label_translations.name#{{this}}" placeholder="{{@root.labels.name}}" value="{{get_translation @root.data.label_translations this 'name'}}" />
+            </div>
+            <div class="col-xs-12 margin-top-20">
+              <label for="description">{{@root.labels.description}} ({{language_name @root.labels this}})</label>
+              <input type="text" class="form-control" id="description" name="label_translations.description#{{this}}" placeholder="{{@root.labels.description}}" value="{{get_translation @root.data.label_translations this 'description'}}" />
+            </div>
+          </div>
+        {{/page.languages}}
+
+      </section>
+    </div>
+  </form>
+
+</section>

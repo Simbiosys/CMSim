@@ -1,12 +1,13 @@
 <?php
 
-class UserModel extends \Singular\Model {
-      protected static $table = "users";
-      protected static $sql_query = "SELECT id, name, surname, email, customer_id, role
-                                     FROM users";
-      protected static $order = "name ASC";
+class UserModel extends CustomerRelatedModel {
+      protected $table = "users";
+      protected $query_fields = array("id", "name", "surname", "email", "customer_id", "role");
+      protected $order = array("name ASC");
+      protected $filter = NULL;
+      protected $search_fields = array("name", "surname", "email");
 
-      protected static $fields = array(
+      protected $fields = array(
         "id" => array(
           "type" => "integer",
           "null" => FALSE,
@@ -42,15 +43,22 @@ class UserModel extends \Singular\Model {
         )
       );
 
-      protected static $primary_key = "id";
+      protected $primary_key = "id";
 
       public function process($data) {
         return $data;
       }
 
       public function validate_user($user, $password) {
+        $this->filter = "1=1";
         $user_info = $this->get_all("email = '$user' AND password = '$password'");
 
-        return count($user_info) > 0 ? $user_info[0] : NULL;
+        $data = count($user_info) > 0 ? $user_info[0] : NULL;
+
+        if (!empty($data)) {
+          $data = isset($data[$this->table]) ? $data[$this->table] : $data;
+        }
+
+        return $data;
       }
 }

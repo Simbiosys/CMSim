@@ -1,0 +1,15 @@
+{{#if page.user_data.roles.administrator_role}}
+  <nav class="admin-bar">
+    <i class="fa fa-cog fa-2x vertical-align-middle margin-right-10"></i>
+    <span class="admin-title">{{labels.administration}}</span>
+    <ul class="admin-navigation">
+      <li>
+        <select class="form-control customer-selector" id="admin_customer">
+          {{#page.customers}}
+            <option value="{{customers.id}}" {{select_equals customers.id @root.page.impersonated_customer}}>{{customers.name}}</option>
+          {{/page.customers}}
+        </select>
+      </li>
+    </ul>
+  </nav>
+{{/if}}

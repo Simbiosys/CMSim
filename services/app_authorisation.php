@@ -23,7 +23,7 @@
     public static function get_user_role() {
       $user = \Singular\Authentication::get_user_data();
 
-      $role = "usuario";
+      $role = "user_role";
 
       if (isset($user["role"])) {
         $role = $user["role"];

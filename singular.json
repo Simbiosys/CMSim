@@ -4,12 +4,17 @@
   "models": "/models",
   "services": "/services",
   "views": {
-    "server": "/views/server",
+    "server": ["/views/server", "/views/server/private", "/views/server/public"],
     "client": "/views/client",
-    "partials": "/views/server/partials"
+    "partials": ["/views/server/partials", "/views/server/partials/private", "/views/server/partials/public"],
+    "compiled": "/views/compiled"
   },
+  "layouts": "/views/server/layouts",
+  "languages": "/lang",
   "settings": "/config/app.json",
   "index": "/index.php",
+  "available_languages": ["es", "en", "cat", "ast"],
+  "default_language": "es",
   "mode": "development",
   "modes": {
     "development": {
@@ -21,16 +26,17 @@
         "user": "root",
         "password": "simPHP00",
         "data_base": "cmsim",
-        "provider": "\\singular\\ProveedorMySQL"
+        "provider": "\\singular\\MySQLProvider"
       },
-      "cache": "\\Singular\\MemcacheCache",
-      "cache_server": "localhost",
-      "cache_port": "11211",
+      "cache": null,
       "authentication": "AppAuthentication",
-      "authorisation": "AppAuthorisation"
+      "authorisation": "AppAuthorisation",
+      "helpers": "AppHelpers"
     },
     "production": {
-
+      "cache": "\\Singular\\MemcacheCache",
+      "cache_server": "localhost",
+      "cache_port": "11211"
     }
   }
 }

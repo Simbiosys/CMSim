@@ -1,12 +1,13 @@
 <?php
 
 class CustomerModel extends \Singular\Model {
-      protected static $table = "customers";
-      protected static $sql_query = "SELECT id, name
-                                     FROM customers";
-      protected static $order = "name ASC";
+      protected $table = "customers";
+      protected $query_fields = array("id", "name");
+      protected $order = array("name ASC");
+      protected $filter = NULL;
+      protected $search_fields = array("name");
 
-      protected static $fields = array(
+      protected $fields = array(
         "id" => array(
           "type" => "integer",
           "null" => FALSE,
@@ -19,7 +20,11 @@ class CustomerModel extends \Singular\Model {
         )
       );
 
-      protected static $primary_key = "id";
+      protected $primary_key = "id";
+
+      protected function init() {
+
+      }
 
       public function process($data) {
         return $data;

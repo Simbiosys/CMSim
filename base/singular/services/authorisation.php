@@ -1,0 +1,45 @@
+<?php
+  /**
+  * Singular's Authorisation Method
+  */
+  namespace Singular;
+
+  /**
+  * Singular's Authorisation Method Class
+  */
+  class Authorisation {
+    /** @var Object|null $authorisation_method Authorisation method instance. */
+    protected static $authorisation_method = NULL;
+
+    /**
+      * Returns True if the user has access to an action in an entity.
+      *
+      * @param string $entity Entity's name.
+      * @param string $action Action's name.
+      *
+      * @return boolean
+      */
+    public static function is_allowed($entity, $action) {
+      $authorisation_method = self::load_authorisation_method();
+
+      return empty($authorisation_method) ? TRUE : $authorisation_method->is_allowed($entity, $action);
+    }
+
+    /**
+      * Loads the authorisation method from configuration.
+      *
+      * @return void
+      */
+    private static function load_authorisation_method() {
+      if (empty(static::$authorisation_method)) {
+        $authorisation_method = Configuration::get_authorisation();
+
+        if ($authorisation_method) {
+          $r = new \ReflectionClass($authorisation_method);
+          static::$authorisation_method = $r->newInstanceArgs(array());
+        }
+      }
+
+      return static::$authorisation_method;
+    }
+  }

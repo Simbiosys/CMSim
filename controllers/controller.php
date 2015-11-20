@@ -2,26 +2,31 @@
   //////////////////////////////////////////////////////////////////////////////
   //                                  ROOT
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_public("/", function() {
-    if (redirect_when_logged()) {
-      return;
-    }
+  LanguageController::get_public("/", function() {
+    $language = \Singular\Configuration::get_default_language();
 
-    \Singular\View::render(array(
-        "template" => "index"
+    \Singular\Controller::redirect("/$language");
+  });
+
+  LanguageController::get_public_language("/", function() {
+
+    CMSView::render(array(
+        "template" => "index",
+        "layout" => "public.hbs"
     ));
   });
 
   //////////////////////////////////////////////////////////////////////////////
   //                                  LOGIN
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_public("/login", function() {
+  LanguageController::get_public_language("/login", function() {
     if (redirect_when_logged()) {
       return;
     }
 
-    \Singular\View::render(array(
-        "template" => "login"
+    CMSView::render(array(
+        "template" => "login",
+        "layout" => "public.hbs"
     ));
   });
 
@@ -48,14 +53,58 @@
     }
 
     // Invalid login
-    \Singular\Controller::flash("Usuario y/o contraseña incorrectos");
 
-    \Singular\Controller::redirect("/login");
+    \Singular\Controller::flash(array(
+      "message" => CMSView::get_label("user_password_incorrent"),
+      "code" => "error"
+    ));
+
+    $language = \Singular\Configuration::get_default_language();
+    \Singular\Controller::redirect("/$language/login");
   });
 
   \Singular\Controller::get_public("/logout", function() {
     AppAuthentication::log_out();
-    \Singular\Controller::redirect("/login");
+    $language = \Singular\Configuration::get_default_language();
+    \Singular\Controller::redirect("/$language/login");
+  });
+
+  \Singular\Controller::post_private("/impersonate/:customer",
+  "customers", "list", function($customer) {
+    AppAuthentication::impersonate_customer($customer);
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
+  //                                 LANGUAGE
+  //////////////////////////////////////////////////////////////////////////////
+
+  \Singular\Controller::get_public("/language/:language", function($language) {
+    AppAuthentication::set_language($language);
+
+    $user_info = AppAuthentication::get_user_data();
+    redirect_to_user_default_path($user_info);
+  });
+
+  \Singular\Controller::post_public("/language/:language", function($language) {
+    AppAuthentication::set_language($language);
+
+    $url = \Singular\Controller::get_post_variable("url");
+    $languages = \Singular\Configuration::get_available_languages();
+
+    foreach ($languages as $lang) {
+      if (strpos($url, "/$lang/") !== FALSE) {
+        $url = preg_replace("/\/$lang\//", "/$language/", $url, 1);
+        break;
+      }
+      else if (endsWith($url, "/$lang")) {
+        $url = str_lreplace("/$lang", "/$language", $url);
+        break;
+      }
+    }
+
+    echo json_encode(array(
+      "url" => $url
+    ));
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -81,8 +130,22 @@
     $default_path = \Singular\Configuration::get_app_settings(array("roles", $role, "default_path"));
 
     if (empty($default_path)) {
-      $default_path = "/login";
+      $default_path = "/";
     }
 
     \Singular\Controller::redirect($default_path);
+  }
+
+  function endsWith($str, $sub) {
+    return (substr( $str, strlen( $str ) - strlen( $sub ) ) === $sub);
+  }
+
+  function str_lreplace($search, $replace, $subject) {
+    $pos = strrpos($subject, $search);
+
+    if ($pos !== FALSE) {
+      $subject = substr_replace($subject, $replace, $pos, strlen($search));
+    }
+
+    return $subject;
   }

@@ -1,0 +1,22 @@
+<div class="container margin-top-20">
+  <section class="content-body">
+
+    <div class="jumbotron">
+      <h1 class="margin-bottom-30">{{labels.login}}</h1>
+      <form method="POST" action="{{page.host}}/login">
+        <div class="form-group">
+          <label for="user">{{labels.user_account}}</label>
+          <input type="text" class="form-control" name="user" placeholder="" />
+        </div>
+        <div class="form-group">
+          <label for="password">{{labels.password}}</label>
+          <input type="password" class="form-control" name="password" placeholder="" />
+        </div>
+        <p class="text-right">
+          <input type="submit" value="{{labels.send}}" class="btn btn-primary" />
+        </p>
+      </form>
+    </div>
+
+  </section>
+</div>

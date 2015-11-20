@@ -1,0 +1,43 @@
+<form method="POST"
+  {{#if data.customers.id}}
+    action="{{page.host}}/manager/customers/{{data.customers.id}}/save"
+  {{else}}
+    action="{{page.host}}/manager/customers/new"
+  {{/if}}>
+  <header class="navbar-form navigation-bar width-container" role="">
+    <div class="width-container">
+      <a href="{{page.host}}/manager/customers" class="pull-left">
+        <i class="fa fa-angle-left fa-3x return-back"></i>
+      </a>
+      <h1 class="page_title pull-left">
+        {{#if data.customers.id}}
+          {{data.customers.name}}
+        {{else}}
+          {{labels.new_customer}}
+        {{/if}}
+      </h1>
+      <nav class="pull-right">
+        {{#if data.customers.id}}
+        <a href="{{page.host}}/manager/customers/{{data.customers.id}}/delete" class="btn btn-cancel margin-right-8">
+          <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
+        </a>
+        {{/if}}
+        <button type="submit" class="btn btn-default">
+          <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <input type="hidden" name="id" value="{{data.customers.id}}" />
+
+  <div class="width-container margin-top-10">
+      <div class="row language-content" data-language-content="{{this}}">
+
+        <div class="col-xs-12">
+          <label for="title">{{@root.labels.name}}</label>
+          <input type="text" class="form-control" id="name" name="users.name" placeholder="{{@root.labels.name}}" value="{{data.customers.name}}" />
+        </div>
+      </div>
+  </div>
+</form>

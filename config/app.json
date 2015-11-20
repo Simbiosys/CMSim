@@ -2,14 +2,15 @@
   "title": "CMSim",
   "version": "0.0.1",
   "roles": {
-    "administrator_rol": {
-      "default_path": "/manager/customers"
+    "administrator_role": {
+      "default_path": "/manager/news"
     },
     "manager_rol": {
-      "default_path": "/manager/users"
+      "default_path": "/manager/dashboard"
     },
     "user_rol": {
       "default_path": "/"
     }
-  }
+  },
+  "page_limit": 10
 }

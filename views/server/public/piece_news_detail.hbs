@@ -1,0 +1,19 @@
+<div class="container margin-top-20">
+  <section class="content-body">
+    <nav>
+      <a href="{{page.host}}/{{page.language}}/news"><i class="fa fa-angle-left"></i> {{labels.view_news}}</a>
+    </nav>
+
+    <h1 class="">
+      {{#if data.informations.id}}
+        {{get_translation @root.data.information_translations page.language 'title'}}
+      {{else}}
+        {{labels.new_news}}
+      {{/if}}
+    </h1>
+
+    <p class="margin-top-20">
+      {{get_translation @root.data.information_translations page.language 'content'}}
+    </p>
+  </section>
+</div>

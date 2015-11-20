@@ -1,260 +1,1033 @@
 <?php
+  /**
+  * Singular model
+  */
   namespace Singular;
 
-  class Model {
-    private static $data_base;
-    protected static $table;
-    protected static $sql_query;
-    protected static $order;
+  /**
+  * Singular's Basic Model
+  */
+  class BasicModel {
+    /** @var string|null $query Default query for the model. */
+    protected $query = NULL;
+    /** @var Array|null $query_fields Fields to include in any query. */
+    protected $query_fields = NULL;
+    /** @var string|null $table Model's table. */
+    protected $table = NULL;
+    /** @var Array|null $filter Filter to apply to any query. */
+    protected $filter = NULL;
+    /** @var Array|null $order Order criteria. */
+    protected $order = NULL;
+    /** @var Array|null $dependencies List of dependencies on other models. */
+    protected $dependencies = NULL;
+    /** @var Array|null $fields The fields that this model contains. */
+    protected $fields = NULL;
+    /** @var string|null $primary_key Primary key. */
+    protected $primary_key = NULL;
 
-    protected static $fields;
-    protected static $primary_key = NULL;
+    /**
+      * Constructor.
+      *
+      * @param Array $params Method parameters.
+			* <ul>
+			*		<li><strong>query:</strong> Default query for the model.</li>
+			*		<li><strong>query_fields:</strong> Fields to include in any query.</li>
+			*		<li><strong>table:</strong> Model's table.</li>
+			*		<li><strong>filter:</strong> Filter to apply to any query.</li>
+			*		<li><strong>order:</strong> Order criteria.</li>
+			*		<li><strong>dependencies:</strong> List of dependencies on other models.</li>
+      *		<li><strong>fields:</strong> The fields that this model contains.</li>
+      *		<li><strong>primary_key:</strong> Primary key.</li>
+			*	</ul>
+      *
+      * @return void
+      */
+    public function __construct($params) {
+      if (isset($params["query"])) {
+        $this->query = $params["query"];
+      }
 
-    protected static $cache = NULL;
+      if (isset($params["query_fields"])) {
+        $this->query_fields = $params["query_fields"];
+      }
 
-    function __construct($values = NULL) {
-      self::get_connection();
-      self::get_cache();
+      if (isset($params["table"])) {
+        $this->table = $params["table"];
+      }
+
+      if (isset($params["filter"])) {
+        $this->filter = $params["filter"];
+      }
+
+      if (isset($params["order"])) {
+        $this->order = $params["order"];
+      }
+
+      if (isset($params["dependencies"])) {
+        $this->dependencies = $params["dependencies"];
+      }
+
+      if (isset($params["fields"])) {
+        $this->fields = $params["fields"];
+      }
+
+      if (isset($params["primary_key"])) {
+        $this->order = $params["primary_key"];
+      }
+    }
+
+    /**
+      * Returns the table of this model.
+      *
+      * @return string
+      */
+    public function get_table() {
+      return $this->table;
+    }
+
+    /**
+      * Returns the query of this model.
+      *
+      * @return string
+      */
+    public function get_query() {
+      return $this->query;
+    }
+
+    /**
+      * Returns the filter of this model.
+      *
+      * @return Array
+      */
+    public function get_filter() {
+      return $this->filter;
+    }
+
+    /**
+      * Returns the order criteria of this model.
+      *
+      * @return Array
+      */
+    public function get_order() {
+      return $this->order;
+    }
+
+    /**
+      * Returns the fields that appears in any query.
+      *
+      * @return Array
+      */
+    public function get_query_fields() {
+      return $this->query_fields;
+    }
+
+    /**
+      * Returns the dependencies of this model on other models.
+      *
+      * @return Array
+      */
+    public function get_dependencies() {
+      return $this->dependencies;
+    }
+
+    /**
+      * Returns the fields that this model contains.
+      *
+      * @return string
+      */
+    public function get_fields() {
+      return $this->fields;
+    }
+
+    /**
+      * Returns the primary key.
+      *
+      * @return string
+      */
+    public function get_primary_key() {
+      return $this->primary_key;
+    }
+  }
+
+  /**
+  * Singular's Model. Any application model should inherit from this class
+  */
+  class Model extends BasicModel {
+    /** @var Database $data_base Points to Singular's database instance. */
+    protected $data_base;
+    /** @var Cache|null $cache Points to the cache instance, when enabled. */
+    protected $cache = NULL;
+    /** @var Array $search_fields Fields to search in in the 'search' function. */
+    protected $search_fields = array();
+    /** @var Array $attributes Attributes. */
+    protected $attributes = array();
+
+    /**
+      * Constructor.
+      *
+      * @param Array $values Values to initialise the model.
+      *
+      * @return void
+      */
+    public function __construct($values = NULL) {
+      $this->get_connection();
+      $this->get_cache();
 
       if (!empty($values)) {
         $this->set($values);
       }
+
+      $this->init();
     }
 
-    protected $attributes = array(
-
-    );
-
+    /**
+      * Sets values to this model's attributes.
+      *
+      * @param Array $values Values to initialise the model.
+      *
+      * @return void
+      */
     public function set($values) {
       foreach ($values as $key => $value) {
         $this->attributes[$key] = $value;
       }
     }
 
+    /**
+      * Sets a value to an attribute.
+      *
+      * @param string $name Attribute's name.
+      * @param string $value Attribute's value.
+      *
+      * @return void
+      */
     public function set_attribute($name, $value) {
       $this->attributes[$name] = $value;
     }
 
+    /**
+      * Gets the value of an attribute.
+      *
+      * @param string $name Attribute's name.
+      *
+      * @return string
+      */
     public function get_attribute($name) {
       return isset($this->attributes[$name]) ? $this->attributes[$name] : NULL;
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                          DATABASE CONNECTION
-    ////////////////////////////////////////////////////////////////////////////
-
-    private static function get_connection() {
+    /**
+      * Gets the database connection.
+      *
+      * @return DataBaseProvider
+      */
+    protected function get_connection() {
       $configuration = Configuration::get_database_configuration();
-      self::$data_base = Database::get_connection($configuration["provider"], $configuration["server"], $configuration["user"], $configuration["password"], $configuration["data_base"]);
+      $this->data_base = Database::get_connection($configuration["provider"], $configuration["server"], $configuration["user"], $configuration["password"], $configuration["data_base"]);
     }
 
-    ////////////////////////////////////////////////////////////////////////////
-    //                                CACHE
-    ////////////////////////////////////////////////////////////////////////////
-
-    private static function get_cache() {
-      if (empty(static::$cache)) {
+    /**
+      * Gets the cache instance when enabled.
+      *
+      * @return Cache
+      */
+    protected function get_cache() {
+      if (empty($this->cache)) {
         $cache = Configuration::get_cache();
 
         if ($cache) {
           $r = new \ReflectionClass($cache);
-          static::$cache = $r->newInstanceArgs(array(static::$table));
+          $this->cache = $r->newInstanceArgs(array($this->table));
         }
       }
 
-      return static::$cache;
+      return $this->cache;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     //                        QUERY AUXILIARY METHODS
     ////////////////////////////////////////////////////////////////////////////
 
-    private static function get_query() {
-      self::auto_generation();
-
-      $sql_query = static::$sql_query;
-
-      if (!isset($sql_query)) {
-        $sql_query = "SELECT * FROM " . static::$table;
-      }
-
-      if (strpos($sql_query, "WHERE") === false) {
-          $sql_query .= " WHERE deleted = 0";
-      }
-
-      return $sql_query;
+    /**
+      * When overwritten the child class can perform initial tasks.
+      *
+      * @return void
+      */
+    protected function init() {
+      // Lets you perform initial tasks
+      $this->filter = $this->data_base->get_default_filter();
     }
 
-    private static function get_order() {
-      $order = static::$order;
+    /**
+      * Return the model's query.
+      *
+      * @return string
+      */
+    protected function get_the_query() {
+      $this->auto_generation();
 
-      if (!isset($order)) {
-        return "";
+      return $this->data_base->get_query($this);
+    }
+
+    /**
+      * Return the model's filter.
+      *
+      * @return string
+      */
+    protected function get_the_filter() {
+      return $this->data_base->get_filter($this);
+    }
+
+    /**
+      * Return the model's order criteria.
+      *
+      * @return string
+      */
+    protected function get_the_order() {
+      return $this->data_base->get_order($this);
+    }
+
+    /**
+      * Wraps data under a key.
+      *
+      * @param Array $data The whole data container.
+      * @param string $model The surrounding key.
+      * @param Array $info The inner data to wrap.
+      *
+      * @return Array
+      */
+    protected function wrap_data(&$data, $model, $info) {
+      $data[$model] = $info;
+
+      return $data;
+    }
+
+    /**
+      * Returns True when the received array is associative.
+      *
+      * @param Array $array Array to check.
+      *
+      * @return boolean
+      */
+    private function is_assoc(array $array) {
+      $keys = array_keys($array);
+      return array_keys($keys) !== $keys;
+    }
+
+    /**
+      * Sets the dependencies of this model into the data.
+      *
+      * @param string $entity Entity's name.
+      * @param Array $fields Model's fields data.
+      * @param Array $data The whole data container.
+      * @param string $cache_identifier The identifier used to store cache data.
+      *
+      * @return Array
+      */
+    protected function set_dependencies($entity, $fields, &$data, $cache_identifier) {
+      $object = new $entity();
+      $dependencies = $object->dependencies;
+
+      if (empty($dependencies)) {
+        return $data;
       }
 
-      return " ORDER BY $order";
+      foreach ($dependencies as $dependency) {
+        $entity = isset($dependency["entity"]) ? $dependency["entity"] : NULL;
+        $filter = isset($dependency["filter"]) ? $dependency["filter"] : NULL;
+        $order = isset($dependency["order"]) ? $dependency["order"] : NULL;
+        $dependent = isset($dependency["dependent"]) ? $dependency["dependent"] : FALSE;
+
+        $table = $this->get_table_by_entity($entity);
+
+        $key = $this->get_dependency_key($object, $table);
+        $key_parent = $this->get_dependency_key_parent($object, $table);
+        $id = isset($fields[$key_parent]) ? $fields[$key_parent] : NULL;
+
+        $condition = "$key = '$id'";
+
+        $fake_model = new BasicModel(array(
+          "query" => NULL,
+          "query_fields" => NULL,
+          "table" => $table,
+          "filter" => $filter,
+          "order" => $order
+        ));
+
+        $query = $this->data_base->get_query_by_condition($fake_model, $condition);
+
+        $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
+        $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
+
+        $data[$table] = $results;
+      }
+
+      return $data;
+    }
+
+    /**
+      * Gets the table's name associated to an entity.
+      *
+      * @param string $entity Entity's name.
+      *
+      * @return string
+      */
+    private function get_table_by_entity($entity) {
+      $object = new $entity();
+      return $object->get_table();
+    }
+
+    /**
+      * Returns the cached data when available.
+      *
+      * @param string $identifier Stored data identifier.
+      *
+      * @return Array|null
+      */
+    private function get_cached_data($identifier) {
+      $cache = $this->get_cache();
+
+      if ($cache) {
+        $cached_data = $cache->get($cache_identifier);
+
+        if ($cached_data)
+          return $cached_data;
+      }
+
+      return NULL;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //                                 SEARCH
+    ////////////////////////////////////////////////////////////////////////////
+
+    /**
+      * When overwritten the child class can specify the source of the search data.
+      * This function returns the items to search in.
+      *
+      * @param Array $condition Search condition.
+      *
+      * @return Array
+      */
+    protected function get_search_results($condition = NULL) {
+      return $this->get_all($condition);
+    }
+
+    /**
+      * Searchs the data returned by 'get_search_results' and returns the
+      * occurrences.
+      *
+      * @param Array $terms Words to search in the items.
+      * @param Array $condition Optional search condition.
+      *
+      * @return Array
+      */
+    public function search($terms, $condition = NULL) {
+      $search_fields = $this->search_fields;
+      $table = $this->table;
+
+      $terms = explode(" ", $terms);
+
+      for ($i = 0; $i < count($search_fields); $i++) {
+        $search_field = $search_fields[$i];
+
+        $parts = explode(".", $search_field);
+
+        if (count($parts) == 1) {
+          array_unshift($parts, $table);
+        }
+
+        $search_fields[$i] = $parts;
+      }
+
+      $results = $this->get_search_results($condition);
+      $occurrences = array();
+
+      foreach ($results as $result) {
+        $valid = TRUE;
+
+        foreach ($terms as $term) {
+          $term = strtolower($term);
+          $found = FALSE;
+
+          foreach ($search_fields as $search_field) {
+            if ($this->search_term($search_field, $result, $term, 0)) {
+              $found = TRUE;
+              break;
+            }
+          }
+
+          if (!$found) {
+            $valid = FALSE;
+            break;
+          }
+        }
+
+        if ($valid) {
+          array_push($occurrences, $result);
+        }
+      }
+
+      return $occurrences;
+    }
+
+    /**
+      * Inner recursive search function
+      *
+      * @param Array $search_field One search field parts. i.e.: [table, field]
+      * @param Array $data One row to search in.
+      * @param Array $term Term to check if exists in the search_field.
+      * @param Array $level Recursive level through the search_field length.
+      *
+      * @return Array
+      */
+    private function search_term($search_field, $data, $term, $level) {
+      if ($level >= count($search_field)) {
+
+        return strpos($data, $term) !== FALSE;
+      }
+
+      if ($this->is_assoc($data)) {
+        $data = array($data);
+      }
+
+      $part = $search_field[$level];
+
+      foreach ($data as $row) {
+        if (!isset($row[$part])) {
+          return FALSE;
+        }
+
+        $row = $row[$part];
+
+        $partial_result = $this->search_term($search_field, $row, $term, $level + 1);
+
+        if ($partial_result) {
+          return TRUE;
+        }
+      }
+
+      return FALSE;
+    }
+
+    /**
+      * Function that loops the results obtained by a query.
+      *
+      * @param string $entity Entity's name.
+      * @param string $table Table's name.
+      * @param string $query Query to peform.
+      * @param Array $params Query parameters.
+      * @param string $cache_identifier Identifier to store cached data.
+      * @param boolean $wrap_data Determines whether the data must be wrapped or not with the entity's name.
+      *
+      * @return Array
+      */
+    private function process_query_results($entity, $table, $query, $params, $cache_identifier, $wrap_data = TRUE) {
+      $results = $this->data_base->run($query, NULL, $params);
+
+      $class = get_called_class();
+      $obj = new $class();
+
+      $objs = NULL;
+
+      if (!empty($entity)) {
+        $obj = $entity = new $entity();
+      }
+      else {
+        $entity = $obj;
+      }
+
+      if ($results) {
+        for ($i = 0; $i < sizeof($results); $i++) {
+          $fields = $this->data_base->format_fields($results[$i], $this->fields);
+          $data = array();
+
+          $processed_fields = $obj->process($fields);
+
+          if ($wrap_data) {
+            $obj->wrap_data($data, $table, $processed_fields);
+          }
+          else {
+            $data = $processed_fields;
+          }
+
+          $obj->set_dependencies($entity, $fields, $data, $cache_identifier);
+
+          $objs[] = $data;
+        }
+      }
+
+      $cache = $this->get_cache();
+
+      if ($cache) {
+        $cache->set($cache_identifier, $objs);
+      }
+
+      return $objs;
+    }
+
+    /**
+      * Split the data to save into groups based on the entity they belong to.
+      *
+      * @param Array $entities Data to group.
+      * @param boolean $exists Determines whether the object exists so it will
+      * be updated or should be created.
+      *
+      * @return Array
+      */
+    private function filter_by_entity($entities, $exists) {
+      $filtered_data = array();
+
+      foreach ($entities as $entity => $rows) {
+        if (!is_array($rows)) {
+          $rows = array($rows);
+        }
+
+        if (count($rows) == 0) {
+          array_push($filtered_data, array(
+            "entity" => $entity
+          ));
+        }
+        else {
+          if ($this->is_assoc($rows)) {
+            $rows = array($rows);
+          }
+
+          foreach ($rows as $row) {
+            $filtered = array();
+            $id = NULL;
+
+            foreach ($row as $key => $value) {
+              if ($value !== NULL && $value !== '' && $key !== 'id') {
+                if ($value === false) {
+                  $value = 0;
+                }
+
+                $filtered[$key] = $value;
+              }
+              else if ($key === 'id') {
+                $id = $value;
+              }
+            }
+
+            if ( (!$this->is_dependency($entity) && !$exists)
+                  || $id !== NULL
+                  || count($filtered) > 0 ) {
+              array_push($filtered_data, array(
+                "entity" => $entity,
+                "id" => $id,
+                "filtered" => $filtered
+              ));
+            }
+          }
+        }
+      }
+
+      return $filtered_data;
+    }
+
+    /**
+      * Returns True if the passed table is a dependency to this model.
+      *
+      * @param string $table Table's name.
+      *
+      * @return boolean
+      */
+    private function is_dependency($table) {
+      $dependencies = $this->dependencies;
+
+      return isset($dependencies[$table]);
+    }
+
+    /**
+      * Returns the dependent table foreign key.
+      *
+      * @param string $table Table's name.
+      *
+      * @return string
+      */
+    private function get_dependency_key($obj, $table) {
+      $dependencies = $obj->dependencies;
+      $dependency = isset($dependencies[$table]) ? $dependencies[$table] : array();
+
+
+      return isset($dependency["key"]) ? $dependency["key"] : $table . "_id";
+    }
+
+    /**
+      * Returns the dependent table parent foreign key.
+      *
+      * @param string $table Table's name.
+      *
+      * @return string
+      */
+    private function get_dependency_key_parent($obj, $table) {
+      $dependencies = $obj->dependencies;
+      $dependency = isset($dependencies[$table]) ? $dependencies[$table] : array();
+
+      return isset($dependency["key_parent"]) ? $dependency["key_parent"] : "id";
     }
 
     ////////////////////////////////////////////////////////////////////////////
     //                             QUERY METHODS
     ////////////////////////////////////////////////////////////////////////////
 
-    public static function find($id) {
-      $results = self::find_all_by_value('id', $id);
+    /**
+      * Returns the object with a specified identifier
+      *
+      * @param string $id Identifier to find.
+      *
+      * @return Array|null
+      */
+    public function find($id) {
+      $results = $this->find_all_by_value('id', $id);
 
-      return $results[0];
+      return count($results) > 0 ? $results[0] : NULL;
     }
 
-    public static function find_all_by_value($field, $value) {
-      $cache = self::get_cache();
+    /**
+      * Returns all the registers that have a field with a specified value.
+      *
+      * @param string $field Field's name.
+      * @param string $value Field's value.
+      *
+      * @return Array
+      */
+    public function find_all_by_value($field, $value) {
+      $this->auto_generation();
+
       $cache_identifier = "$field_$value";
+      $cached = $this->get_cached_data($cache_identifier);
 
-      if ($cache) {
-        $cached_data = $cache->get($cache_identifier);
-
-        if ($cached_data)
-          return $cached_data;
+      if ($cached) {
+        return $cached;
       }
 
-      $class = get_called_class();
+      $this->get_connection();
 
-      $objs = NULL;
-      self::get_connection();
+      $query = $this->data_base->get_query_by_value($this, $field, $value);
 
-      $sql_query = self::get_query();
-      $sql_query .= " AND " . $field . " = ?";
-      $sql_query .= self::get_order();
-
-      $results = self::$data_base->run($sql_query, NULL, array($value));
-
-      if ($results) {
-        for ($i = 0; $i < sizeof($results); $i++) {
-          $fields = self::$data_base->format_fields($results[$i], static::$fields);
-          $obj = new $class();
-          $objs[] = $obj->process($fields);
-        }
-      }
-
-      if ($cache) {
-        $cache->set($cache_identifier, $objs);
-      }
-
-      return $objs;
+      return $this->process_query_results(NULL, $this->table, $query, array($value), $cache_identifier);
     }
 
-    public static function get_all($condition = NULL) {
-      $cache = self::get_cache();
+    /**
+      * Returns the number of occurrences for a condition.
+      *
+      * @param Array $condition Condition to search.
+      *
+      * @return integer
+      */
+    public function number($condition = NULL) {
+      $query = $this->data_base->get_count($this, $condition);
+      $result = $this->data_base->run($query, NULL, $params);
+
+      if (empty($result) || count($result) < 1) {
+        return NULL;
+      }
+
+      $result = $result[0];
+
+      return isset($result["count"]) ? $result["count"] : NULL;
+    }
+
+    /**
+      * Returns the number of occurrences for the 'search' function.
+      *
+      * @param Array $terms Words to search.
+      * @param Array $condition Condition to search.
+      *
+      * @return integer
+      */
+    public function number_search($terms, $condition = NULL) {
+      $occurrences = $this->search($terms, $condition);
+
+      return count($occurrences);
+    }
+
+    /**
+      * Returns all the occurrences for a condition.
+      *
+      * @param Array $params Condition to search.
+      * <ul>
+      * <li><strong>condition:</strong> Condition to search.</li>
+      * <li><strong>start:</strong> Register number to start with (used with pagination).</li>
+      * <li><strong>limit:</strong> Number of register to return (used with pagination).</li>
+      * </ul>
+      *
+      * @return Array
+      */
+    public function get_all($params = NULL) {
+      $condition = $params;
+      $start = 0;
+      $limit = Configuration::get_app_settings("page_limit", NULL);
+
+      if (is_array($params)) {
+        $condition = isset($params["condition"]) ? $params["condition"] : NULL;
+        $start = isset($params["start"]) ? $params["start"] : $start;
+        $limit = isset($params["limit"]) ? $params["limit"] : $limit;
+      }
+
+      $this->auto_generation();
+
       $cache_identifier = "condition_$condition";
+      $cached = $this->get_cached_data($cache_identifier);
 
-      if ($cache) {
-        $cached_data = $cache->get($cache_identifier);
-
-        if ($cached_data)
-          return $cached_data;
+      if ($cached) {
+        return $cached;
       }
 
-      $class = get_called_class();
+      $this->get_connection();
 
-      $objs = NULL;
-      self::get_connection();
+      $query = $this->data_base->get_query_by_condition($this, $condition);
 
-      $sql_query = self::get_query();
+      $results = $this->process_query_results(NULL, $this->table, $query, NULL, $cache_identifier);
 
-      if ($condition) {
-        $sql_query .= " AND $condition ";
+      if (!empty($results)) {
+        return array_slice($results, $start, $limit);
       }
-
-      $sql_query .= self::get_order();
-
-      $results = self::$data_base->run($sql_query, NULL, NULL);
-
-      if ($results) {
-          foreach ($results as $index => $data) {
-            $fields = self::$data_base->format_fields($data, static::$fields);
-            $obj = new $class();
-            $objs[] = $obj->process($fields);
-          }
+      else {
+        return array();
       }
-
-      if ($cache) {
-        $cache->set($cache_identifier, $objs);
-      }
-
-      return $objs;
     }
 
-    public function save() {
-      self::auto_generation();
-      self::get_connection();
+    /**
+      * Saves a record, insert or update depending on the existence of the id.
+      *
+      * @param string|null $the_id Register's identifier.
+      * @param Array $value Data to store.
+      *
+      * @return Array
+      */
+    public function save($the_id, $values) {
+      $this->auto_generation();
+      $this->get_connection();
 
-      $values = $this->attributes;
-      $filtered = NULL;
+      $filtered_data = $this->filter_by_entity($values, isset($the_id));
 
-      foreach ($values as $key => $value) {
-          if ($value !== NULL && $value !== '' && $key !== 'id') {
-              if ($value === false) {
-                  $value = 0;
-              }
+      $table = $this->table;
 
-              $filtered[$key] = $value;
-          }
+      $main_entity_id = $this->get_attribute("id");
+
+      if (empty($main_entity_id)) {
+        $main_entity_id = $the_id;
       }
 
-      $columns = array_keys($filtered);
-      $id = $this->get_attribute("id");
+      // Sort entities, this model must be first to generate ID in INSERT
+      // to have it for following INSERTs
+      usort($filtered_data, function($a, $b) use ($table) {
+        $a_entity = $a["entity"];
+        $b_entity = $b["entity"];
 
-      if ($id) {
-          $columns = join(" = ?, ", $columns);
-          $columns .= ' = ?';
-          $sql_query = "UPDATE " . static ::$table . " SET $columns WHERE id = " . $id;
-      } else {
-          $params = join(", ", array_fill(0, count($columns), "?"));
-          $columns = join(", ", $columns);
-          $sql_query = "INSERT INTO " . static ::$table . " ($columns) VALUES ($params)";
-      }
-
-      $result = self::$data_base->run($sql_query, NULL, $filtered);
-
-      if ($result) {
-        $result = array('error' => false, 'message' => self::$data_base->get_id());
-
-        // Cache invalidation
-        $cache = self::get_cache();
-
-        if ($cache) {
-          $cache->clear();
+        if ($a_entity == $table) {
+          return -1;
         }
-      } else {
-        $result = array('error' => true, 'message' => self::$data_base->get_error());
+
+        if ($b_entity == $table) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+      $results = array();
+      $main_result = NULL;
+
+      for ($i = 0; $i < count($filtered_data); $i++) {
+        $info = $filtered_data[$i];
+
+        $entity = $info["entity"];
+        $filtered = $info["filtered"];
+        $id = $info["id"];
+
+        // Set foreign key in dependent entities
+        if ($this->is_dependency($entity)) {
+          $key = $this->get_dependency_key($this, $entity);
+
+          if (!isset($filtered[$key])) {
+            $filtered[$key] = $main_entity_id;
+          }
+        }
+        else {
+          if (empty($id)) {
+            $id = $main_entity_id;
+          }
+        }
+
+        $columns = NULL;
+
+        if (!empty($filtered)) {
+          $columns = array_keys($filtered);
+        }
+
+        if ($id) {
+          $query = $this->data_base->get_update($entity, $columns, $id);
+        }
+        else {
+          $query = $this->data_base->get_insert($entity, $columns, $params);
+        }
+
+		$result = NULL;
+
+		if ($query) {
+        	$result = $this->data_base->run($query, NULL, $filtered);
+        }
+
+        if ($result) {
+          $new_id = $this->data_base->get_id();
+          $result = array('error' => FALSE, 'message' => $new_id);
+
+          if (empty($main_entity_id) && !$this->is_dependency($entity)) {
+            $main_entity_id = $new_id;
+          }
+
+          // Cache invalidation
+          $cache = $this->get_cache();
+
+          if ($cache) {
+            $cache->clear();
+          }
+        }
+        else {
+          return array('error' => TRUE, 'message' => $this->data_base->get_error());
+        }
+
+        if (!$this->is_dependency($entity)) {
+          $main_result = $result;
+        }
+
+        array_push($results, $result);
+      }
+
+      return array(
+        "main" => $main_result,
+        "all" => $results
+      );
+    }
+
+    /**
+      * Updates a record.
+      *
+      * @param string $id Register's identifier.
+      * @param Array $value Data to store.
+      *
+      * @return Array
+      */
+    public function update($id, $values) {
+      $result = $this->save($id, $values);
+
+      if ($result["error"]) {
+        Controller::debug("Update error: " . $result["message"]);
+      }
+    }
+
+    /**
+      * Creates a new record.
+      *
+      * @param Array $value Data to store.
+      *
+      * @return Array
+      */
+    public function create($values) {
+      if (!isset($values[$this->table])) {
+        $values[$this->table] = array();
+      }
+
+      $result = $this->save(NULL, $values);
+
+      if ($result["error"]) {
+        Controller::debug("Insert error: " . $result["message"]);
       }
 
       return $result;
     }
 
-    public static function update($id, $values) {
-      $values["id"] = $id;
-
-      $class = get_called_class();
-      $obj = new $class($values);
-
-      $obj->save();
+    /**
+      * Deletes a record.
+      *
+      * @param string $id Register's identifier.
+      *
+      * @return void
+      */
+    public function delete($id) {
+      $this->_delete("id = '$id'");
     }
 
-    public static function create($values) {
-      $class = get_called_class();
-      $obj = new $class($values);
-
-      $obj->save();
+    /**
+      * Deletes a record.
+      *
+      * @param string $condition Condition to apply.
+      *
+      * @return void
+      */
+    public function delete_by_condition($condition) {
+      $this->_delete($condition);
     }
 
-    public static function delete($id) {
-      self::get_connection();
-      $sql_query = "UPDATE " . static ::$table . " SET deleted = 1 WHERE id = '$id'";
+    private function _delete($condition) {
+      $this->get_connection();
+      $query = $this->data_base->get_delete_by_condition($this->table, $condition);
+      $result = $this->data_base->run($query, NULL, NULL);
 
-      $result = self::$data_base->run($sql_query, NULL, NULL);
+      if (!$result) {
+        Controller::debug("Delete error: " . $this->data_base->get_error());
+        return;
+      }
+
+      // Cascade delete
+      $dependencies = empty($this->dependencies) ? array() : $this->dependencies;
+
+      foreach ($dependencies as $dependency) {
+        $entity = isset($dependency["entity"]) ? $dependency["entity"] : NULL;
+        $filter = isset($dependency["filter"]) ? $dependency["filter"] : NULL;
+        $order = isset($dependency["order"]) ? $dependency["order"] : NULL;
+        $dependent = isset($dependency["dependent"]) ? $dependency["dependent"] : FALSE;
+
+        if ($dependent) {
+          $table = $this->get_table_by_entity($entity);
+          $key = $this->get_dependency_key($this, $table);
+          $condition = "$key = '$id'";
+
+          $fake_model = new BasicModel(array(
+            "query" => NULL,
+            "query_fields" => NULL,
+            "table" => $table,
+            "filter" => $filter,
+            "order" => $order
+          ));
+
+          $query = $this->data_base->get_query_by_condition($fake_model, $condition);
+          $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
+          $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
+
+          $object = new $entity();
+
+          if ($results) {
+            foreach ($results as $result) {
+              $element_id = isset($result["id"]) ? $result["id"] : NULL;
+
+              if ($element_id) {
+                $query = $this->data_base->get_delete($object->table, $element_id);
+                $result = $this->data_base->run($query, NULL, NULL);
+
+                if (!$result) {
+                  Controller::debug("Delete error: " . $this->data_base->get_error());
+                  return;
+                }
+              }
+            }
+
+            // Cache invalidation
+            $cache = $object->get_cache();
+
+            if ($cache) {
+              $cache->clear();
+            }
+          }
+        }
+      }
 
       // Cache invalidation
-      $cache = self::get_cache();
+      $cache = $this->get_cache();
 
       if ($cache) {
         $cache->clear();
@@ -265,6 +1038,13 @@
     //                             DATA PROCESSING
     ////////////////////////////////////////////////////////////////////////////
 
+    /**
+      * When overwritten lets the new model modify any record returned by a query
+      *
+      * @param Array $data Each query register.
+      *
+      * @return Array
+      */
     protected function process($data) {
       return $data;
     }
@@ -273,23 +1053,57 @@
     //                             AUTO GENERATION
     ////////////////////////////////////////////////////////////////////////////
 
-    private static function auto_generation() {
-      self::check_table();
-      self::check_fields();
+    /**
+      * Model database table autogeneration.
+      *
+      * @return void
+      */
+    protected function auto_generation() {
+      $this->check_table();
+      $this->check_fields();
+
+      // Check table and fields for dependencies
+      $dependencies = $this->dependencies;
+
+      if (empty($dependencies)) {
+        return;
+      }
+
+      foreach ($dependencies as $key => $info) {
+        $entity = isset($info["entity"]) ? $info["entity"] : NULL;
+
+        if (empty($entity)) {
+          continue;
+        }
+
+        $object = new $entity();
+        $object->check_table();
+        $object->check_fields();
+      }
     }
 
-    private static function check_table() {
-      $table = static::$table;
-      $fields = static::$fields;
-      $primary_key = static::$primary_key;
+    /**
+      * Checks if the table exists and creates it if not.
+      *
+      * @return void
+      */
+    protected function check_table() {
+      $table = $this->table;
+      $fields = $this->fields;
+      $primary_key = $this->primary_key;
 
-      self::$data_base->check_table($table, $fields, $primary_key);
+      $this->data_base->check_table($table, $fields, $primary_key);
     }
 
-    private static function check_fields() {
-      $table = static::$table;
-      $fields = static::$fields;
-      $primary_key = static::$primary_key;
+    /**
+      * Checks table fields, creates new ones and modifies the ones that differ,
+      *
+      * @return void
+      */
+    protected function check_fields() {
+      $table = $this->table;
+      $fields = $this->fields;
+      $primary_key = $this->primary_key;
 
       // Deleted
       if (!isset($fields["deleted"])) {
@@ -300,6 +1114,6 @@
         );
       }
 
-      self::$data_base->check_fields($table, $fields, $primary_key);
+      $this->data_base->check_fields($table, $fields, $primary_key);
     }
   }

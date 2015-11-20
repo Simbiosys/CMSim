@@ -1,0 +1,51 @@
+{{> admin_bar}}
+{{> flash}}
+<nav class="user-session-bar">
+  <div class="width-container">
+    {{> language_selector}}
+    <a href="{{page.host}}/logout">{{labels.logout}} <i class="fa fa-power-off"></i></a>
+  </div>
+</nav>
+
+{{> page_hiddens}}
+
+<header class="margin-top-10">
+  <nav class="width-container">
+    <img src="{{page.web}}/img/logo-tech4snow-top.png" alt="tech4snow" />
+  </nav>
+</header>
+
+<section class="width-container margin-top-5">
+  <ul class="nav nav-tabs top-nav-tabs text-center">
+    <li role="presentation" class="{{#if extra.top.dashboard}} active {{/if}}">
+      <a href="{{page.host}}/manager/dashboard" class="top-tab">
+        <i class="fa fa-tachometer fa-2x display-block top-icon"></i>
+        <span class="font-m">{{labels.dashboard}}</span>
+      </a>
+    </li>
+    <li role="presentation" class="{{#if extra.top.web}} active {{/if}}">
+      <a href="{{page.host}}/manager/news" class="top-tab">
+        <i class="fa fa-globe fa-2x display-block top-icon"></i>
+        <span class="font-m">{{labels.web}}</span>
+      </a>
+    </li>
+    <li role="presentation" class="{{#if extra.top.resort}} active {{/if}}">
+      <a href="{{page.host}}/manager/pois" class="top-tab">
+        <i class="fa fa-tree fa-2x display-block top-icon"></i>
+        <span class="font-m">{{labels.resort}}</span>
+      </a>
+    </li>
+    <li role="presentation" class="{{#if extra.top.users}} active {{/if}}">
+      <a href="{{page.host}}/manager/users" class="top-tab">
+        <i class="fa fa-male fa-2x display-block top-icon"></i>
+        <span class="font-m">{{labels.users}}</span>
+      </a>
+    </li>
+    <li role="presentation" class="{{#if extra.top.customers}} active {{/if}}">
+      <a href="{{page.host}}/manager/customers" class="top-tab">
+        <i class="fa fa-shopping-cart fa-2x display-block top-icon"></i>
+        <span class="font-m">{{labels.customers}}</span>
+      </a>
+    </li>
+  </ul>
+</section>

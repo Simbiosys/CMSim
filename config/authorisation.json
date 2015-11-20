@@ -1,35 +1,69 @@
 {
   "manager": {
     "enter": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": true
     }
   },
   "customers": {
     "list": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": false
     },
     "view": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": false
     },
     "edit": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": false
     }
   },
   "users": {
     "list": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": true
     },
     "view": {
-      "administrator_rol": true,
+      "administration_role": true,
       "manager_rol": true
     },
     "edit": {
-      "administrator_rol": true,
+      "administration_role": true,
+      "manager_rol": true
+    }
+  },
+  "pages": {
+    "list": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "view": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "edit": {
+      "administration_role": true,
+      "manager_rol": true
+    }
+  },
+  "labels": {
+    "list": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "view": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "edit": {
+      "administration_role": true,
+      "manager_rol": true
+    }
+  },
+  "dashboard": {
+    "view": {
+      "administration_role": true,
       "manager_rol": true
     }
   }
