@@ -1,6 +1,6 @@
 <section class="width-container">
   {{> web_left_bar}}
-  <form method="POST" class="inner-body"
+  <form method="POST" data-form data-model="pages" class="inner-body"
     {{#if data.pages.id}}
       action="{{page.host}}/manager/pages/{{data.pages.id}}/save"
     {{else}}
@@ -31,7 +31,7 @@
       </div>
     </header>
 
-    <input type="hidden" name="id" value="{{data.pages.id}}" />
+    <input type="hidden" name="id" id="id" value="{{data.pages.id}}" data-field />
 
     <div class="width-container margin-top-10">
       <section class="content-body">
@@ -56,26 +56,46 @@
         </ul>
 
         {{#page.languages}}
-          <div class="row language-content" data-content="{{this}}">
+          <div class="row language-content" data-content="{{this}}" data-row data-model="page_translations" data-fk="language" data-fk-value="{{this}}">
 
             <input type="hidden" name="page_translations.id#{{this}}" value="{{get_translation @root.data.page_translations this 'id'}}" />
 
             <div class="col-xs-12 margin-top-20">
               <label for="title">{{@root.labels.page_path}} ({{language_name @root.labels this}})</label>
-              <input type="text" class="form-control" id="title" name="page_translations.path#{{this}}" placeholder="{{@root.labels.page_path}}" value="{{get_translation @root.data.page_translations this 'path'}}" />
+              <input type="text" class="form-control" id="title" name="path" placeholder="{{@root.labels.page_path}}" value="{{get_translation @root.data.page_translations this 'path'}}" data-field />
             </div>
             <div class="col-xs-12 margin-top-20">
               <label for="title">{{@root.labels.page_title}} ({{language_name @root.labels this}})</label>
-              <input type="text" class="form-control" id="title" name="page_translations.title#{{this}}" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.page_translations this 'title'}}" />
+              <input type="text" class="form-control" id="title" name="title" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.page_translations this 'title'}}" data-field />
             </div>
             <div class="col-xs-12 margin-top-20">
               <label for="title">{{@root.labels.content}} ({{language_name @root.labels this}})</label>
-              <textarea class="form-control height-200" id="title" name="page_translations.content#{{this}}" placeholder="{{@root.labels.content}}">{{@root.data.content}}{{get_translation @root.data.page_translations this 'content'}}</textarea>
+              <textarea class="form-control height-200" id="title" name="content" placeholder="{{@root.labels.content}}" data-field>{{@root.data.content}}{{get_translation @root.data.page_translations this 'content'}}</textarea>
             </div>
           </div>
         {{/page.languages}}
+
+        {{> label_selector}}
+
+        <div class="row margin-top-10" data-model="page_labels">
+          <div class="col-xs-12" id="label_container" data-model="page_labels" data-fk="page_id">
+            {{#data.page_labels}}
+              <div class="label" data-label="{{label_id}}" data-selector="label_selector" data-row="" data-model="page_labels" data-fk="page_id" data-fk-value="{{@root.data.pages.id}}" data-name="label_id" data-value="{{id}}">
+                <input type="hidden" name="id" value="{{id}}" data-field />
+                <input type="hidden" name="deleted" value="0" data-field />
+                <span>{{get_translation label_translations @root.page.language 'name'}}</span>
+                <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="{{label_id}}" data-selector="label_selector">
+                  <i class="fa fa-times fa-lg"></i>
+                </a>
+              </div>
+            {{/data.page_labels}}
+          </div>
+        </div>
 
       </section>
     </div>
   </form>
 </section>
+
+<script src="{{page.web}}/js/labels.js?{{page.version}}"></script>
+<script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>

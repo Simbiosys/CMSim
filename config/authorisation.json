@@ -61,6 +61,20 @@
       "manager_rol": true
     }
   },
+  "media": {
+    "list": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "view": {
+      "administration_role": true,
+      "manager_rol": true
+    },
+    "edit": {
+      "administration_role": true,
+      "manager_rol": true
+    }
+  },
   "dashboard": {
     "view": {
       "administration_role": true,

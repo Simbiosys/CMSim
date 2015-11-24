@@ -45,6 +45,13 @@ class PageModel extends TranslatedLabelledModel {
           "filter" => NULL,
           "order" => "",
           "dependent" => TRUE // Cascade delete
+        ),
+        "page_labels" => array(
+          "entity" => "PageModelLabels",
+          "key" => "page_id",
+          "filter" => NULL,
+          "order" => "",
+          "dependent" => TRUE // Cascade delete
         )
       );
 
@@ -86,6 +93,43 @@ class PageModel extends TranslatedLabelledModel {
       "language" => array(
         "type" => "string",
         "size" => "3"
+      )
+    );
+
+    protected $primary_key = "id";
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+//                                 Labels
+////////////////////////////////////////////////////////////////////////////////
+
+  class PageModelLabels extends \Singular\Model {
+    protected $table = "page_labels";
+
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
+      ),
+      "page_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      ),
+      "label_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      )
+    );
+
+    protected $dependencies = array(
+      "label_translations" => array(
+        "entity" => "LabelModelTranslations",
+        "key" => "label_id",
+        "key_parent" => "label_id",
+        "filter" => NULL,
+        "order" => "",
+        "dependent" => FALSE // Cascade delete
       )
     );
 

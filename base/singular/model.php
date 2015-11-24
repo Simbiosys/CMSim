@@ -266,7 +266,7 @@
     protected function get_the_query() {
       $this->auto_generation();
 
-      return $this->data_base->get_query($this);
+      return $this->data_base->get_query($this, $this->get_query_fields());
     }
 
     /**
@@ -354,7 +354,7 @@
           "order" => $order
         ));
 
-        $query = $this->data_base->get_query_by_condition($fake_model, $condition);
+        $query = $this->data_base->get_query_by_condition($fake_model, $fake_model->get_query_fields(), $condition);
 
         $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
         $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
@@ -426,7 +426,10 @@
       $search_fields = $this->search_fields;
       $table = $this->table;
 
-      $terms = explode(" ", $terms);
+      preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $terms, $terms);
+      $terms = $terms[0];
+
+      //$terms = explode(" ", $terms);
 
       for ($i = 0; $i < count($search_fields); $i++) {
         $search_field = $search_fields[$i];
@@ -440,6 +443,10 @@
         $search_fields[$i] = $parts;
       }
 
+      if (empty($condition)) {
+        $condition = array();
+      }
+
       $results = $this->get_search_results($condition);
       $occurrences = array();
 
@@ -447,7 +454,7 @@
         $valid = TRUE;
 
         foreach ($terms as $term) {
-          $term = strtolower($term);
+          $term = rtrim(ltrim(strtolower($term), '"'), '"');
           $found = FALSE;
 
           foreach ($search_fields as $search_field) {
@@ -483,8 +490,7 @@
       */
     private function search_term($search_field, $data, $term, $level) {
       if ($level >= count($search_field)) {
-
-        return strpos($data, $term) !== FALSE;
+        return strpos(strtolower($data), strtolower($term)) !== FALSE;
       }
 
       if ($this->is_assoc($data)) {
@@ -495,7 +501,7 @@
 
       foreach ($data as $row) {
         if (!isset($row[$part])) {
-          return FALSE;
+          continue;
         }
 
         $row = $row[$part];
@@ -760,11 +766,13 @@
       $condition = $params;
       $start = 0;
       $limit = Configuration::get_app_settings("page_limit", NULL);
+      $query_fields = $this->get_query_fields();
 
       if (is_array($params)) {
         $condition = isset($params["condition"]) ? $params["condition"] : NULL;
         $start = isset($params["start"]) ? $params["start"] : $start;
         $limit = isset($params["limit"]) ? $params["limit"] : $limit;
+        $query_fields = isset($params["query_fields"]) ? $params["query_fields"] : $query_fields;
       }
 
       $this->auto_generation();
@@ -778,7 +786,7 @@
 
       $this->get_connection();
 
-      $query = $this->data_base->get_query_by_condition($this, $condition);
+      $query = $this->data_base->get_query_by_condition($this, $query_fields, $condition);
 
       $results = $this->process_query_results(NULL, $this->table, $query, NULL, $cache_identifier);
 
@@ -866,9 +874,9 @@
           $query = $this->data_base->get_insert($entity, $columns, $params);
         }
 
-		$result = NULL;
+		    $result = NULL;
 
-		if ($query) {
+		    if ($query) {
         	$result = $this->data_base->run($query, NULL, $filtered);
         }
 
@@ -995,7 +1003,7 @@
             "order" => $order
           ));
 
-          $query = $this->data_base->get_query_by_condition($fake_model, $condition);
+          $query = $this->data_base->get_query_by_condition($fake_model, $fake_model->get_query_fields(), $condition);
           $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
           $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
 

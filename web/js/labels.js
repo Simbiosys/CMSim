@@ -11,6 +11,9 @@
     var container = button.getAttribute("data-label-add");
     container = document.getElementById(container);
 
+    var model = container.getAttribute("data-model");
+    var fk = container.getAttribute("data-fk");
+
     checkContainer(container, selector);
 
     button.onclick = function(evento) {
@@ -38,8 +41,8 @@
       div.setAttribute("data-label", selector.value);
       div.setAttribute("data-selector", this.getAttribute("data-label-selector"));
       div.setAttribute("data-row", "");
-      div.setAttribute("data-model", "information_labels");
-      div.setAttribute("data-fk", "information_id");
+      div.setAttribute("data-model", model);
+      div.setAttribute("data-fk", fk);
 
       var id = document.getElementById("id");
 

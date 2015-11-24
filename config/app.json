@@ -1,5 +1,5 @@
 {
-  "title": "CMSim",
+  "title": "tech4snow",
   "version": "0.0.1",
   "roles": {
     "administrator_role": {
@@ -12,5 +12,6 @@
       "default_path": "/"
     }
   },
-  "page_limit": 10
+  "page_limit": 10,
+  "file_path": "/customer/files"
 }

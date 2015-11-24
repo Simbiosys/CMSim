@@ -39,6 +39,7 @@
               <th>{{@root.labels.poi_title}}</th>
               <th>{{@root.labels.tipo}}</th>
               <th>{{@root.labels.coordenada}}</th>
+              <th>{{@root.labels.labels}}</th>
             </tr>
           </thead>
           <tbody>
@@ -46,7 +47,7 @@
               <tr>
                 <td>
                   <a href="{{@root.page.host}}/manager/pois/{{pois.id}}">
-                    {{get_translation poi_translations @root.page.language 'title'}}
+                    {{{hightlight (get_translation poi_translations @root.page.language 'title') @root.data.search}}}
                   </a>
                 </td>
                 <td>
@@ -58,6 +59,13 @@
                   <a href="{{@root.page.host}}/manager/pois/{{pois.id}}">
                     {{pois.coordinates}}
                   </a>
+                </td>
+                <td>
+                  {{#poi_labels}}
+                  <a href="{{@root.page.host}}/manager/news/{{pois.id}}" class="label small font-xs">
+                    {{get_translation label_translations @root.page.language 'name'}}
+                  </a>
+                  {{/poi_labels}}
                 </td>
               </tr>
             {{/data.results}}

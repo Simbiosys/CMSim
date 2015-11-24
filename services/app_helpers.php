@@ -36,6 +36,66 @@
           }
 
           return "";
+        },
+        'brief' => function ($args) {
+          $text = $args[0];
+          $count = isset($args[1]) ? $args[1] : "50";
+
+          $pieces = explode(" ", $text);
+          return implode(" ", array_splice($pieces, 0, $count));
+        },
+        'inc' => function ($args) {
+          $value = $args[0];
+
+          return intval($value) + 1;
+        },
+        'hightlight' => function ($args) {
+          $text = $args[0];
+          $terms = $args[1];
+          $count = isset($args[2]) ? intval($args[2]) : 50;
+
+          if ($terms) {
+            preg_match_all('/"(?:\\\\.|[^\\\\"])*"|\S+/', $terms, $terms);
+            $terms = $terms[0];
+          }
+
+          $pieces = explode(" ", $text);
+
+          $found = 0;
+
+          if ($terms) {
+            foreach ($terms as $term) {
+              $term = rtrim(ltrim($term, '"'), '"');
+
+              for ($i = 0; $i < count($pieces); $i++) {
+                $piece = $pieces[$i];
+
+                if (strpos(strtolower($piece), strtolower($term)) !== FALSE) {
+                  $found = $i;
+                  break;
+                }
+              }
+            }
+          }
+
+          if ((count($pieces) - $found) < $count) {
+            $found = count($pieces) - $count;
+
+            if ($found < 0) {
+              $found = 0;
+            }
+          }
+
+          $new_text = implode(" ", array_splice($pieces, $found, $count));
+
+          if ($terms) {
+            foreach ($terms as $term) {
+              $term = rtrim(ltrim($term, '"'), '"');
+              $new_text = str_ireplace($term, "<span class='term-highlight'>$term</span>", $new_text);
+            }
+          }
+
+          return $new_text;
         }
       );
     }

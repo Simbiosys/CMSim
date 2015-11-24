@@ -45,12 +45,12 @@
               <tr>
                 <td>
                   <a href="{{@root.page.host}}/manager/labels/{{labels.id}}">
-                    {{get_translation label_translations @root.page.language 'name'}}
+                    {{{hightlight (get_translation label_translations @root.page.language 'name') @root.data.search}}}
                   </a>
                 </td>
                 <td>
                   <a href="{{@root.page.host}}/manager/labels/{{labels.id}}">
-                    {{get_translation label_translations @root.page.language 'description'}}
+                    {{{hightlight (get_translation label_translations @root.page.language 'description') @root.data.search}}}
                   </a>
                 </td>
               </tr>

@@ -112,7 +112,7 @@
   //                             NEW PAGE (POST)
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/pages/new", "pages", "edit", function() {
-    $data = \Singular\Controller::get_data_by_entity("pages");
+    $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["pages"]["customer_id"] = $customer;
 
@@ -146,11 +146,17 @@
   //                                PAGE DETAIL
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/pages/:page", "pages", "edit", function($page) {
+    $model = new LabelModel();
+    $all_labels = $model->get_all();
+
     $model = new PageModel();
+    $info = $model->find($page);
+
+    $info["all_labels"] = $all_labels;
 
     CMSView::render(array(
         "template" => "private/page_detail",
-        "data" => $model->find($page),
+        "data" => $info,
         "page_navigation" => "pages",
         "layout" => "private.hbs",
         "extra" => array(
@@ -163,7 +169,7 @@
   //                                PAGE UPDATE
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/pages/:page/save", "pages", "edit", function($page) {
-    $data = \Singular\Controller::get_data_by_entity("pages");
+    $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["pages"]["customer_id"] = $customer;
 

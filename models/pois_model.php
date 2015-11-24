@@ -64,6 +64,13 @@
           "filter" => NULL,
           "order" => "",
           "dependent" => TRUE // Cascade delete
+        ),
+        "poi_labels" => array(
+          "entity" => "PoiModelLabels",
+          "key" => "poi_id",
+          "filter" => NULL,
+          "order" => "",
+          "dependent" => TRUE // Cascade delete
         )
       );
 
@@ -114,6 +121,43 @@
       "language" => array(
         "type" => "string",
         "size" => "3"
+      )
+    );
+
+    protected $primary_key = "id";
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+//                                 Labels
+////////////////////////////////////////////////////////////////////////////////
+
+  class PoiModelLabels extends \Singular\Model {
+    protected $table = "poi_labels";
+
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
+      ),
+      "poi_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      ),
+      "label_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      )
+    );
+
+    protected $dependencies = array(
+      "label_translations" => array(
+        "entity" => "LabelModelTranslations",
+        "key" => "label_id",
+        "key_parent" => "label_id",
+        "filter" => NULL,
+        "order" => "",
+        "dependent" => FALSE // Cascade delete
       )
     );
 

@@ -4,7 +4,7 @@
 
 .label {
   display: inline-block;
-  padding: 10px 8px;
+  padding: 8px 8px;
   margin-right: 10px;
   margin-bottom: 10px;
   font-size: 1.2em;
@@ -12,6 +12,10 @@
   color: #333;
   background-color: lighten($left-bar-icon-active-colour, 10%);
   border-radius: 0;
+
+  &.small {
+    padding: 6px 8px;
+  }
 
   a {
     margin-left: 5px;
@@ -25,4 +29,61 @@
 
 .title-labels {
   font-size: 1.2em;
+}
+
+table {
+  .td-number {
+    color: #aaa;
+    font-size: 2em;
+    position: relative;
+    top: -0.35em;
+    font-weight: 300;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f4f4f4;
+  }
+
+  td {
+    border: none !important;
+  }
+}
+
+.table-multiline {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+
+  thead, tbody, tr {
+    display: block;
+    width: 100%;
+  }
+
+  tr {
+    overflow: hidden;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
+
+  td, th {
+    display: block;
+    float: left;
+  }
+
+  th {
+    border-bottom-width: 1px !important;
+  }
+
+  thead > tr {
+    padding-bottom: 0;
+  }
+}
+
+.term-highlight {
+  background-color: #F7D358;
+  padding: 1px 0px;
+}
+
+.media-file {
+  width: 100%;
 }

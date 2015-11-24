@@ -16,6 +16,7 @@
   "page_path": "Page path",
   "new_news": "New piece of news",
   "new_pois": "New POI",
+  "new_areas": "New Area",
   "new_nopois": "New noPDI",
   "new_customer": "New customer",
   "new_page": "New page",
@@ -23,11 +24,13 @@
   "content": "Content",
   "save": "Save",
   "cancel": "Cancel",
-  "delete": "Borrar",
+  "delete": "Delete",
   "new_saved_successfully": "Piece of news successfully saved",
   "new_deleted_successfully": "Piece of news successfully deleted",
   "poi_saved_successfully": "POI successfully saved",
+  "area_saved_successfully": "Area successfully saved",
   "poi_deleted_successfully": "POI successfully deleted",
+  "area_deleted_successfully": "Area successfully deleted",
   "an_error_occurred": "An error occurred",
   "user_account": "User account",
   "password": "Password",
@@ -53,6 +56,7 @@
   "tipo": "Types",
   "pois_abrevia": "Point of interest",
   "poi_title": "POI name",
+  "area_title": "Area name",
   "nopoi_title": "noPOI name",
   "urlinfo": "url info",
   "timeofyear": "Time of year",
@@ -71,5 +75,6 @@
   "tracks": "Tracks",
   "facilities": "Facilities",
   "media": "Media",
-  "creation_date": "Creation date"
+  "creation_date": "Creation date",
+  "new_folder": "New folder"
 }

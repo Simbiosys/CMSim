@@ -1,0 +1,110 @@
+<section class="width-container">
+  {{> web_left_bar}}
+
+  <div class="inner-body">
+    <header class="navbar-form navigation-bar" role="">
+      <div class="">
+        {{#if data.node.media.id}}
+        <a href="{{page.host}}/manager/media/{{data.node.media.parent}}" class="pull-left">
+          <i class="fa fa-angle-left fa-3x return-back"></i>
+        </a>
+        {{/if}}
+        <h1 class="page_title pull-left">
+          {{#if data.node.media.title}}
+            {{data.node.media.title}}
+          {{else}}
+            {{labels.media}}
+          {{/if}}
+        </h1>
+        <nav class="pull-right">
+          <button class="btn btn-default" data-toggle="modal" data-target="#new_folder">
+            <i class="fa fa-folder-open-o"></i> {{labels.new_folder}}
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <div class="">
+      <section class="content-body">
+        <form method="GET" action="{{page.host}}/manager/media/search" class="margin-bottom-20">
+          <div class="input-group search-box">
+            <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+            <span class="input-group-btn">
+              <button class="btn btn-blank" type="submit">
+                <i class="fa fa-search fa-lg"></i>
+              </button>
+            </span>
+          </div>
+
+          {{#if data.search}}
+          <div class="search-filter">
+            {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+            <a href="{{page.host}}/manager/media" class="pull-right">
+              <i class="fa fa-times fa-lg"></i>
+            </a>
+          </div>
+          {{/if}}
+
+        </form>
+
+        <section class="row margin-top-30 margin-bottom-30">
+          {{#data.results}}
+            <div class="col-md-2">
+              <a href="{{@root.page.host}}/manager/media/{{media.id}}">
+                {{#if media.is_folder}}
+                  <img src="{{@root.page.web}}/img/files/folder.png" alt="{{media.title}}" class="media-file" />
+                {{else}}
+                  <img src="{{@root.page.web}}/img/files/{{media.extension}}.png" alt="{{media.title}}" class="media-file" />
+                {{/if}}
+                <input type="text" class="form-control margin-top-10" value="{{media.title}}" />
+              </a>
+            </div>
+          {{/data.results}}
+        </section>
+
+        <nav class="pagination-selector">
+          {{#if data.search}}
+          <a {{#if data.previous}} href="{{page.host}}/manager/media/search/page/{{data.previous}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{else}}
+          <a {{#if data.previous}} href="{{page.host}}/manager/media/page/{{data.previous}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{/if}}
+            class="pagination-link previous {{#unless data.previous}} disabled {{/unless}}" {{#unless data.previous}} disabled {{/unless}}>
+            <i class="fa fa-caret-left"></i>
+          </a>
+          <span class="pagination-page">
+            {{data.page}}
+          </span>
+          {{#if data.search}}
+          <a {{#if data.next}} href="{{page.host}}/manager/media/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{else}}
+          <a {{#if data.next}} href="{{page.host}}/manager/media/page/{{data.next}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{/if}}
+            class="pagination-link next {{#unless data.next}} disabled {{/unless}}" {{#unless data.next}} disabled {{/unless}}>
+            <i class="fa fa-caret-right"></i>
+          </a>
+        </nav>
+
+      </section>
+    </div>
+  </div>
+</section>
+
+
+<div class="modal" tabindex="-1" role="dialog" id="new_folder" aria-labelledby="mySmallModalLabel">
+  <div class="modal-dialog modal-sm">
+    <form class="modal-content" method="POST" action="{{page.host}}/manager/media/new_folder">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">{{labels.new_folder}}</h4>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="node" value="{{@root.data.node.media.id}}" />
+        <input type="text" name="name" class="form-control" placeholder="{{labels.new_folder}}" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{labels.cancel}}</button>
+        <button type="submit" class="btn btn-primary">{{labels.save}}</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,101 @@
+<section class="width-container">
+  {{> resort_left_bar}}
+
+  <div class="inner-body">
+    <header class="navbar-form navigation-bar width-container" role="">
+      <div class="width-container">
+        <h1 class="page_title pull-left">{{labels.areas}}</h1>
+        <nav class="pull-right">
+          <a href="{{page.host}}/manager/areas/new" class="btn btn-default">{{labels.new_areas}}</a>
+        </nav>
+      </div>
+    </header>
+
+    <div class="width-container">
+      <section class="content-body">
+        <form method="GET" action="{{page.host}}/manager/areas/search" class="margin-bottom-20">
+          <div class="input-group search-box">
+            <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+            <span class="input-group-btn">
+              <button class="btn btn-blank" type="submit">
+                <i class="fa fa-search fa-lg"></i>
+              </button>
+            </span>
+          </div>
+
+          {{#if data.search}}
+          <div class="search-filter">
+            {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+            <a href="{{page.host}}/manager/areas" class="pull-right">
+              <i class="fa fa-times fa-lg"></i>
+            </a>
+          </div>
+          {{/if}}
+
+        </form>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>{{@root.labels.area_title}}</th>
+              <th>{{@root.labels.tipo}}</th>
+              <th>{{@root.labels.coordenada}}</th>
+              <th>{{@root.labels.labels}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {{#data.results}}
+              <tr>
+                <td>
+                  <a href="{{@root.page.host}}/manager/areas/{{areas.id}}">
+                    {{{hightlight (get_translation area_translations @root.page.language 'title') @root.data.search}}}
+                  </a>
+                </td>
+                <td>
+                  <a href="{{@root.page.host}}/manager/areas/{{areas.id}}">
+                    {{areas.tipo}}
+                  </a>
+                </td>
+                <td>
+                  <a href="{{@root.page.host}}/manager/areas/{{areas.id}}">
+                    {{areas.coordinates}}
+                  </a>
+                </td>
+                <td>
+                  {{#area_labels}}
+                  <a href="{{@root.page.host}}/manager/news/{{areas.id}}" class="label small font-xs">
+                    {{get_translation label_translations @root.page.language 'name'}}
+                  </a>
+                  {{/area_labels}}
+                </td>
+              </tr>
+            {{/data.results}}
+          </tbody>
+        </table>
+
+        <nav class="pagination-selector">
+          {{#if data.search}}
+          <a {{#if data.previous}} href="{{page.host}}/manager/areas/search/page/{{data.previous}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{else}}
+          <a {{#if data.previous}} href="{{page.host}}/manager/areas/page/{{data.previous}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{/if}}
+            class="pagination-link previous {{#unless data.previous}} disabled {{/unless}}" {{#unless data.previous}} disabled {{/unless}}>
+            <i class="fa fa-caret-left"></i>
+          </a>
+          <span class="pagination-page">
+            {{data.page}}
+          </span>
+          {{#if data.search}}
+          <a {{#if data.next}} href="{{page.host}}/manager/areas/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{else}}
+          <a {{#if data.next}} href="{{page.host}}/manager/areas/page/{{data.next}}" {{else}} href="javascript:void(0)" {{/if}}
+          {{/if}}
+            class="pagination-link next {{#unless data.next}} disabled {{/unless}}" {{#unless data.next}} disabled {{/unless}}>
+            <i class="fa fa-caret-right"></i>
+          </a>
+        </nav>
+
+      </section>
+    </div>
+
+  </div>
+</section>

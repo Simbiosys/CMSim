@@ -33,33 +33,37 @@
           {{/if}}
 
         </form>
-        <table class="table">
+        <table class="table table-multiline">
           <thead>
             <tr>
-              <th>{{@root.labels.news}}</th>
-              <th>{{@root.labels.creation_date}}</th>
-              <th>{{@root.labels.labels}}</th>
+              <th class="width-50">{{@root.labels.news}}</th>
+              <th class="width-25">{{@root.labels.creation_date}}</th>
+              <th class="width-25">{{@root.labels.labels}}</th>
+              <th class="display-none">{{@root.labels.content}}</th>
             </tr>
           </thead>
           <tbody>
             {{#data.results}}
               <tr>
-                <td>
+                <td class="width-50">
                   <a href="{{@root.page.host}}/manager/news/{{informations.id}}">
-                    {{get_translation information_translations @root.page.language 'title'}}
+                    {{{hightlight (get_translation information_translations @root.page.language 'title') @root.data.search}}}
                   </a>
                 </td>
-                <td>
+                <td class="width-25">
                   <a href="{{@root.page.host}}/manager/news/{{informations.id}}">
                     {{informations.creation}}
                   </a>
                 </td>
-                <td>
+                <td class="width-25">
                   {{#information_labels}}
-                  <a href="{{@root.page.host}}/manager/news/{{informations.id}}" class="label font-s">
+                  <a href="{{@root.page.host}}/manager/news/{{informations.id}}" class="label small font-xs">
                     {{get_translation label_translations @root.page.language 'name'}}
                   </a>
                   {{/information_labels}}
+                </td>
+                <td class="width-100 border-none padding-top-0 font-s">
+                  {{{hightlight (get_translation information_translations @root.page.language 'content') @root.data.search}}}
                 </td>
               </tr>
             {{/data.results}}

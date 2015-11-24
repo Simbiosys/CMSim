@@ -37,6 +37,8 @@
           <thead>
             <tr>
               <th>{{@root.labels.page_title}}</th>
+              <th>{{@root.labels.page_path}}</th>
+              <th>{{@root.labels.labels}}</th>
             </tr>
           </thead>
           <tbody>
@@ -44,13 +46,20 @@
               <tr>
                 <td>
                   <a href="{{@root.page.host}}/manager/pages/{{pages.id}}">
-                    {{get_translation page_translations @root.page.language 'title'}}
+                    {{{hightlight (get_translation page_translations @root.page.language 'title') @root.data.search}}}
                   </a>
                 </td>
                 <td>
                   <a href="{{@root.page.host}}/manager/pages/{{pages.id}}">
                     {{pages.path}}
                   </a>
+                </td>
+                <td>
+                  {{#page_labels}}
+                  <a href="{{@root.page.host}}/manager/pages/{{pages.id}}" class="label small font-xs">
+                    {{{hightlight (get_translation label_translations @root.page.language 'name') @root.data.search}}}
+                  </a>
+                  {{/page_labels}}
                 </td>
               </tr>
             {{/data.results}}

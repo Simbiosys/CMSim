@@ -1,0 +1,16 @@
+<div class="row margin-top-20 padding-bottom-10 border-bottom">
+  <div class="col-xs-7 padding-top-5 title-labels">
+    {{labels.labels}}
+  </div>
+  <div class="col-xs-5">
+    <button class="btn btn-default pull-right" data-label-add="label_container" data-label-selector="label_selector">
+      {{labels.add_label}}
+    </button>
+    <select class="form-control select-label pull-right" id="label_selector">
+      <option value="" disabled selected>{{labels.select_label}}</option>
+      {{#data.all_labels}}
+        <option value="{{labels.id}}">{{get_translation label_translations @root.page.language 'name'}}</option>
+      {{/data.all_labels}}
+    </select>
+  </div>
+</div>
