@@ -20,8 +20,14 @@
     </li>
     <li>
       <a href="{{page.host}}/manager/facilities" class="app-navigation-button {{#if page.navigation.facilities}} active {{/if}}">
-        <i class="fa fa-home fa-2x app-navigation-button-icon"></i>
-        <span class="app-navigation-button-text">{{labels.facilities}}</span>
+        <i class="fa fa-map-signs fa-2x app-navigation-button-icon"></i>
+        <span class="app-navigation-button-text"><abbr title="{{labels.facilities_abrevia}}">{{labels.facilities}}</abbr></span>
+      </a>
+    </li>
+    <li>
+      <a href="{{page.host}}/manager/settings" class="app-navigation-button {{#if page.navigation.settings}} active {{/if}}">
+        <i class="fa fa-cogs fa-2x app-navigation-button-icon"></i>
+        <span class="app-navigation-button-text">{{labels.settings}}</span>
       </a>
     </li>
   </ul>

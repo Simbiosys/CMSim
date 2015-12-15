@@ -1,92 +1,104 @@
-<header class="navbar-form navigation-bar width-container" role="">
-  <div class="width-container">
-    <h1 class="page_title pull-left">{{labels.users}}</h1>
-    <nav class="pull-right">
-      <a href="{{page.host}}/manager/users/new" class="btn btn-default">{{labels.new_user}}</a>
-    </nav>
+{{> users_left_bar}}
+
+<section class="width-container">
+  <div class="inner-body">
+    <section class="search-form">
+      <form method="GET" action="{{page.host}}/manager/users/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+        {{#if data.search}}
+        <div class="search-filter">
+          {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+          <a href="{{page.host}}/manager/users" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
+        {{/if}}
+
+      </form>
+    </section>
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <header class="navbar-form navigation-bar" role="">
+          <div class="">
+            <h1 class="page_title pull-left">{{labels.users}}</h1>
+            <nav class="pull-right">
+              <a href="{{page.host}}/manager/users/new" class="btn btn-default">{{labels.new_user}}</a>
+            </nav>
+          </div>
+        </header>
+
+        <div class="">
+          <section class="content-body">
+            <table class="table table-multiline">
+              <thead>
+                <tr>
+                  <th class="width-25">{{@root.labels.name}}</th>
+                  <th class="width-25">{{@root.labels.surname}}</th>
+                  <th class="width-50">{{@root.labels.email}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#data.results}}
+                  <tr>
+                    <td class="width-25">
+                      <a href="{{@root.page.host}}/manager/users/{{users.id}}">
+                        {{users.name}}
+                      </a>
+                    </td>
+                    <td class="width-25">
+                      <a href="{{@root.page.host}}/manager/users/{{users.id}}">
+                        {{users.surname}}
+                      </a>
+                    </td>
+                    <td class="width-25">
+                      <a href="{{@root.page.host}}/manager/users/{{users.id}}">
+                        {{users.email}}
+                      </a>
+                    </td>
+                    <td class="width-25">
+                      <a href="{{@root.page.host}}/manager/users/{{users.id}}">
+                        {{users.customer_id}}
+                      </a>
+                    </td>
+                  </tr>
+                {{/data.results}}
+              </tbody>
+            </table>
+
+            <nav class="pagination-selector">
+              {{#if data.search}}
+              <a {{#if data.previous}} href="{{page.host}}/manager/users/search/page/{{data.previous}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+              {{else}}
+              <a {{#if data.previous}} href="{{page.host}}/manager/users/page/{{data.previous}}" {{else}} href="javascript:void(0)" {{/if}}
+              {{/if}}
+                class="pagination-link previous {{#unless data.previous}} disabled {{/unless}}" {{#unless data.previous}} disabled {{/unless}}>
+                <i class="fa fa-angle-left fa-2x page-before"></i>
+              </a>
+              <span class="pagination-page">
+                {{labels.page}} {{data.page}} {{labels.out_of}} {{data.count}}
+              </span>
+              {{#if data.search}}
+              <a {{#if data.next}} href="{{page.host}}/manager/users/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
+              {{else}}
+              <a {{#if data.next}} href="{{page.host}}/manager/users/page/{{data.next}}" {{else}} href="javascript:void(0)" {{/if}}
+              {{/if}}
+                class="pagination-link next {{#unless data.next}} disabled {{/unless}}" {{#unless data.next}} disabled {{/unless}}>
+                <i class="fa fa-angle-right fa-2x page-after"></i>
+              </a>
+            </nav>
+
+          </section>
+        </div>
+      </div>
+    </div>
   </div>
-</header>
-
-<div class="width-container">
-  <section class="content-body">
-    <form method="GET" action="{{page.host}}/manager/users/search" class="margin-bottom-20">
-      <div class="input-group search-box">
-        <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
-        <span class="input-group-btn">
-          <button class="btn btn-blank" type="submit">
-            <i class="fa fa-search fa-lg"></i>
-          </button>
-        </span>
-      </div>
-
-      {{#if data.search}}
-      <div class="search-filter">
-        {{labels.search_results_for}}: <strong>{{data.search}}</strong>
-        <a href="{{page.host}}/manager/users" class="pull-right">
-          <i class="fa fa-times fa-lg"></i>
-        </a>
-      </div>
-      {{/if}}
-
-    </form>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>{{@root.labels.name}}</th>
-          <th>{{@root.labels.surname}}</th>
-          <th>{{@root.labels.email}}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#data.results}}
-          <tr>
-            <td>
-              <a href="{{@root.page.host}}/manager/users/{{users.id}}">
-                {{users.name}}
-              </a>
-            </td>
-            <td>
-              <a href="{{@root.page.host}}/manager/users/{{users.id}}">
-                {{users.surname}}
-              </a>
-            </td>
-            <td>
-              <a href="{{@root.page.host}}/manager/users/{{users.id}}">
-                {{users.email}}
-              </a>
-            </td>
-            <td>
-              <a href="{{@root.page.host}}/manager/users/{{users.id}}">
-                {{users.customer_id}}
-              </a>
-            </td>
-          </tr>
-        {{/data.results}}
-      </tbody>
-    </table>
-
-    <nav class="pagination-selector">
-      {{#if data.search}}
-      <a {{#if data.previous}} href="{{page.host}}/manager/users/search/page/{{data.previous}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
-      {{else}}
-      <a {{#if data.previous}} href="{{page.host}}/manager/users/page/{{data.previous}}" {{else}} href="javascript:void(0)" {{/if}}
-      {{/if}}
-        class="pagination-link previous {{#unless data.previous}} disabled {{/unless}}" {{#unless data.previous}} disabled {{/unless}}>
-        <i class="fa fa-caret-left"></i>
-      </a>
-      <span class="pagination-page">
-        {{data.page}}
-      </span>
-      {{#if data.search}}
-      <a {{#if data.next}} href="{{page.host}}/manager/users/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
-      {{else}}
-      <a {{#if data.next}} href="{{page.host}}/manager/users/page/{{data.next}}" {{else}} href="javascript:void(0)" {{/if}}
-      {{/if}}
-        class="pagination-link next {{#unless data.next}} disabled {{/unless}}" {{#unless data.next}} disabled {{/unless}}>
-        <i class="fa fa-caret-right"></i>
-      </a>
-    </nav>
-
-  </section>
-</div>
+</section>

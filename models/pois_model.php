@@ -2,7 +2,7 @@
 
   class PoisModel extends TranslatedLabelledModel {
       protected $table = "pois";
-      protected $query_fields = array("id", "customer_id", "creation", "tipo", "coordinates", "url_info", "timeofyear", "phone", "estacio_propietaria");
+      protected $query_fields = array("id", "customer_id", "creation", "tipo", "coordinates", "url_info", "timeofyear");
       protected $order = array("creation ASC");
       protected $filter = NULL;
       protected $search_fields = array("poi_translations.title", "poi_translations.content");
@@ -20,7 +20,8 @@
           "null" => FALSE
         ),
         "tipo" => array(
-          "type" => "integer",
+          "type" => "string",
+          "size" => 400,
           "null" => FALSE
         ),
         "coordinates" => array(
@@ -34,16 +35,6 @@
           "null" => FALSE
         ),
         "timeofyear" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "phone" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "estacio_propietaria" => array(
           "type" => "string",
           "size" => 400,
           "null" => FALSE

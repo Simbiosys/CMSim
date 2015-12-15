@@ -1,13 +1,13 @@
 <?php
 
-  class NoPoisModel extends TranslatedLabelledModel {
-      protected $table = "nopois";
-      protected $query_fields = array("id", "customer_id",  "tipo", "coordinates", "url_info", "timeofyear", "resort_reference", "occupancy", "capacity", "duration", "heating", "creation");
+  class SettingsModel extends TranslatedLabelledModel {
+      protected $table = "settings";
+      protected $query_fields = array("id", "customer_id", "creation", "km", "pista", "deleted");
       protected $order = array("creation ASC");
       protected $filter = NULL;
-      protected $search_fields = array("nopoi_translations.title", "nopoi_translations.content");
+      protected $search_fields = array("setting_translations.title", "setting_translations.content");
 
-      protected $filtered_language_entity = "nopoi_translations";
+      protected $filtered_language_entity = "setting_translations";
 
       protected $fields = array(
         "id" => array(
@@ -19,63 +19,41 @@
           "type" => "integer",
           "null" => FALSE
         ),
-        "tipo" => array(
-          "type" => "integer",
-          "null" => FALSE
-        ),
-        "coordinates" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "url_info" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "timeofyear" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "resort_reference" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "occupancy" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "capacity" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "duration" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "heating" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
         "creation" => array(
           "type" => "timestamp",
           "null" => FALSE,
           "default" => "CURRENT_TIMESTAMP"
+        ),
+        "km" => array(
+          "type" => "string",
+          "size" => 400,
+          "null" => FALSE
+        ),
+        "pista" => array(
+          "type" => "string",
+          "size" => 400,
+          "null" => FALSE
+        ),
+        "deleted" => array(
+          "type" => "string",
+          "size" => 400,
+          "null" => FALSE
         )
       );
 
       protected $primary_key = "id";
 
       protected $dependencies = array(
-        "nopoi_translations" => array(
-          "entity" => "NoPoiModelTranslations",
-          "key" => "nopoi_id",
+        "setting_translations" => array(
+          "entity" => "SettingModelTranslations",
+          "key" => "setting_id",
+          "filter" => NULL,
+          "order" => "",
+          "dependent" => TRUE // Cascade delete
+        ),
+        "setting_labels" => array(
+          "entity" => "SettingModelLabels",
+          "key" => "setting_id",
           "filter" => NULL,
           "order" => "",
           "dependent" => TRUE // Cascade delete
@@ -105,8 +83,8 @@
 //                              Translations
 ////////////////////////////////////////////////////////////////////////////////
 
-  class NoPoiModelTranslations extends \Singular\Model {
-    protected $table = "nopoi_translations";
+  class SettingModelTranslations extends \Singular\Model {
+    protected $table = "setting_translations";
 
     protected $fields = array(
       "id" => array(
@@ -114,7 +92,7 @@
         "null" => FALSE,
         "auto_increment" => TRUE
       ),
-      "nopoi_id" => array(
+      "setting_id" => array(
         "type" => "integer",
         "null" => FALSE
       ),
@@ -129,6 +107,43 @@
       "language" => array(
         "type" => "string",
         "size" => "3"
+      )
+    );
+
+    protected $primary_key = "id";
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+//                                 Labels
+////////////////////////////////////////////////////////////////////////////////
+
+  class SettingModelLabels extends \Singular\Model {
+    protected $table = "setting_labels";
+
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
+      ),
+      "setting_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      ),
+      "label_id" => array(
+        "type" => "integer",
+        "null" => FALSE
+      )
+    );
+
+    protected $dependencies = array(
+      "label_translations" => array(
+        "entity" => "LabelModelTranslations",
+        "key" => "label_id",
+        "key_parent" => "label_id",
+        "filter" => NULL,
+        "order" => "",
+        "dependent" => FALSE // Cascade delete
       )
     );
 

@@ -1,0 +1,68 @@
+<section class="width-container">
+  <div class="inner-body">
+
+    {{> resort_left_bar}}
+    
+    <section class="search-form">
+      <form method="GET" action="{{page.host}}/manager/facilities/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+        {{#if data.search}}
+        <div class="search-filter">
+          {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+          <a href="{{page.host}}/manager/settings" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
+        {{/if}}
+
+      </form>
+    </section>
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <header class="navbar-form navigation-bar" role="">
+          <div class="">
+            <h1 class="page_title pull-left">{{labels.settings}}</h1>
+          </div>
+        </header>
+
+        <div class="">
+          <section class="content-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="width-50">{{labels.track}}</th>
+                  <th class="width-50">{{labels.kilometros}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {{#data.results}}
+                  <tr>
+                    <td class="width-50">
+                      <a href="{{@root.page.host}}/manager/settings/{{settings.id}}">
+                        {{settings.pista}}
+                      </a>
+                    </td>
+                    <td class="width-50">
+                      <a href="{{@root.page.host}}/manager/settings/{{settings.id}}">
+                        {{settings.km}}
+                      </a>
+                    </td>
+                  </tr>
+                {{/data.results}}
+              </tbody>
+            </table>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,5 +1,5 @@
 /* Admin bar */
-$admin-bar-background-colour: #444;
+$admin-bar-background-colour: #666;
 $admin-bar-foreground-colour: #fff;
 
 /* Left bar */
@@ -13,6 +13,10 @@ $left-bar-icon-active-colour: #ED7600;
 
 /* Navigation bar */
 
-$navigation-bar-background-colour: #eee;
+$navigation-bar-background-colour: #fff;
 $navigation-bar-foreground-colour: #666;
 $navigation-cancel-background-colour: #FE2E2E;
+
+/* Search */
+
+$search-box-background-colour: lighten($left-bar-icon-active-colour, 8%);

@@ -4,7 +4,7 @@
     <span class="admin-title">{{labels.administration}}</span>
     <ul class="admin-navigation">
       <li>
-        <select class="form-control customer-selector" id="admin_customer">
+        <select class="form-control customer-selector dark-selector" id="admin_customer">
           {{#page.customers}}
             <option value="{{customers.id}}" {{select_equals customers.id @root.page.impersonated_customer}}>{{customers.name}}</option>
           {{/page.customers}}

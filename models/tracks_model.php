@@ -2,7 +2,7 @@
 
   class tracksModel extends TranslatedLabelledModel {
       protected $table = "tracks";
-      protected $query_fields = array("id", "customer_id", "creation", "tipo", "coordinates", "url_info", "timeofyear", "phone", "estacio_propietaria");
+      protected $query_fields = array("id", "customer_id", "creation", "tipo", "coordinates", "url_info", "timeofyear");
       protected $order = array("creation ASC");
       protected $filter = NULL;
       protected $search_fields = array("track_translations.title", "track_translations.content");
@@ -20,7 +20,8 @@
           "null" => FALSE
         ),
         "tipo" => array(
-          "type" => "integer",
+          "type" => "string",
+          "size" => 400,
           "null" => FALSE
         ),
         "coordinates" => array(
@@ -38,17 +39,7 @@
           "size" => 400,
           "null" => FALSE
         ),
-        "phone" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "estacio_propietaria" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
-        ),
-        "creation" => array(
+      "creation" => array(
           "type" => "timestamp",
           "null" => FALSE,
           "default" => "CURRENT_TIMESTAMP"

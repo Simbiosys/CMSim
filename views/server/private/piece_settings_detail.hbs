@@ -1,0 +1,88 @@
+<section class="width-container">
+  <div class="inner-body">
+
+    {{> resort_left_bar}}
+
+    <section class="search-form">
+      <form method="GET" action="{{page.host}}/manager/settings/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+        {{#if data.search}}
+        <div class="search-filter">
+          {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+          <a href="{{page.host}}/manager/settings" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
+        {{/if}}
+
+      </form>
+    </section>
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <form method="POST" data-form data-model="settings"
+          {{#if data.settings.id}}
+            action="{{page.host}}/manager/settings/{{data.settings.id}}/save"
+          {{else}}
+            action="{{page.host}}/manager/settings/facility"
+          {{/if}}>
+          <header class="navbar-form navigation-bar width-container" role="">
+            <div class="width-container">
+              <a href="{{page.host}}/manager/settings" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
+              </a>
+              <h1 class="page_title pull-left">
+                {{#if data.settings.id}}
+                  {{get_translation @root.data.facility_translations page.language 'title'}}
+                {{else}}
+                  {{labels.new_settings}}
+                {{/if}}
+              </h1>
+              <nav class="pull-right">
+              <button type="submit" class="btn btn-default">
+                  <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+                </button>
+              </nav>
+            </div>
+          </header>
+
+          <input type="hidden" name="id" id="id" value="{{data.settings.id}}" data-field />
+
+          <div class="width-container">
+            <section class="content-body">
+
+              <div class="row">
+                <div class="col-xs-12 margin-bottom-20">
+                  URL:
+                  <a href="{{page.host}}/{{page.language}}/settings/{{data.settings.id}}/{{get_translation @root.data.facility_translations page.language 'path'}}" target="_blank">
+                    {{page.host}}/{{page.language}}/settings/{{data.settings.id}}/{{get_translation @root.data.facility_translations page.language 'path'}}
+                  </a>
+                </div>
+              </div>
+               <div class="row margin-bottom-10">
+                <div class="col-xs-6">
+                  <label for="coordenadas">{{labels.track}}:</label>
+                  <input type="text" name="pista" class="form-control" value="{{data.settings.pista}}" data-field />
+                </div>
+                <div class="col-xs-6">
+                  <label for="coordenadas">{{labels.kilometros}}:</label>
+                  <input type="text" name="km" class="form-control" value="{{data.settings.km}}" data-field />
+                </div>
+              </div>
+            </section>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="{{page.web}}/js/labels.js?{{page.version}}"></script>
+<script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>

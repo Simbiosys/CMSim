@@ -87,3 +87,49 @@ table {
 .media-file {
   width: 100%;
 }
+
+.media-container {
+  min-height: 400px;
+}
+
+.media-name {
+  border: none;
+  background-color: transparent;
+  resize: none;
+  width: 100%;
+  text-align: center;
+}
+
+.media-header {
+  ul {
+    list-style: none;
+    overflow: hidden;
+    margin: 0 auto 1em auto;
+    padding: 0;
+    width: 80%;
+    text-align: center;
+
+    li {
+      float: left;
+      width: 50%;
+    }
+  }
+
+  a {
+    color: #888;
+  }
+}
+
+.page-before, .page-after {
+  display: inline-block;
+  padding-top: 0;
+  padding-left: 0;
+  float: left;
+  position: relative;
+  top: -6px;
+}
+
+.page-after {
+  padding-left: 3px;
+  float: right;
+}

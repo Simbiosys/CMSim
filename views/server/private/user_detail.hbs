@@ -1,51 +1,84 @@
-<form method="POST"
-  {{#if data.users.id}}
-    action="{{page.host}}/manager/users/{{data.users.id}}/save"
-  {{else}}
-    action="{{page.host}}/manager/users/new"
-  {{/if}}>
-  <header class="navbar-form navigation-bar width-container" role="">
-    <div class="width-container">
-      <a href="{{page.host}}/manager/users" class="pull-left">
-        <i class="fa fa-angle-left fa-3x return-back"></i>
-      </a>
-      <h1 class="page_title pull-left">
-        {{#if data.users.id}}
-          {{data.users.name}}
-        {{else}}
-          {{labels.new_user}}
+{{> users_left_bar}}
+
+<section class="width-container">
+  <div class="inner-body">
+    <section class="search-form">
+      <form method="GET" action="{{page.host}}/manager/users/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+        {{#if data.search}}
+        <div class="search-filter">
+          {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+          <a href="{{page.host}}/manager/users" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
         {{/if}}
-      </h1>
-      <nav class="pull-right">
-        {{#if data.users.id}}
-        <a href="{{page.host}}/manager/users/{{data.users.id}}/delete" class="btn btn-cancel margin-right-8">
-          <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
-        </a>
-        {{/if}}
-        <button type="submit" class="btn btn-default">
-          <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
-        </button>
-      </nav>
-    </div>
-  </header>
 
-  <input type="hidden" name="id" value="{{data.users.id}}" />
+      </form>
+    </section>
 
-  <div class="width-container margin-top-10">
-      <div class="row language-content" data-language-content="{{this}}">
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <form method="POST"
+          {{#if data.users.id}}
+            action="{{page.host}}/manager/users/{{data.users.id}}/save"
+          {{else}}
+            action="{{page.host}}/manager/users/new"
+          {{/if}}>
+          <header class="navbar-form navigation-bar width-container" role="">
+            <div class="width-container">
+              <a href="{{page.host}}/manager/users" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
+              </a>
+              <h1 class="page_title pull-left">
+                {{#if data.users.id}}
+                  {{data.users.name}}
+                {{else}}
+                  {{labels.new_user}}
+                {{/if}}
+              </h1>
+              <nav class="pull-right">
+                {{#if data.users.id}}
+                <a href="{{page.host}}/manager/users/{{data.users.id}}/delete" class="btn btn-cancel margin-right-8">
+                  <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
+                </a>
+                {{/if}}
+                <button type="submit" class="btn btn-default">
+                  <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+                </button>
+              </nav>
+            </div>
+          </header>
 
-        <div class="col-xs-12 col-sm-3">
-          <label for="title">{{@root.labels.name}}</label>
-          <input type="text" class="form-control" id="name" name="users.name" placeholder="{{@root.labels.name}}" value="{{data.users.name}}" />
-        </div>
-        <div class="col-xs-12 col-sm-4">
-          <label for="title">{{@root.labels.surname}}</label>
-          <input type="text" class="form-control" id="surname" name="users.surname" placeholder="{{@root.labels.surname}}" value="{{data.users.surname}}" />
-        </div>
-        <div class="col-xs-12 col-sm-5">
-          <label for="title">{{@root.labels.email}}</label>
-          <input type="text" class="form-control" id="email" name="users.email" placeholder="{{@root.labels.email}}" value="{{data.users.email}}" />
-        </div>
+          <input type="hidden" name="id" value="{{data.users.id}}" />
+
+          <div class="width-container margin-top-10">
+              <div class="row language-content" data-language-content="{{this}}">
+
+                <div class="col-xs-12 col-sm-3">
+                  <label for="title">{{@root.labels.name}}</label>
+                  <input type="text" class="form-control" id="name" name="users.name" placeholder="{{@root.labels.name}}" value="{{data.users.name}}" />
+                </div>
+                <div class="col-xs-12 col-sm-4">
+                  <label for="title">{{@root.labels.surname}}</label>
+                  <input type="text" class="form-control" id="surname" name="users.surname" placeholder="{{@root.labels.surname}}" value="{{data.users.surname}}" />
+                </div>
+                <div class="col-xs-12 col-sm-5">
+                  <label for="title">{{@root.labels.email}}</label>
+                  <input type="text" class="form-control" id="email" name="users.email" placeholder="{{@root.labels.email}}" value="{{data.users.email}}" />
+                </div>
+              </div>
+          </div>
+        </form>
       </div>
+    </div>
   </div>
-</form>
+</section>

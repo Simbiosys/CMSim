@@ -1,97 +1,127 @@
 <section class="width-container">
-  {{> web_left_bar}}
-  <form method="POST" data-form data-model="informations" class="inner-body"
-    {{#if data.informations.id}}
-      action="{{page.host}}/manager/news/{{data.informations.id}}/save"
-    {{else}}
-      action="{{page.host}}/manager/news/new"
-    {{/if}}>
-    <header class="navbar-form navigation-bar width-container" role="">
-      <div class="width-container">
-        <a href="{{page.host}}/manager/news" class="pull-left">
-          <i class="fa fa-angle-left fa-3x return-back"></i>
-        </a>
-        <h1 class="page_title pull-left">
-          {{#if data.informations.id}}
-            {{get_translation @root.data.information_translations page.language 'title'}}
-          {{else}}
-            {{labels.new_news}}
-          {{/if}}
-        </h1>
-        <nav class="pull-right">
-          {{#if data.informations.id}}
-          <a href="{{page.host}}/manager/news/{{data.informations.id}}/delete" class="btn btn-cancel margin-right-8">
-            <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
+  <div class="inner-body">
+    {{> web_left_bar}}
+    
+    <section class="search-form">
+      <form method="GET" action="{{page.host}}/manager/news/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="{{labels.do_search}}">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+        {{#if data.search}}
+        <div class="search-filter">
+          {{labels.search_results_for}}: <strong>{{data.search}}</strong>
+          <a href="{{page.host}}/manager/news" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
           </a>
-          {{/if}}
-          <button type="submit" class="btn btn-default">
-            <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <input type="hidden" name="id" id="id" value="{{data.informations.id}}" data-field />
-
-    <div class="width-container">
-      <section class="content-body">
-
-        <div class="row">
-          <div class="col-xs-12 margin-bottom-20">
-            URL:
-            <a href="{{page.host}}/{{page.language}}/news/{{data.informations.id}}/{{get_translation @root.data.information_translations page.language 'path'}}" target="_blank">
-              {{page.host}}/{{page.language}}/news/{{data.informations.id}}/{{get_translation @root.data.information_translations page.language 'path'}}
-            </a>
-          </div>
         </div>
+        {{/if}}
 
-        <ul class="nav nav-tabs">
-          {{#page.languages}}
-            <li role="presentation" class="{{equals @index 0 'active'}}">
-              <a href="#" data-tab="{{this}}">
-                {{language_name @root.labels this}}
+      </form>
+    </section>
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <form method="POST" data-form data-model="informations"
+          {{#if data.informations.id}}
+            action="{{page.host}}/manager/news/{{data.informations.id}}/save"
+          {{else}}
+            action="{{page.host}}/manager/news/new"
+          {{/if}}>
+          <header class="navbar-form navigation-bar width-container" role="">
+            <div class="width-container">
+              <a href="{{page.host}}/manager/news" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
               </a>
-            </li>
-          {{/page.languages}}
-        </ul>
-
-        {{#page.languages}}
-          <div class="row language-content" data-content="{{this}}" data-row data-model="information_translations" data-fk="language" data-fk-value="{{this}}">
-
-            <input type="hidden" name="id" value="{{get_translation @root.data.information_translations this 'id'}}" data-field />
-
-            <div class="col-xs-12 margin-top-20">
-              <label for="title">{{@root.labels.page_title}} ({{language_name @root.labels this}})</label>
-              <input type="text" class="form-control" id="title" name="title" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.information_translations this 'title'}}" data-field />
-            </div>
-            <div class="col-xs-12 margin-top-20">
-              <label for="title">{{@root.labels.content}} ({{language_name @root.labels this}})</label>
-              <textarea class="form-control height-200" id="title" name="content" placeholder="{{@root.labels.content}}" data-field>{{@root.data.content}}{{get_translation @root.data.information_translations this 'content'}}</textarea>
-            </div>
-          </div>
-        {{/page.languages}}
-
-        {{> label_selector}}
-
-        <div class="row margin-top-10" data-model="information_labels">
-          <div class="col-xs-12" id="label_container" data-model="information_labels" data-fk="information_id">
-            {{#data.information_labels}}
-              <div class="label" data-label="{{label_id}}" data-selector="label_selector" data-row="" data-model="information_labels" data-fk="information_id" data-fk-value="{{@root.data.informations.id}}" data-name="label_id" data-value="{{id}}">
-                <input type="hidden" name="id" value="{{id}}" data-field />
-                <input type="hidden" name="deleted" value="0" data-field />
-                <span>{{get_translation label_translations @root.page.language 'name'}}</span>
-                <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="{{label_id}}" data-selector="label_selector">
-                  <i class="fa fa-times fa-lg"></i>
+              <h1 class="page_title pull-left">
+                {{#if data.informations.id}}
+                  {{get_translation @root.data.information_translations page.language 'title'}}
+                {{else}}
+                  {{labels.new_news}}
+                {{/if}}
+              </h1>
+              <nav class="pull-right">
+                {{#if data.informations.id}}
+                <a href="{{page.host}}/manager/news/{{data.informations.id}}/delete" class="btn btn-cancel margin-right-8">
+                  <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
                 </a>
+                {{/if}}
+                <button type="submit" class="btn btn-default">
+                  <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+                </button>
+              </nav>
+            </div>
+          </header>
+
+          <input type="hidden" name="id" id="id" value="{{data.informations.id}}" data-field />
+
+          <div class="width-container">
+            <section class="content-body">
+
+              <div class="row">
+                <div class="col-xs-12 margin-bottom-20">
+                  URL:
+                  <a href="{{page.host}}/{{page.language}}/news/{{data.informations.id}}/{{get_translation @root.data.information_translations page.language 'path'}}" target="_blank">
+                    {{page.host}}/{{page.language}}/news/{{data.informations.id}}/{{get_translation @root.data.information_translations page.language 'path'}}
+                  </a>
+                </div>
               </div>
-            {{/data.information_labels}}
+
+              <ul class="nav nav-tabs">
+                {{#page.languages}}
+                  <li role="presentation" class="{{equals @index 0 'active'}}">
+                    <a href="#" data-tab="{{this}}">
+                      {{language_name @root.labels this}}
+                    </a>
+                  </li>
+                {{/page.languages}}
+              </ul>
+
+              {{#page.languages}}
+                <div class="row language-content" data-content="{{this}}" data-row data-model="information_translations" data-fk="language" data-fk-value="{{this}}">
+
+                  <input type="hidden" name="id" value="{{get_translation @root.data.information_translations this 'id'}}" data-field />
+
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="title">{{@root.labels.page_title}} ({{language_name @root.labels this}})</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.information_translations this 'title'}}" data-field />
+                  </div>
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="title">{{@root.labels.content}} ({{language_name @root.labels this}})</label>
+                    <textarea class="form-control height-200" id="title" name="content" placeholder="{{@root.labels.content}}" data-field>{{@root.data.content}}{{get_translation @root.data.information_translations this 'content'}}</textarea>
+                  </div>
+                </div>
+              {{/page.languages}}
+
+              {{> label_selector}}
+
+              <div class="row margin-top-10" data-model="information_labels">
+                <div class="col-xs-12" id="label_container" data-model="information_labels" data-fk="information_id">
+                  {{#data.information_labels}}
+                    <div class="label" data-label="{{label_id}}" data-selector="label_selector" data-row="" data-model="information_labels" data-fk="information_id" data-fk-value="{{@root.data.informations.id}}" data-name="label_id" data-value="{{id}}">
+                      <input type="hidden" name="id" value="{{id}}" data-field />
+                      <input type="hidden" name="deleted" value="0" data-field />
+                      <span>{{get_translation label_translations @root.page.language 'name'}}</span>
+                      <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="{{label_id}}" data-selector="label_selector">
+                        <i class="fa fa-times fa-lg"></i>
+                      </a>
+                    </div>
+                  {{/data.information_labels}}
+                </div>
+              </div>
+
+            </section>
           </div>
-        </div>
+        </form>
 
-      </section>
+      </div>
     </div>
-  </form>
+  </div>
 </section>
-
 <script src="{{page.web}}/js/labels.js?{{page.version}}"></script>
 <script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>

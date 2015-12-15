@@ -1,12 +1,15 @@
 .inner-navigation {
   position: absolute;
-  width: 70px;
+  width: 90px;
   top: 0;
   left: 0;
   bottom: 0;
   overflow: hidden;
   z-index: 1000;
   min-height: 600px;
+  background-color: #fff;
+  text-align: center;
+  background-color: #eee;
 
   ul {
     padding: 0;
@@ -17,21 +20,17 @@
 
 .inner-body {
   position: relative;
-  padding-left: 100px;
+  padding-left: 90px;
   min-height: 100%;
 }
 
 .app-navigation-button {
   display: inline-block;
-  padding: 1.3em 0.2em;
+  padding: 2em 0.2em;
   font-size: 0.8em;
   text-align: center;
   color: #999;
   width: 100%;
-  margin-bottom: 3em;
-  box-shadow: inset 0px 0px 3px 2px #f6f6f6;
-  border-radius: 50%;
-  background-color: #fdfdfd;
 
   &:not(.active):hover {
     color: $left-bar-icon-active-colour;
@@ -46,9 +45,8 @@
   }
 
   &.active {
-    background-color: $left-bar-icon-active-colour;
-    color: #fff;
-    border-radius: 50%;
+    background-color: #fff;
+    color: $left-bar-icon-active-colour;
     box-shadow: none;
   }
 }
@@ -63,4 +61,8 @@
   text-align: center;
   padding: 1em 0;
   margin-bottom: 2em;
+}
+
+.navigation-triangle {
+
 }

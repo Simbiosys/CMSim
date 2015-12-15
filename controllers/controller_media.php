@@ -120,22 +120,25 @@
 
     $model = new MediaModel();
 
-    if ($node) {
+    $parent = "";
+    $customer = AppAuthentication::get_user_customer();
+
+    if (!empty($node)) {
       $info = $model->find($node);
 
       if ($info) {
-        $path = $info["media"]["file_path"] . "/$name";
+        $parent = $info["media"]["file_path"];
+        $path =  "$parent/$name";
       }
     }
     else {
-      $path = $root . \Singular\Configuration::get_app_settings("file_path")
-          . "/$customer/$path";
+      $root = \Singular\Configuration::get_root();
+      $parent = $root . \Singular\Configuration::get_app_settings("file_path")
+          . "/$customer";
+      $path = "$parent/$name";
     }
 
-    $customer = AppAuthentication::get_user_customer();
     check_customer_folder($customer);
-
-    $root = \Singular\Configuration::get_root();
 
     check_folder($path);
 
@@ -149,7 +152,13 @@
       ),
     ));
 
-    \Singular\Controller::redirect("/manager/media");
+    $redirect = "/manager/media";
+
+    if ($node) {
+      $redirect .= "/$node";
+    }
+
+    \Singular\Controller::redirect($redirect);
   });
 
 /*

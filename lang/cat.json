@@ -72,5 +72,7 @@
   "facilities": "Servei",
   "media": "Recursos",
   "creation_date": "Data de creació",
-  "new_folder": "Nova carpeta"
+  "new_folder": "Nova carpeta",
+  "page": "Pàgina",
+  "out_of": "de"
 }

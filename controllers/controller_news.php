@@ -49,7 +49,8 @@
           "results" => $model->get_all_filtered_by_language($pagination),
           "page" => $pagination["page"],
           "previous" => $pagination["page"] > 1 ? $pagination["page"] - 1 : NULL,
-          "next" => $next < $count ? $pagination["page"] + 1 : NULL
+          "next" => $next < $count ? $pagination["page"] + 1 : NULL,
+          "count" => $count
         ),
         "page_navigation" => "news",
         "layout" => "private.hbs",
@@ -77,7 +78,8 @@
           "search" => $search,
           "page" => $pagination["page"],
           "previous" => $pagination["page"] > 1 ? $pagination["page"] - 1 : NULL,
-          "next" => $next < $count ? $pagination["page"] + 1 : NULL
+          "next" => $next < $count ? $pagination["page"] + 1 : NULL,
+          "count" => $count
         ),
         "page_navigation" => "news",
         "layout" => "private.hbs",

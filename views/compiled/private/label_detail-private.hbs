@@ -82,59 +82,66 @@
 '.$sp.'    </li>
 '.$sp.'';}).'</ul>
 ';},'page_hiddens' => function ($cx, $in, $sp) {return ''.$sp.'<input type="hidden" id="host" value="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'" />
-';},'header_private' => function ($cx, $in, $sp) {return ''.$sp.''.$cx['funcs']['p']($cx, 'admin_bar', array(array($in),array())).''.$cx['funcs']['p']($cx, 'flash', array(array($in),array())).'<nav class="user-session-bar">
-'.$sp.'  <div class="width-container">
-'.$sp.''.$cx['funcs']['p']($cx, 'language_selector', array(array($in),array()), '    ').'    <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/logout">'.htmlentities((string)((isset($in['labels']['logout']) && is_array($in['labels'])) ? $in['labels']['logout'] : null), ENT_QUOTES, 'UTF-8').' <i class="fa fa-power-off"></i></a>
-'.$sp.'  </div>
-'.$sp.'</nav>
-'.$sp.'
-'.$sp.''.$cx['funcs']['p']($cx, 'page_hiddens', array(array($in),array())).'
-'.$sp.'<header class="margin-top-10">
-'.$sp.'  <nav class="width-container">
-'.$sp.'    <img src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/img/logo-tech4snow-top.png" alt="tech4snow" />
+';},'header_private' => function ($cx, $in, $sp) {return ''.$sp.''.$cx['funcs']['p']($cx, 'admin_bar', array(array($in),array())).''.$cx['funcs']['p']($cx, 'flash', array(array($in),array())).'
+'.$sp.'<header class="manager-header">
+'.$sp.'  <nav class="user-session-bar">
+'.$sp.'    <div class="width-container">
+'.$sp.''.$cx['funcs']['p']($cx, 'language_selector', array(array($in),array()), '      ').'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/logout">'.htmlentities((string)((isset($in['labels']['logout']) && is_array($in['labels'])) ? $in['labels']['logout'] : null), ENT_QUOTES, 'UTF-8').' <i class="fa fa-power-off"></i></a>
+'.$sp.'    </div>
 '.$sp.'  </nav>
-'.$sp.'</header>
 '.$sp.'
-'.$sp.'<section class="width-container margin-top-5">
-'.$sp.'  <ul class="nav nav-tabs top-nav-tabs text-center">
-'.$sp.'    <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['dashboard']) && is_array($in['extra']['top'])) ? $in['extra']['top']['dashboard'] : null))) ? ' active ' : '').'">
-'.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/dashboard" class="top-tab">
-'.$sp.'        <i class="fa fa-tachometer fa-2x display-block top-icon"></i>
-'.$sp.'        <span class="font-m">'.htmlentities((string)((isset($in['labels']['dashboard']) && is_array($in['labels'])) ? $in['labels']['dashboard'] : null), ENT_QUOTES, 'UTF-8').'</span>
-'.$sp.'      </a>
-'.$sp.'    </li>
-'.$sp.'    <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['web']) && is_array($in['extra']['top'])) ? $in['extra']['top']['web'] : null))) ? ' active ' : '').'">
-'.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/news" class="top-tab">
-'.$sp.'        <i class="fa fa-globe fa-2x display-block top-icon"></i>
-'.$sp.'        <span class="font-m">'.htmlentities((string)((isset($in['labels']['web']) && is_array($in['labels'])) ? $in['labels']['web'] : null), ENT_QUOTES, 'UTF-8').'</span>
-'.$sp.'      </a>
-'.$sp.'    </li>
-'.$sp.'    <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['resort']) && is_array($in['extra']['top'])) ? $in['extra']['top']['resort'] : null))) ? ' active ' : '').'">
-'.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois" class="top-tab">
-'.$sp.'        <i class="fa fa-tree fa-2x display-block top-icon"></i>
-'.$sp.'        <span class="font-m">'.htmlentities((string)((isset($in['labels']['resort']) && is_array($in['labels'])) ? $in['labels']['resort'] : null), ENT_QUOTES, 'UTF-8').'</span>
-'.$sp.'      </a>
-'.$sp.'    </li>
-'.$sp.'    <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['users']) && is_array($in['extra']['top'])) ? $in['extra']['top']['users'] : null))) ? ' active ' : '').'">
-'.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/users" class="top-tab">
-'.$sp.'        <i class="fa fa-male fa-2x display-block top-icon"></i>
-'.$sp.'        <span class="font-m">'.htmlentities((string)((isset($in['labels']['users']) && is_array($in['labels'])) ? $in['labels']['users'] : null), ENT_QUOTES, 'UTF-8').'</span>
-'.$sp.'      </a>
-'.$sp.'    </li>
-'.$sp.'    <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['customers']) && is_array($in['extra']['top'])) ? $in['extra']['top']['customers'] : null))) ? ' active ' : '').'">
-'.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/customers" class="top-tab">
-'.$sp.'        <i class="fa fa-shopping-cart fa-2x display-block top-icon"></i>
-'.$sp.'        <span class="font-m">'.htmlentities((string)((isset($in['labels']['customers']) && is_array($in['labels'])) ? $in['labels']['customers'] : null), ENT_QUOTES, 'UTF-8').'</span>
-'.$sp.'      </a>
-'.$sp.'    </li>
-'.$sp.'  </ul>
-'.$sp.'</section>
+'.$sp.''.$cx['funcs']['p']($cx, 'page_hiddens', array(array($in),array()), '  ').'
+'.$sp.'  <section class="margin-top-5">
+'.$sp.'    <ul class="nav nav-tabs top-nav-tabs text-center">
+'.$sp.'      <li class="text-left margin-right-40">
+'.$sp.'        <img src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/img/logo-tech4snow-top.png" alt="tech4snow" class="margin-top-15" />
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['dashboard']) && is_array($in['extra']['top'])) ? $in['extra']['top']['dashboard'] : null))) ? ' active ' : '').'">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/dashboard" class="top-tab">
+'.$sp.'          <i class="fa fa-tachometer fa-2x display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['dashboard']) && is_array($in['labels'])) ? $in['labels']['dashboard'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['web']) && is_array($in['extra']['top'])) ? $in['extra']['top']['web'] : null))) ? ' active ' : '').'">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/news" class="top-tab">
+'.$sp.'          <i class="fa fa-globe fa-2x display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['web']) && is_array($in['labels'])) ? $in['labels']['web'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['resort']) && is_array($in['extra']['top'])) ? $in['extra']['top']['resort'] : null))) ? ' active ' : '').'">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois" class="top-tab">
+'.$sp.'          <i class="fa fa-tree fa-2x display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['resort']) && is_array($in['labels'])) ? $in['labels']['resort'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['users']) && is_array($in['extra']['top'])) ? $in['extra']['top']['users'] : null))) ? ' active ' : '').'">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/users" class="top-tab">
+'.$sp.'          <i class="fa fa-male fa-2x display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['users']) && is_array($in['labels'])) ? $in['labels']['users'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['extra']['top']['customers']) && is_array($in['extra']['top'])) ? $in['extra']['top']['customers'] : null))) ? ' active ' : '').'">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/customers" class="top-tab">
+'.$sp.'          <i class="fa fa-shopping-cart fa-2x display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['customers']) && is_array($in['labels'])) ? $in['labels']['customers'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'      <li role="presentation" class="pull-right text-center">
+'.$sp.'        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/logout" class="top-tab padding-right-0 margin-top-10">
+'.$sp.'          <i class="fa fa-power-off fa-lg display-block top-icon"></i>
+'.$sp.'          <span class="font-m">'.htmlentities((string)((isset($in['labels']['logout']) && is_array($in['labels'])) ? $in['labels']['logout'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        </a>
+'.$sp.'      </li>
+'.$sp.'    </ul>
+'.$sp.'  </section>
+'.$sp.'</header>
 ';},'web_left_bar' => function ($cx, $in, $sp) {return ''.$sp.'<aside class="inner-navigation">
 '.$sp.'  <ul>
 '.$sp.'    <li>
 '.$sp.'      <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/news" class="app-navigation-button '.(($cx['funcs']['ifvar']($cx, ((isset($in['page']['navigation']['news']) && is_array($in['page']['navigation'])) ? $in['page']['navigation']['news'] : null))) ? ' active ' : '').'">
 '.$sp.'        <i class="fa fa-newspaper-o fa-2x app-navigation-button-icon"></i>
 '.$sp.'        <span class="app-navigation-button-text">'.htmlentities((string)((isset($in['labels']['news']) && is_array($in['labels'])) ? $in['labels']['news'] : null), ENT_QUOTES, 'UTF-8').'</span>
+'.$sp.'        <span class="navigation-triangle"></span>
 '.$sp.'      </a>
 '.$sp.'    </li>
 '.$sp.'    <li>
@@ -316,73 +323,99 @@
   <body>
     <main class="app-body">
 '.$cx['funcs']['p']($cx, 'header_private', array(array($in),array()), '      ').'      <section class="app-container">
-        <section class="width-container">
-'.$cx['funcs']['p']($cx, 'web_left_bar', array(array($in),array()), '  ').'
-  <form method="POST" class="inner-body"
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '      action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'/save"
-' : '      action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/new"
-    ').'>
-    <header class="navbar-form navigation-bar width-container" role="">
-      <div class="width-container">
-        <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels" class="pull-left">
-          <i class="fa fa-angle-left fa-3x return-back"></i>
-        </a>
-        <h1 class="page_title pull-left">
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '            '.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null),'name'),array()), 'encq').'
-' : '            '.htmlentities((string)((isset($in['labels']['new_label']) && is_array($in['labels'])) ? $in['labels']['new_label'] : null), ENT_QUOTES, 'UTF-8').'
-').'        </h1>
-        <nav class="pull-right">
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '          <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'/delete" class="btn btn-cancel margin-right-8">
-            <i class="fa fa-trash-o fa-lg cancel-icon"></i> '.htmlentities((string)((isset($in['labels']['delete']) && is_array($in['labels'])) ? $in['labels']['delete'] : null), ENT_QUOTES, 'UTF-8').'
-          </a>
-' : '').'          <button type="submit" class="btn btn-default">
-            <i class="fa fa-floppy-o fa-lg"></i> '.htmlentities((string)((isset($in['labels']['save']) && is_array($in['labels'])) ? $in['labels']['save'] : null), ENT_QUOTES, 'UTF-8').'
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <input type="hidden" name="id" value="'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'" />
-
-    <div class="width-container margin-top-10">
-      <section class="content-body">
-
-        <div class="row">
-          <div class="col-md-5 col-md-offset-7 text-right">
-            <label for="parent" class="padding-top-5 margin-right-10">'.htmlentities((string)((isset($in['labels']['label_parent']) && is_array($in['labels'])) ? $in['labels']['label_parent'] : null), ENT_QUOTES, 'UTF-8').'</label>
-            <select class="form-control width-50 pull-right" id="parent" name="parent_id">
-              <option value="NULL">'.htmlentities((string)((isset($in['labels']['none']) && is_array($in['labels'])) ? $in['labels']['none'] : null), ENT_QUOTES, 'UTF-8').'</option>
-'.$cx['funcs']['sec']($cx, ((isset($in['data']['other_labels']) && is_array($in['data'])) ? $in['data']['other_labels'] : null), $in, false, function($cx, $in) {return '                <option value="'.htmlentities((string)((isset($in['labels']['id']) && is_array($in['labels'])) ? $in['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'" '.$cx['funcs']['ch']($cx, 'select_equals', array(array(((isset($in['labels']['id']) && is_array($in['labels'])) ? $in['labels']['id'] : null),((isset($cx['sp_vars']['root']['data']['labels']['parent_id']) && is_array($cx['sp_vars']['root']['data']['labels'])) ? $cx['sp_vars']['root']['data']['labels']['parent_id'] : null)),array()), 'encq').'>'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['label_translations']) && is_array($in)) ? $in['label_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'</option>
-';}).'            </select>
-          </div>
+'.$cx['funcs']['p']($cx, 'web_left_bar', array(array($in),array()), '        ').'
+<section class="width-container">
+  <div class="inner-body">
+    <section class="search-form">
+      <form method="GET" action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="'.htmlentities((string)((isset($in['labels']['do_search']) && is_array($in['labels'])) ? $in['labels']['do_search'] : null), ENT_QUOTES, 'UTF-8').'">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
         </div>
 
-        <ul class="nav nav-tabs">
-'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '            <li role="presentation" class="'.$cx['funcs']['ch']($cx, 'equals', array(array(((isset($cx['sp_vars']['index']) && is_array($cx['sp_vars'])) ? $cx['sp_vars']['index'] : null),0,'active'),array()), 'encq').'">
-              <a href="#" data-tab="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
-                '.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').'
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null))) ? '        <div class="search-filter">
+          '.htmlentities((string)((isset($in['labels']['search_results_for']) && is_array($in['labels'])) ? $in['labels']['search_results_for'] : null), ENT_QUOTES, 'UTF-8').': <strong>'.htmlentities((string)((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null), ENT_QUOTES, 'UTF-8').'</strong>
+          <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
+' : '').'
+      </form>
+    </section>
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <form method="POST"
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '            action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'/save"
+' : '            action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/new"
+          ').'>
+          <header class="navbar-form navigation-bar width-container" role="">
+            <div class="width-container">
+              <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
               </a>
-            </li>
-';}).'        </ul>
-
-'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '          <div class="row language-content" data-content="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
-
-            <input type="hidden" name="label_translations.id#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'id'),array()), 'encq').'" />
-
-            <div class="col-xs-12 margin-top-20">
-              <label for="name">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['name']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['name'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
-              <input type="text" class="form-control" id="name" name="label_translations.name#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['name']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['name'] : null), ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'name'),array()), 'encq').'" />
+              <h1 class="page_title pull-left">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '                  '.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null),'name'),array()), 'encq').'
+' : '                  '.htmlentities((string)((isset($in['labels']['new_label']) && is_array($in['labels'])) ? $in['labels']['new_label'] : null), ENT_QUOTES, 'UTF-8').'
+').'              </h1>
+              <nav class="pull-right">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null))) ? '                <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/labels/'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'/delete" class="btn btn-cancel margin-right-8">
+                  <i class="fa fa-trash-o fa-lg cancel-icon"></i> '.htmlentities((string)((isset($in['labels']['delete']) && is_array($in['labels'])) ? $in['labels']['delete'] : null), ENT_QUOTES, 'UTF-8').'
+                </a>
+' : '').'                <button type="submit" class="btn btn-default">
+                  <i class="fa fa-floppy-o fa-lg"></i> '.htmlentities((string)((isset($in['labels']['save']) && is_array($in['labels'])) ? $in['labels']['save'] : null), ENT_QUOTES, 'UTF-8').'
+                </button>
+              </nav>
             </div>
-            <div class="col-xs-12 margin-top-20">
-              <label for="description">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['description']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['description'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
-              <input type="text" class="form-control" id="description" name="label_translations.description#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['description']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['description'] : null), ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'description'),array()), 'encq').'" />
-            </div>
-          </div>
+          </header>
+
+          <input type="hidden" name="id" value="'.htmlentities((string)((isset($in['data']['labels']['id']) && is_array($in['data']['labels'])) ? $in['data']['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'" />
+
+          <div class="width-container margin-top-10">
+            <section class="content-body">
+
+              <div class="row">
+                <div class="col-md-5 col-md-offset-7 text-right">
+                  <label for="parent" class="padding-top-5 margin-right-10">'.htmlentities((string)((isset($in['labels']['label_parent']) && is_array($in['labels'])) ? $in['labels']['label_parent'] : null), ENT_QUOTES, 'UTF-8').'</label>
+                  <select class="form-control width-50 pull-right" id="parent" name="parent_id">
+                    <option value="NULL">'.htmlentities((string)((isset($in['labels']['none']) && is_array($in['labels'])) ? $in['labels']['none'] : null), ENT_QUOTES, 'UTF-8').'</option>
+'.$cx['funcs']['sec']($cx, ((isset($in['data']['other_labels']) && is_array($in['data'])) ? $in['data']['other_labels'] : null), $in, false, function($cx, $in) {return '                      <option value="'.htmlentities((string)((isset($in['labels']['id']) && is_array($in['labels'])) ? $in['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'" '.$cx['funcs']['ch']($cx, 'select_equals', array(array(((isset($in['labels']['id']) && is_array($in['labels'])) ? $in['labels']['id'] : null),((isset($cx['sp_vars']['root']['data']['labels']['parent_id']) && is_array($cx['sp_vars']['root']['data']['labels'])) ? $cx['sp_vars']['root']['data']['labels']['parent_id'] : null)),array()), 'encq').'>'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['label_translations']) && is_array($in)) ? $in['label_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'</option>
+';}).'                  </select>
+                </div>
+              </div>
+
+              <ul class="nav nav-tabs">
+'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '                  <li role="presentation" class="'.$cx['funcs']['ch']($cx, 'equals', array(array(((isset($cx['sp_vars']['index']) && is_array($cx['sp_vars'])) ? $cx['sp_vars']['index'] : null),0,'active'),array()), 'encq').'">
+                    <a href="#" data-tab="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
+                      '.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').'
+                    </a>
+                  </li>
+';}).'              </ul>
+
+'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '                <div class="row language-content" data-content="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
+
+                  <input type="hidden" name="label_translations.id#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'id'),array()), 'encq').'" />
+
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="name">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['name']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['name'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
+                    <input type="text" class="form-control" id="name" name="label_translations.name#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['name']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['name'] : null), ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'name'),array()), 'encq').'" />
+                  </div>
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="description">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['description']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['description'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
+                    <input type="text" class="form-control" id="description" name="label_translations.description#'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['description']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['description'] : null), ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['label_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['label_translations'] : null),$in,'description'),array()), 'encq').'" />
+                  </div>
+                </div>
 ';}).'
-      </section>
+            </section>
+          </div>
+        </form>
+      </div>
     </div>
-  </form>
-
+  </div>
 </section>
 
       </section>
