@@ -28,7 +28,7 @@
 
     <div class="search-padding">
       <div class="padding-top-10 padding-left-15 padding-right-20">
-        <form method="POST"
+        <form method="POST" data-form data-model="labels"
           {{#if data.labels.id}}
             action="{{page.host}}/manager/labels/{{data.labels.id}}/save"
           {{else}}
@@ -59,15 +59,19 @@
             </div>
           </header>
 
-          <input type="hidden" name="id" value="{{data.labels.id}}" />
+          <input type="hidden" name="id" value="{{data.labels.id}}" data-field />
 
           <div class="width-container margin-top-10">
             <section class="content-body">
 
-              <div class="row">
-                <div class="col-md-5 col-md-offset-7 text-right">
-                  <label for="parent" class="padding-top-5 margin-right-10">{{labels.label_parent}}</label>
-                  <select class="form-control width-50 pull-right" id="parent" name="parent_id">
+              <div class="row margin-bottom-15">
+                <div class="col-md-6">
+                  <label for="identifier" class="">{{labels.identifier}}</label>
+                  <input type="text" maxlength="40" name="identifier" id="identifier" class="form-control" value="{{data.labels.identifier}}" data-required data-field />
+                </div>
+                <div class="col-md-6">
+                  <label for="parent" class="">{{labels.label_parent}}</label>
+                  <select class="form-control" id="parent" name="parent_id" data-field>
                     <option value="NULL">{{labels.none}}</option>
                     {{#data.other_labels}}
                       <option value="{{labels.id}}" {{select_equals labels.id @root.data.labels.parent_id}}>{{get_translation label_translations @root.page.language 'name'}}</option>
@@ -87,17 +91,17 @@
               </ul>
 
               {{#page.languages}}
-                <div class="row language-content" data-content="{{this}}">
+                <div class="row language-content" data-content="{{this}}" data-row data-model="label_translations" data-fk="language" data-fk-value="{{this}}">
 
-                  <input type="hidden" name="label_translations.id#{{this}}" value="{{get_translation @root.data.label_translations this 'id'}}" />
+                  <input type="hidden" name="id" value="{{get_translation @root.data.label_translations this 'id'}}" data-field />
 
                   <div class="col-xs-12 margin-top-20">
-                    <label for="name">{{@root.labels.name}} ({{language_name @root.labels this}})</label>
-                    <input type="text" class="form-control" id="name" name="label_translations.name#{{this}}" placeholder="{{@root.labels.name}}" value="{{get_translation @root.data.label_translations this 'name'}}" />
+                    <label for="name">{{@root.labels.page_title}} ({{language_name @root.labels this}})</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="{{@root.labels.name}}" value="{{get_translation @root.data.label_translations this 'name'}}" data-field />
                   </div>
                   <div class="col-xs-12 margin-top-20">
-                    <label for="description">{{@root.labels.description}} ({{language_name @root.labels this}})</label>
-                    <input type="text" class="form-control" id="description" name="label_translations.description#{{this}}" placeholder="{{@root.labels.description}}" value="{{get_translation @root.data.label_translations this 'description'}}" />
+                    <label for="description">{{@root.labels.content}} ({{language_name @root.labels this}})</label>
+                    <textarea class="form-control height-200" id="description" name="description" placeholder="{{@root.labels.description}}" data-field>{{@root.data.content}}{{get_translation @root.data.label_translations this 'description'}}</textarea>
                   </div>
                 </div>
               {{/page.languages}}
@@ -109,3 +113,5 @@
     </div>
   </div>
 </section>
+
+<script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>

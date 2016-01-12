@@ -2,7 +2,7 @@
 
   class SettingsModel extends TranslatedLabelledModel {
       protected $table = "settings";
-      protected $query_fields = array("id", "customer_id", "creation", "km", "pista", "deleted");
+      protected $query_fields = array("id", "customer_id", "creation", "km", "resort_name", "map_latitude", "map_longitude", "map_zoom");
       protected $order = array("creation ASC");
       protected $filter = NULL;
       protected $search_fields = array("setting_translations.title", "setting_translations.content");
@@ -29,15 +29,22 @@
           "size" => 400,
           "null" => FALSE
         ),
-        "pista" => array(
+        "resort_name" => array(
           "type" => "string",
           "size" => 400,
           "null" => FALSE
         ),
-        "deleted" => array(
-          "type" => "string",
-          "size" => 400,
-          "null" => FALSE
+        "map_latitude" => array(
+          "type" => "double",
+          "null" => TRUE
+        ),
+        "map_longitude" => array(
+          "type" => "double",
+          "null" => TRUE
+        ),
+        "map_zoom" => array(
+          "type" => "integer",
+          "null" => TRUE
         )
       );
 

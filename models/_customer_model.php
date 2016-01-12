@@ -2,7 +2,7 @@
 
 class CustomerModel extends \Singular\Model {
       protected $table = "customers";
-      protected $query_fields = array("id", "name");
+      protected $query_fields = array("id", "name", "identifier");
       protected $order = array("name ASC");
       protected $filter = NULL;
       protected $search_fields = array("name");
@@ -16,6 +16,11 @@ class CustomerModel extends \Singular\Model {
         "name" => array(
           "type" => "string",
           "size" => 200,
+          "null" => FALSE
+        ),
+        "identifier" => array(
+          "type" => "string",
+          "size" => 20,
           "null" => FALSE
         )
       );

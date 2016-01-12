@@ -96,6 +96,57 @@
           }
 
           return $new_text;
+        },
+        'get_type_translation' => function ($args) {
+          $labels = $args[0];
+          $language = $args[1];
+          $name = $args[2];
+          $element_type = $args[3];
+
+          for ($i = 0; $i < count($labels); $i++) {
+            $item = $labels[$i];
+            $label = $item["labels"];
+            $translations = $item["label_translations"];
+
+            if ($label["id"] != $element_type) {
+              continue;
+            }
+
+            for ($j = 0; $j < count($translations); $j++) {
+              $translation = $translations[$j];
+
+              if ($translation["language"] != $language) {
+                continue;
+              }
+
+              return $translation[$name];
+            }
+          }
+        },
+        'is_false' => function ($args) {
+          $value = $args[0];
+          return $value == 0 || $value == "0";
+        },
+        'is_true' => function ($args) {
+          $value = $args[0];
+          return $value == 1 || $value == "1";
+        },
+        'date' => function($args) {
+          $date = $args[0];
+          $date = new DateTime($date);
+
+          return $date->format('d/m/Y H:i:s');
+        },
+        'check' => function($args) {
+          $value = $args[0];
+
+          return $value == "1" ? '<i class="fa fa-check"></i>' : "";
+        },
+        'yes' => function($args) {
+          $value = $args[0];
+          $labels = $args[1];
+
+          return $value == "1" ? $labels["yes"] : $labels["no"];
         }
       );
     }

@@ -1,34 +1,6 @@
 <?php
   //////////////////////////////////////////////////////////////////////////////
   //
-  //                             PUBLIC ROUTES
-  //
-  //////////////////////////////////////////////////////////////////////////////
-/*
-  LanguageController::get_public_language("/areas", function() {
-    $model = new AreasModel();
-
-    CMSView::render(array(
-        "template" => "public/areas",
-        "data" => $model->get_all_filtered_by_language(),
-        "page_navigation" => "areas",
-        "layout" => "public.hbs"
-    ));
-  });
-
-  LanguageController::get_public_language("/areas/:piece(/:title)", function($piece) {
-    $model = new AreasModel();
-
-    CMSView::render(array(
-        "template" => "public/piece_areas_detail",
-        "data" => $model->find($piece),
-        "page_navigation" => "areas",
-        "layout" => "public.hbs"
-    ));
-  });
-*/
-  //////////////////////////////////////////////////////////////////////////////
-  //
   //                             PRIVATE ROUTES
   //
   //////////////////////////////////////////////////////////////////////////////
@@ -90,7 +62,7 @@
   //////////////////////////////////////////////////////////////////////////////
   //                              NEW PIECE OF areas
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_private("/manager/areas/area", "areas", "edit", function() {
+  \Singular\Controller::get_private("/manager/areas/new", "areas", "edit", function() {
     CMSView::render(array(
         "template" => "private/piece_areas_detail",
         "data" => array(),
@@ -106,7 +78,7 @@
   //                           NEW PIECE OF areas (POST)
   //////////////////////////////////////////////////////////////////////////////
 
-  \Singular\Controller::post_private("/manager/areas/area", "areas", "edit", function() {
+  \Singular\Controller::post_private("/manager/areas/new", "areas", "edit", function() {
     $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["areas"]["customer_id"] = $customer;

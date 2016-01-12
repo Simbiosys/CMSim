@@ -1,7 +1,7 @@
 <section class="width-container">
   <div class="inner-body">
     {{> web_left_bar}}
-    
+
     <section class="search-form">
       <form method="GET" action="{{page.host}}/manager/news/search" class="margin-bottom-20">
         <div class="input-group search-box">
@@ -85,7 +85,7 @@
                 <i class="fa fa-angle-left fa-2x page-before"></i>
               </a>
               <span class="pagination-page">
-                {{labels.page}} {{data.page}} {{labels.out_of}} {{data.count}}
+                {{data.count}} {{labels.results}} - {{labels.page}} {{data.page}} {{labels.out_of}} {{data.pages}}
               </span>
               {{#if data.search}}
               <a {{#if data.next}} href="{{page.host}}/manager/news/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}

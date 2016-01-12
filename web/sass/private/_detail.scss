@@ -133,3 +133,60 @@ table {
   padding-left: 3px;
   float: right;
 }
+
+.import-success {
+  background-color: $success-colour;
+  color: #fff;
+  padding: 0.3em;
+  border-radius: 50%;
+}
+
+.import-fail {
+  background-color: $fail-colour;
+  color: #fff;
+  padding: 0.3em;
+  border-radius: 50%;
+}
+
+.import-text {
+  color: #777;
+  font-size: 1.4em;
+  font-weight: 300;
+}
+
+.status-equal {
+  color: #aaa;
+}
+
+.status-deleted {
+  color: darken($fail-colour, 20%);
+}
+
+.status-created {
+  color: $new-colour;
+}
+
+.status-updated {
+  color: $update-colour;
+}
+
+.result-legend {
+  font-size: 0.8em;
+}
+
+.map {
+  min-height: 400px;
+}
+
+.map-small {
+  min-height: 170px;
+}
+
+.alert {
+  border: none;
+  border-radius: 0;
+}
+
+.line-through {
+  text-decoration: line-through;
+}

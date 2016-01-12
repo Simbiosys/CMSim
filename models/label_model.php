@@ -2,7 +2,7 @@
 
   class LabelModel extends TranslatedLabelledModel {
       protected $table = "labels";
-      protected $query_fields = array("id", "customer_id", "creation", "parent_id");
+      protected $query_fields = array("id", "customer_id", "creation", "parent_id", "identifier");
       protected $order = array("creation ASC");
       protected $filter = NULL;
       protected $search_fields = array("label_translations.name");
@@ -22,6 +22,11 @@
         "parent_id" => array(
           "type" => "integer",
           "null" => TRUE
+        ),
+        "identifier" => array(
+          "type" => "string",
+          "null" => FALSE,
+          "size" => 50
         ),
         "creation" => array(
           "type" => "timestamp",

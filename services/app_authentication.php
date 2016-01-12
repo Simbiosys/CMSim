@@ -76,4 +76,12 @@
 
       return $data;
     }
+
+    public static function get_user_id() {
+      return self::get_user_attribute("id");
+    }
+
+    public static function get_user_name() {
+      return self::get_user_attribute("email");
+    }
   }

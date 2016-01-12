@@ -16,6 +16,8 @@
     protected $table = NULL;
     /** @var Array|null $filter Filter to apply to any query. */
     protected $filter = NULL;
+    /** @var Array|null $deletion Deletion to apply to any query. */
+    protected $deletion = NULL;
     /** @var Array|null $order Order criteria. */
     protected $order = NULL;
     /** @var Array|null $dependencies List of dependencies on other models. */
@@ -24,6 +26,10 @@
     protected $fields = NULL;
     /** @var string|null $primary_key Primary key. */
     protected $primary_key = NULL;
+    /** @var boolean $audit If true audits this table updates */
+    protected $audit = FALSE;
+    /** @var boolean $autogen If false disables autogeneration when it's enabled */
+    protected $autogen = TRUE;
 
     /**
       * Constructor.
@@ -34,15 +40,26 @@
 			*		<li><strong>query_fields:</strong> Fields to include in any query.</li>
 			*		<li><strong>table:</strong> Model's table.</li>
 			*		<li><strong>filter:</strong> Filter to apply to any query.</li>
+      *		<li><strong>deletion:</strong> Deletion filter to apply. By default it ignores deleted items.</li>
 			*		<li><strong>order:</strong> Order criteria.</li>
 			*		<li><strong>dependencies:</strong> List of dependencies on other models.</li>
       *		<li><strong>fields:</strong> The fields that this model contains.</li>
       *		<li><strong>primary_key:</strong> Primary key.</li>
+      *		<li><strong>audit:</strong> Boolean to enable table audits.</li>
+      *		<li><strong>autogen:</strong> Boolean to disable autogeneration.</li>
 			*	</ul>
       *
       * @return void
       */
     public function __construct($params) {
+      $this->preload($params);
+    }
+
+    public function preload($params) {
+      if (empty($params)) {
+        return;
+      }
+
       if (isset($params["query"])) {
         $this->query = $params["query"];
       }
@@ -59,6 +76,10 @@
         $this->filter = $params["filter"];
       }
 
+      if (isset($params["deletion"])) {
+        $this->deletion = $params["deletion"];
+      }
+
       if (isset($params["order"])) {
         $this->order = $params["order"];
       }
@@ -73,6 +94,14 @@
 
       if (isset($params["primary_key"])) {
         $this->order = $params["primary_key"];
+      }
+
+      if (isset($params["audit"])) {
+        $this->audit = $params["audit"];
+      }
+
+      if (isset($params["autogen"])) {
+        $this->autogen = $params["autogen"];
       }
     }
 
@@ -101,6 +130,15 @@
       */
     public function get_filter() {
       return $this->filter;
+    }
+
+    /**
+      * Returns the deletion of this model.
+      *
+      * @return Array
+      */
+    public function get_deletion() {
+      return $this->deletion;
     }
 
     /**
@@ -147,6 +185,24 @@
     public function get_primary_key() {
       return $this->primary_key;
     }
+
+    /**
+      * Returns the audit flag.
+      *
+      * @return boolean
+      */
+    public function get_audit() {
+      return $this->audit;
+    }
+
+    /**
+      * Returns the autogeneration flag.
+      *
+      * @return boolean
+      */
+    public function get_autogen() {
+      return $this->autogen;
+    }
   }
 
   /**
@@ -173,9 +229,7 @@
       $this->get_connection();
       $this->get_cache();
 
-      if (!empty($values)) {
-        $this->set($values);
-      }
+      $this->set($values);
 
       $this->init();
     }
@@ -188,6 +242,10 @@
       * @return void
       */
     public function set($values) {
+      if (empty($values)) {
+        return;
+      }
+
       foreach ($values as $key => $value) {
         $this->attributes[$key] = $value;
       }
@@ -201,7 +259,7 @@
       *
       * @return void
       */
-    public function set_attribute($name, $value) {
+      public function set_attribute($name, $value) {
       $this->attributes[$name] = $value;
     }
 
@@ -256,6 +314,7 @@
     protected function init() {
       // Lets you perform initial tasks
       $this->filter = $this->data_base->get_default_filter();
+      $this->deletion = $this->data_base->get_default_deletion($this);
     }
 
     /**
@@ -266,7 +325,7 @@
     protected function get_the_query() {
       $this->auto_generation();
 
-      return $this->data_base->get_query($this, $this->get_query_fields());
+      return $this->data_base->get_query($this, $this->get_query_fields(), FALSE);
     }
 
     /**
@@ -314,19 +373,11 @@
       return array_keys($keys) !== $keys;
     }
 
-    /**
-      * Sets the dependencies of this model into the data.
-      *
-      * @param string $entity Entity's name.
-      * @param Array $fields Model's fields data.
-      * @param Array $data The whole data container.
-      * @param string $cache_identifier The identifier used to store cache data.
-      *
-      * @return Array
-      */
-    protected function set_dependencies($entity, $fields, &$data, $cache_identifier) {
+    protected function get_all_dependencies($entity, $cache_identifier) {
       $object = new $entity();
       $dependencies = $object->dependencies;
+
+      $data = array();
 
       if (empty($dependencies)) {
         return $data;
@@ -335,31 +386,50 @@
       foreach ($dependencies as $dependency) {
         $entity = isset($dependency["entity"]) ? $dependency["entity"] : NULL;
         $filter = isset($dependency["filter"]) ? $dependency["filter"] : NULL;
+        $deletion = isset($dependency["deletion"]) ? $dependency["deletion"] : NULL;
         $order = isset($dependency["order"]) ? $dependency["order"] : NULL;
         $dependent = isset($dependency["dependent"]) ? $dependency["dependent"] : FALSE;
+        $key = isset($dependency["key"]) ? $dependency["key"] : "id";
+        $key_parent = isset($dependency["key_parent"]) ? $dependency["key_parent"] : "id";
 
         $table = $this->get_table_by_entity($entity);
 
         $key = $this->get_dependency_key($object, $table);
         $key_parent = $this->get_dependency_key_parent($object, $table);
-        $id = isset($fields[$key_parent]) ? $fields[$key_parent] : NULL;
-
-        $condition = "$key = '$id'";
 
         $fake_model = new BasicModel(array(
           "query" => NULL,
           "query_fields" => NULL,
           "table" => $table,
           "filter" => $filter,
+          "deletion" => $deletion,
           "order" => $order
         ));
 
-        $query = $this->data_base->get_query_by_condition($fake_model, $fake_model->get_query_fields(), $condition);
+        $query = $this->data_base->get_query($fake_model, $fake_model->get_query_fields(), FALSE);
 
         $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
         $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
 
-        $data[$table] = $results;
+        if (!array_key_exists($table, $data)) {
+          $data[$table] = array(
+            "key" => $key,
+            "key_parent" => $key_parent,
+            "data" => array()
+          );
+        }
+
+		    if (!empty($results)) {
+		       foreach ($results as $result) {
+		          $key_value = $result[$key];
+
+		          if (!array_key_exists($key_value, $data[$table]["data"])) {
+			          $data[$table]["data"][$key_value] = array();
+		          }
+
+		          array_push($data[$table]["data"][$key_value], $result);
+		        }
+        }
       }
 
       return $data;
@@ -543,6 +613,8 @@
         $entity = $obj;
       }
 
+      $all_dependencies = $obj->get_all_dependencies($entity, $cache_identifier);
+
       if ($results) {
         for ($i = 0; $i < sizeof($results); $i++) {
           $fields = $this->data_base->format_fields($results[$i], $this->fields);
@@ -557,7 +629,23 @@
             $data = $processed_fields;
           }
 
-          $obj->set_dependencies($entity, $fields, $data, $cache_identifier);
+          if (!array_key_exists("id", $fields)) {
+            continue;
+          }
+
+          //$id = $fields["id"];
+
+          foreach ($all_dependencies as $dependency => $values) {
+            $key = $values["key"];
+            $parent_key = $values["key_parent"];
+            $dependency_data = $values["data"];
+
+            $id = $fields[$parent_key];
+
+            if (array_key_exists($id, $dependency_data)) {
+              $data[$dependency] = $dependency_data[$id];
+            }
+          }
 
           $objs[] = $data;
         }
@@ -765,13 +853,14 @@
     public function get_all($params = NULL) {
       $condition = $params;
       $start = 0;
-      $limit = Configuration::get_app_settings("page_limit", NULL);
+      $limit = NULL;
+      $settings_limit = Configuration::get_app_settings("page_limit", NULL);
       $query_fields = $this->get_query_fields();
 
       if (is_array($params)) {
         $condition = isset($params["condition"]) ? $params["condition"] : NULL;
         $start = isset($params["start"]) ? $params["start"] : $start;
-        $limit = isset($params["limit"]) ? $params["limit"] : $limit;
+        $limit = isset($params["limit"]) ? $params["limit"] : $settings_limit;
         $query_fields = isset($params["query_fields"]) ? $params["query_fields"] : $query_fields;
       }
 
@@ -791,7 +880,12 @@
       $results = $this->process_query_results(NULL, $this->table, $query, NULL, $cache_identifier);
 
       if (!empty($results)) {
-        return array_slice($results, $start, $limit);
+        if ($start != 0 || $limit != NULL) {
+          return array_slice($results, $start, $limit);
+        }
+        else {
+          return $results;
+        }
       }
       else {
         return array();
@@ -861,6 +955,12 @@
           }
         }
 
+        if (empty($filtered)) {
+          $filtered = array();
+        }
+
+        $filtered["updating"] = new Unescaped($this->data_base->get_now());
+
         $columns = NULL;
 
         if (!empty($filtered)) {
@@ -871,7 +971,7 @@
           $query = $this->data_base->get_update($entity, $columns, $id);
         }
         else {
-          $query = $this->data_base->get_insert($entity, $columns, $params);
+          $query = $this->data_base->get_insert($entity, $columns);
         }
 
 		    $result = NULL;
@@ -896,6 +996,7 @@
           }
         }
         else {
+          $this->audit($entity, $id ? $id : "NEW", "ERROR", $this->data_base->get_error());
           return array('error' => TRUE, 'message' => $this->data_base->get_error());
         }
 
@@ -904,6 +1005,13 @@
         }
 
         array_push($results, $result);
+      }
+
+      if ($id) {
+        $this->audit($entity, $id, "UPDATE");
+      }
+      else {
+        $this->audit($entity, $main_result["id"], "INSERT");
       }
 
       return array(
@@ -925,7 +1033,10 @@
 
       if ($result["error"]) {
         Controller::debug("Update error: " . $result["message"]);
+        $this->audit($this->table, $id, "ERROR", $result["message"]);
       }
+
+      $this->audit($this->table, $id, "UPDATE");
     }
 
     /**
@@ -942,9 +1053,17 @@
 
       $result = $this->save(NULL, $values);
 
-      if ($result["error"]) {
-        Controller::debug("Insert error: " . $result["message"]);
+      if (array_key_exists("main", $result) && array_key_exists("error", $result["main"]) && $result["main"]["error"] === TRUE) {
+        Controller::debug("Insert error: " . $result["main"]["message"]);
+        $this->audit($this->table, "NEW", "ERROR", $result["main"]["message"]);
       }
+
+      if (array_key_exists("all", $result) && array_key_exists("error", $result["all"]) && $result["all"]["error"] === TRUE) {
+        Controller::debug("Insert error: " . $result["all"]["message"]);
+        $this->audit($this->table, "NEW", "ERROR", $result["all"]["message"]);
+      }
+
+      $this->audit($this->table, $result["main"]["id"], "INSERT");
 
       return $result;
     }
@@ -957,7 +1076,7 @@
       * @return void
       */
     public function delete($id) {
-      $this->_delete("id = '$id'");
+      $this->_delete("id = '$id'", $id);
     }
 
     /**
@@ -971,15 +1090,28 @@
       $this->_delete($condition);
     }
 
-    private function _delete($condition) {
+    private function _delete($condition, $id = NULL) {
       $this->get_connection();
+
+      $all_to_remove = array(
+        array("id" => $id)
+      );
+
+      if (empty($id)) {
+        $all_to_remove = $this->get_all($condition);
+        $all_to_remove = isset($all_to_remove[$this->table]) ? $all_to_remove[$this->table] : array();
+      }
+
       $query = $this->data_base->get_delete_by_condition($this->table, $condition);
       $result = $this->data_base->run($query, NULL, NULL);
 
       if (!$result) {
         Controller::debug("Delete error: " . $this->data_base->get_error());
+        $this->audit($this->table, $id ? $id : $condition, "ERROR", $this->data_base->get_error());
         return;
       }
+
+      $this->audit($this->table, $id ? $id : $condition, "DELETE");
 
       // Cascade delete
       $dependencies = empty($this->dependencies) ? array() : $this->dependencies;
@@ -993,42 +1125,49 @@
         if ($dependent) {
           $table = $this->get_table_by_entity($entity);
           $key = $this->get_dependency_key($this, $table);
-          $condition = "$key = '$id'";
 
-          $fake_model = new BasicModel(array(
-            "query" => NULL,
-            "query_fields" => NULL,
-            "table" => $table,
-            "filter" => $filter,
-            "order" => $order
-          ));
+          for ($i = 0; $i < count($all_to_remove); $i++) {
+            $item = $all_to_remove[$i];
+            $id = $item["id"];
 
-          $query = $this->data_base->get_query_by_condition($fake_model, $fake_model->get_query_fields(), $condition);
-          $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
-          $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
+            $condition = "$key = '$id'";
 
-          $object = new $entity();
+            $fake_model = new BasicModel(array(
+              "query" => NULL,
+              "query_fields" => NULL,
+              "table" => $table,
+              "filter" => $filter,
+              "order" => $order
+            ));
 
-          if ($results) {
-            foreach ($results as $result) {
-              $element_id = isset($result["id"]) ? $result["id"] : NULL;
+            $query = $this->data_base->get_query_by_condition($fake_model, $fake_model->get_query_fields(), $condition);
+            $cache_identifier = "condition_$condition";
+            $dependency_cache_identifier = $cache_identifier . "_" . $table . "_" . $key . "_" . $filter;
+            $results = $this->process_query_results($entity, $table, $query, NULL, $dependency_cache_identifier, FALSE);
 
-              if ($element_id) {
-                $query = $this->data_base->get_delete($object->table, $element_id);
-                $result = $this->data_base->run($query, NULL, NULL);
+            $object = new $entity();
 
-                if (!$result) {
-                  Controller::debug("Delete error: " . $this->data_base->get_error());
-                  return;
+            if ($results) {
+              foreach ($results as $result) {
+                $element_id = isset($result["id"]) ? $result["id"] : NULL;
+
+                if ($element_id) {
+                  $query = $this->data_base->get_delete($object->table, $element_id);
+                  $result = $this->data_base->run($query, NULL, NULL);
+
+                  if (!$result) {
+                    Controller::debug("Delete error: " . $this->data_base->get_error());
+                    return;
+                  }
                 }
               }
-            }
 
-            // Cache invalidation
-            $cache = $object->get_cache();
+              // Cache invalidation
+              $cache = $object->get_cache();
 
-            if ($cache) {
-              $cache->clear();
+              if ($cache) {
+                $cache->clear();
+              }
             }
           }
         }
@@ -1067,6 +1206,10 @@
       * @return void
       */
     protected function auto_generation() {
+      if (!$this->get_autogen() || !Configuration::get_autogen()) {
+      	return;
+      }
+
       $this->check_table();
       $this->check_fields();
 
@@ -1113,6 +1256,15 @@
       $fields = $this->fields;
       $primary_key = $this->primary_key;
 
+      // ID
+      if (!isset($fields["id"])) {
+        $fields["id"] = array(
+          "type" => "integer",
+          "null" => FALSE,
+          "auto_increment" => TRUE
+        );
+      }
+
       // Deleted
       if (!isset($fields["deleted"])) {
         $fields["deleted"] = array(
@@ -1122,6 +1274,108 @@
         );
       }
 
+      // Creation
+      if (!isset($fields["creation"])) {
+        $fields["creation"] = array(
+          "type" => "timestamp",
+          "null" => FALSE,
+          "default" => "CURRENT_TIMESTAMP"
+        );
+      }
+
+      // Update
+      if (!isset($fields["updating"])) {
+        $fields["updating"] = array(
+          "type" => "timestamp",
+          "null" => TRUE
+        );
+      }
+
+      // Deletion
+      if (!isset($fields["deletion"])) {
+        $fields["deletion"] = array(
+          "type" => "timestamp",
+          "null" => TRUE
+        );
+      }
+
       $this->data_base->check_fields($table, $fields, $primary_key);
+    }
+
+    /**
+      * Audits a register change
+      *
+      * @param integer $id Register identifier.
+      * @param string $action Action to audit (i.e. UPDATE).
+      *
+      * @return void
+      */
+    protected function audit($table, $id, $action, $observations = NULL) {
+      if (!$this->audit) {
+        return;
+      }
+
+      $audit = new Audit();
+      $audit->audit_action($table, $id, $action, $observations);
+    }
+  }
+
+  ////////////////////////////////////////////////////////////////////////////////
+  //                              Audits
+  ////////////////////////////////////////////////////////////////////////////////
+
+  class Audit extends Model {
+    protected $table = "singular_audits";
+
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
+      ),
+      "entity" => array(
+        "type" => "string",
+        "size" => 40,
+        "null" => FALSE
+      ),
+      "entity_id" => array(
+        "type" => "string",
+        "size" => 100,
+        "null" => FALSE
+      ),
+      "user_id" => array(
+        "type" => "integer",
+        "null" => TRUE
+      ),
+      "user_name" => array(
+        "type" => "string",
+        "size" => 100,
+        "null" => TRUE
+      ),
+      "action" => array(
+        "type" => "string",
+        "size" => 15,
+        "null" => FALSE
+      ),
+      "observations" => array(
+        "type" => "string",
+        "size" => 400,
+        "null" => TRUE
+      )
+    );
+
+    protected $primary_key = "id";
+
+    public function audit_action($table, $id, $action, $observations = NULL) {
+      $this->create(array(
+        "singular_audits" => array(
+          "entity" => $table,
+          "entity_id" => $id,
+          "user_id" => Authentication::get_user_id(),
+          "user_name" => Authentication::get_user_name(),
+          "observations" => $observations,
+          "action" => $action
+        )
+      ));
     }
   }

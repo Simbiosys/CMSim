@@ -90,7 +90,7 @@
   //////////////////////////////////////////////////////////////////////////////
   //                              NEW PIECE OF tracks
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_private("/manager/tracks/track", "tracks", "edit", function() {
+  \Singular\Controller::get_private("/manager/tracks/new", "tracks", "edit", function() {
     CMSView::render(array(
         "template" => "private/piece_tracks_detail",
         "data" => array(),
@@ -106,7 +106,7 @@
   //                           NEW PIECE OF tracks (POST)
   //////////////////////////////////////////////////////////////////////////////
 
-  \Singular\Controller::post_private("/manager/tracks/track", "tracks", "edit", function() {
+  \Singular\Controller::post_private("/manager/tracks/new", "tracks", "edit", function() {
     $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["tracks"]["customer_id"] = $customer;

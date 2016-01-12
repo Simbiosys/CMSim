@@ -1,34 +1,6 @@
 <?php
   //////////////////////////////////////////////////////////////////////////////
   //
-  //                             PUBLIC ROUTES
-  //
-  //////////////////////////////////////////////////////////////////////////////
-/*
-  LanguageController::get_public_language("/labels", function() {
-    $model = new LabelModel();
-
-    CMSView::render(array(
-        "template" => "public/labels",
-        "data" => $model->get_all_filtered_by_language(),
-        "page_navigation" => "labels",
-        "layout" => "public.hbs"
-    ));
-  });
-
-  LanguageController::get_public_language("/labels/:label(/:title)", function($label) {
-    $model = new LabelModel();
-
-    CMSView::render(array(
-        "template" => "public/label_news_detail",
-        "data" => $model->find($label),
-        "page_navigation" => "labels",
-        "layout" => "public.hbs"
-    ));
-  });
-*/
-  //////////////////////////////////////////////////////////////////////////////
-  //
   //                             PRIVATE ROUTES
   //
   //////////////////////////////////////////////////////////////////////////////
@@ -167,7 +139,7 @@
   //                                LABEL UPDATE
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/labels/:label/save", "labels", "edit", function($label) {
-    $data = \Singular\Controller::get_data_by_entity("labels");
+    $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["labels"]["customer_id"] = $customer;
 

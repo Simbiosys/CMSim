@@ -41,15 +41,21 @@
             <table class="table table-multiline">
               <thead>
                 <tr>
-                  <th class="width-100">{{@root.labels.name}}</th>
+                  <th class="width-50">{{@root.labels.name}}</th>
+                  <th class="width-50">{{@root.labels.identifier}}</th>
                 </tr>
               </thead>
               <tbody>
                 {{#data.results}}
                   <tr>
-                    <td class="width-100">
+                    <td class="width-50">
                       <a href="{{@root.page.host}}/manager/customers/{{customers.id}}">
                         {{customers.name}}
+                      </a>
+                    </td>
+                    <td class="width-50">
+                      <a href="{{@root.page.host}}/manager/customers/{{customers.id}}">
+                        {{customers.identifier}}
                       </a>
                     </td>
                   </tr>

@@ -32,7 +32,7 @@
             action="{{page.host}}/manager/customers/{{data.customers.id}}/save"
           {{else}}
             action="{{page.host}}/manager/customers/new"
-          {{/if}}>
+          {{/if}} data-form data-model="customers">
           <header class="navbar-form navigation-bar width-container" role="">
             <div class="width-container">
               <a href="{{page.host}}/manager/customers" class="pull-left">
@@ -63,9 +63,13 @@
           <div class="width-container margin-top-10">
               <div class="row language-content" data-language-content="{{this}}">
 
-                <div class="col-xs-12">
+                <div class="col-md-6">
                   <label for="title">{{@root.labels.name}}</label>
-                  <input type="text" class="form-control" id="name" name="users.name" placeholder="{{@root.labels.name}}" value="{{data.customers.name}}" />
+                  <input type="text" class="form-control" id="name" name="name" placeholder="{{@root.labels.name}}" value="{{data.customers.name}}" data-field />
+                </div>
+                <div class="col-md-6">
+                  <label for="title">{{@root.labels.identifier}}</label>
+                  <input type="text" class="form-control" id="identifier" name="identifier" placeholder="{{@root.labels.identifier}}" value="{{data.customers.identifier}}" data-field {{#if data.customers.id}}disabled{{/if}} />
                 </div>
               </div>
           </div>
@@ -75,3 +79,4 @@
     </div>
   </div>
 </section>
+<script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>

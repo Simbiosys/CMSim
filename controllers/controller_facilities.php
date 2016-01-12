@@ -1,34 +1,6 @@
 <?php
   //////////////////////////////////////////////////////////////////////////////
   //
-  //                             PUBLIC ROUTES
-  //
-  //////////////////////////////////////////////////////////////////////////////
-/*
-  LanguageController::get_public_language("/facilities", function() {
-    $model = new facilitiesModel();
-
-    CMSView::render(array(
-        "template" => "public/facilities",
-        "data" => $model->get_all_filtered_by_language(),
-        "page_navigation" => "facilities",
-        "layout" => "public.hbs"
-    ));
-  });
-
-  LanguageController::get_public_language("/facilities/:piece(/:title)", function($piece) {
-    $model = new facilitiesModel();
-
-    CMSView::render(array(
-        "template" => "public/piece_facilities_detail",
-        "data" => $model->find($piece),
-        "page_navigation" => "facilities",
-        "layout" => "public.hbs"
-    ));
-  });
-*/
-  //////////////////////////////////////////////////////////////////////////////
-  //
   //                             PRIVATE ROUTES
   //
   //////////////////////////////////////////////////////////////////////////////
@@ -90,7 +62,7 @@
   //////////////////////////////////////////////////////////////////////////////
   //                              NEW PIECE OF facilities
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_private("/manager/facilities/facility", "facilities", "edit", function() {
+  \Singular\Controller::get_private("/manager/facilities/new", "facilities", "edit", function() {
     CMSView::render(array(
         "template" => "private/piece_facilities_detail",
         "data" => array(),
@@ -106,7 +78,7 @@
   //                           NEW PIECE OF facilities (POST)
   //////////////////////////////////////////////////////////////////////////////
 
-  \Singular\Controller::post_private("/manager/facilities/facility", "facilities", "edit", function() {
+  \Singular\Controller::post_private("/manager/facilities/new", "facilities", "edit", function() {
     $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["facilities"]["customer_id"] = $customer;

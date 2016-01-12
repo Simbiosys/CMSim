@@ -132,12 +132,11 @@
   //                                CUSTOMER UPDATE
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/customers/:customer/save", "customers", "edit", function($customer) {
+    $data = \Singular\Controller::get_post();
+
     $model = new CustomerModel();
-    $model->update($customer, array(
-      "customers" => array(
-        "name" => \Singular\Controller::get_post_variable("users.name")
-      )
-    ));
+
+    $model->update($customer, $data);
 
     \Singular\Controller::flash(array(
       "message" => CMSView::get_label("new_saved_successfully"),

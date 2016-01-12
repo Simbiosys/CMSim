@@ -42,6 +42,8 @@
 
     $count = $model->number($pagination["condition"]);
     $next = $pagination["next"];
+    $limit = $pagination["limit"];
+    $pages = ceil($count/$limit);
 
     CMSView::render(array(
         "template" => "private/news",
@@ -50,7 +52,8 @@
           "page" => $pagination["page"],
           "previous" => $pagination["page"] > 1 ? $pagination["page"] - 1 : NULL,
           "next" => $next < $count ? $pagination["page"] + 1 : NULL,
-          "count" => $count
+          "count" => $count,
+          "pages" => $pages
         ),
         "page_navigation" => "news",
         "layout" => "private.hbs",
@@ -93,9 +96,14 @@
   //                              NEW PIECE OF NEWS
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/news/new", "news", "edit", function() {
+    $model = new LabelModel();
+    $all_labels = $model->get_all();
+
     CMSView::render(array(
         "template" => "private/piece_news_detail",
-        "data" => array(),
+        "data" => array(
+          "all_labels" => $all_labels
+        ),
         "page_navigation" => "news",
         "layout" => "private.hbs",
         "extra" => array(
