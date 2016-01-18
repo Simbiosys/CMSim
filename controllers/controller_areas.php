@@ -64,7 +64,7 @@
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/areas/new", "areas", "edit", function() {
     CMSView::render(array(
-        "template" => "private/piece_areas_detail",
+        "template" => "private/area_detail",
         "data" => array(),
         "page_navigation" => "areas",
         "layout" => "private.hbs",
@@ -122,7 +122,7 @@
     $info["all_labels"] = $all_labels;
 
     CMSView::render(array(
-        "template" => "private/piece_areas_detail",
+        "template" => "private/area_detail",
         "data" => $info,
         "page_navigation" => "areas",
         "layout" => "private.hbs",

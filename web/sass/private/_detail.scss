@@ -155,11 +155,7 @@ table {
 }
 
 .status-equal {
-  color: #aaa;
-}
-
-.status-deleted {
-  color: darken($fail-colour, 20%);
+  color: #999;
 }
 
 .status-created {

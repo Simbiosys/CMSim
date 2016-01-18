@@ -79,9 +79,14 @@
   //                              IMPORT POIS
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/pois/import", "pois", "edit", function() {
+    $model_pois = new PoisModel();
+    $pois = $model_pois->get_all_from_last_import();
+
     CMSView::render(array(
         "template" => "private/import_pois",
-        "data" => array(),
+        "data" => array(
+          "last_import_elements" => $pois
+        ),
         "page_navigation" => "pois",
         "layout" => "private.hbs",
         "extra" => array(
@@ -97,12 +102,16 @@
     $file = $_FILES["file_to_import"]["tmp_name"];
     $contents = file_get_contents($file);
 
-    $model = new PoisModel();
-    $response = $model->import($contents);
+    $model_pois = new PoisModel();
+    $response = $model_pois->import($contents);
+    $pois = $model_pois->get_all_from_last_import();
 
     CMSView::render(array(
         "template" => "private/import_pois",
-        "data" => $response,
+        "data" => array(
+          "last_import_elements" => $pois,
+          "import" => $response
+        ),
         "page_navigation" => "pois",
         "layout" => "private.hbs",
         "extra" => array(
@@ -115,6 +124,7 @@
   //                              IMPORT POIS (DELETE)
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/pois/import/delete", "pois", "edit", function() {
+    \Singular\Controller::set_content_type("application/json");
     $ids = \Singular\Controller::get_post_variable("pois");
 
     $model = new PoisModel();
@@ -125,7 +135,9 @@
       $model->delete($id);
     }
 
-    \Singular\Controller::redirect("/manager/pois");
+    echo json_encode(array(
+      "success" => TRUE
+    ));
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -137,7 +149,7 @@
     $all_labels = $model->get_all();
 
     CMSView::render(array(
-        "template" => "private/piece_pois_detail",
+        "template" => "private/poi_detail",
         "data" => array(
           "all_labels" => $all_labels
         ),
@@ -200,7 +212,7 @@
     $other_pois = $model->get_all_with_deleted("identifier = '$identifier' AND id <> '$piece'");
 
     CMSView::render(array(
-        "template" => "private/piece_pois_detail",
+        "template" => "private/poi_detail",
         "data" => $info,
         "page_navigation" => "pois",
         "layout" => "private.hbs",

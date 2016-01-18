@@ -137,12 +137,15 @@
   "map_settings": "Coordenadas del punto central y zoom para los mapas de Google Maps de configuración de elementos.",
   "items_to_delete": "Elementos candidatos a eliminarse",
   "to_delete_description": "elementos no están contenidos en el fichero de importación. Pulse el botón 'Eliminar' para borrarlos.",
-  "imported_items": "elementos importados",
+  "imported_items": "Elementos importados",
   "deleted_item": "Este elemento ha sido eliminado",
   "other_versions": "Otras versiones de este elemento",
   "deletion_time": "Fecha de borrado",
   "imported": "Importado",
   "yes": "Sí",
   "no": "No",
-  "active_item": "Item activo"
+  "active_item": "Item activo",
+  "last_import": "Última importación",
+  "other_items": "Otros elementos",
+  "other_items_description": "Los siguientes elementos ya estaban presentes antes de la última importación y no se han visto afectados por la misma."
 }

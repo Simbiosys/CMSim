@@ -25,6 +25,29 @@
           $language = $args[1];
           return isset($labels[$language]) ? $labels[$language] : $language;
         },
+            'equals' => function($args) {
+          return $args[0] == $args[1] ? $args[2] : "";
+        },
+            'get_translation' => function($args) {
+          $list = $args[0];
+          $language = $args[1];
+          $key = $args[2];
+
+          if (empty($list)) {
+            return "";
+          }
+
+          foreach ($list as $item) {
+            $item_language = isset($item["language"]) ? $item["language"] : NULL;
+            $item_value = isset($item[$key]) ? $item[$key] : NULL;
+
+            if ($item_language == $language) {
+              return $item_value;
+            }
+          }
+
+          return "";
+        },
 ),
         'blockhelpers' => array(),
         'hbhelpers' => array(),
@@ -139,6 +162,20 @@
 '.$sp.'    </li>
 '.$sp.'  </ul>
 '.$sp.'</aside>
+';},'label_selector' => function ($cx, $in, $sp) {return ''.$sp.'<div class="row margin-top-20 padding-bottom-10 border-bottom">
+'.$sp.'  <div class="col-xs-7 padding-top-5 title-labels">
+'.$sp.'    '.htmlentities((string)((isset($in['labels']['labels']) && is_array($in['labels'])) ? $in['labels']['labels'] : null), ENT_QUOTES, 'UTF-8').'
+'.$sp.'  </div>
+'.$sp.'  <div class="col-xs-5">
+'.$sp.'    <button class="btn btn-default pull-right" data-label-add="label_container" data-label-selector="label_selector">
+'.$sp.'      '.htmlentities((string)((isset($in['labels']['add_label']) && is_array($in['labels'])) ? $in['labels']['add_label'] : null), ENT_QUOTES, 'UTF-8').'
+'.$sp.'    </button>
+'.$sp.'    <select class="form-control select-label pull-right" id="label_selector">
+'.$sp.'      <option value="" disabled selected>'.htmlentities((string)((isset($in['labels']['select_label']) && is_array($in['labels'])) ? $in['labels']['select_label'] : null), ENT_QUOTES, 'UTF-8').'</option>
+'.$sp.''.$cx['funcs']['sec']($cx, ((isset($in['data']['all_labels']) && is_array($in['data'])) ? $in['data']['all_labels'] : null), $in, false, function($cx, $in)use($sp){return '        <option value="'.htmlentities((string)((isset($in['labels']['id']) && is_array($in['labels'])) ? $in['labels']['id'] : null), ENT_QUOTES, 'UTF-8').'">'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['label_translations']) && is_array($in)) ? $in['label_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'</option>
+'.$sp.'';}).'    </select>
+'.$sp.'  </div>
+'.$sp.'</div>
 ';},'footer_private' => function ($cx, $in, $sp) {return ''.$sp.'<script src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/js/vendor/jquery-2.1.4.min.js?'.htmlentities((string)((isset($in['page']['version']) && is_array($in['page'])) ? $in['page']['version'] : null), ENT_QUOTES, 'UTF-8').'"></script>
 '.$sp.'<script src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/js/vendor/handlebars.runtime-v4.0.4.js?'.htmlentities((string)((isset($in['page']['version']) && is_array($in['page'])) ? $in['page']['version'] : null), ENT_QUOTES, 'UTF-8').'"></script>
 '.$sp.'<script src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/js/vendor/bootstrap.min.js?'.htmlentities((string)((isset($in['page']['version']) && is_array($in['page'])) ? $in['page']['version'] : null), ENT_QUOTES, 'UTF-8').'"></script>
@@ -301,59 +338,139 @@
         <section class="width-container">
   <div class="inner-body">
 
-'.$cx['funcs']['p']($cx, 'resort_left_bar', array(array($in),array()), '    ').'
+'.$cx['funcs']['p']($cx, 'resort_left_bar', array(array($in),array()), '    ').'    
+    <section class="search-form">
+      <form method="GET" action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks/search" class="margin-bottom-20">
+        <div class="input-group search-box">
+          <input type="text" name="s" class="form-control border-none" placeholder="'.htmlentities((string)((isset($in['labels']['do_search']) && is_array($in['labels'])) ? $in['labels']['do_search'] : null), ENT_QUOTES, 'UTF-8').'">
+          <span class="input-group-btn">
+            <button class="btn btn-blank" type="submit">
+              <i class="fa fa-search fa-lg"></i>
+            </button>
+          </span>
+        </div>
+
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null))) ? '        <div class="search-filter">
+          '.htmlentities((string)((isset($in['labels']['search_results_for']) && is_array($in['labels'])) ? $in['labels']['search_results_for'] : null), ENT_QUOTES, 'UTF-8').': <strong>'.htmlentities((string)((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null), ENT_QUOTES, 'UTF-8').'</strong>
+          <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks" class="pull-right">
+            <i class="fa fa-times fa-lg"></i>
+          </a>
+        </div>
+' : '').'
+      </form>
+    </section>
+
     <div class="search-padding">
       <div class="padding-top-10 padding-left-15 padding-right-20">
-        <form method="POST" data-form data-model="settings" action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/settings/save">
+        <form method="POST" data-form data-model="tracks"
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null))) ? '            action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks/'.htmlentities((string)((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'/save"
+' : '            action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks/track"
+          ').'>
           <header class="navbar-form navigation-bar width-container" role="">
             <div class="width-container">
+              <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
+              </a>
               <h1 class="page_title pull-left">
-                '.htmlentities((string)((isset($in['labels']['settings']) && is_array($in['labels'])) ? $in['labels']['settings'] : null), ENT_QUOTES, 'UTF-8').'
-              </h1>
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null))) ? '                  '.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null),'title'),array()), 'encq').'
+' : '                  '.htmlentities((string)((isset($in['labels']['new_tracks']) && is_array($in['labels'])) ? $in['labels']['new_tracks'] : null), ENT_QUOTES, 'UTF-8').'
+').'              </h1>
               <nav class="pull-right">
-              <button type="submit" class="btn btn-default">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null))) ? '                <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/tracks/'.htmlentities((string)((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'/delete" class="btn btn-cancel margin-right-8">
+                  <i class="fa fa-trash-o fa-lg cancel-icon"></i> '.htmlentities((string)((isset($in['labels']['delete']) && is_array($in['labels'])) ? $in['labels']['delete'] : null), ENT_QUOTES, 'UTF-8').'
+                </a>
+' : '').'                <button type="submit" class="btn btn-default">
                   <i class="fa fa-floppy-o fa-lg"></i> '.htmlentities((string)((isset($in['labels']['save']) && is_array($in['labels'])) ? $in['labels']['save'] : null), ENT_QUOTES, 'UTF-8').'
                 </button>
               </nav>
             </div>
           </header>
 
-          <input type="hidden" name="id" id="id" value="'.htmlentities((string)((isset($in['data']['settings']['id']) && is_array($in['data']['settings'])) ? $in['data']['settings']['id'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
+          <input type="hidden" name="id" id="id" value="'.htmlentities((string)((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
 
           <div class="width-container">
             <section class="content-body">
+
+              <div class="row">
+                <div class="col-xs-12 margin-bottom-20">
+                  URL:
+                  <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/'.htmlentities((string)((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null), ENT_QUOTES, 'UTF-8').'/tracks/'.htmlentities((string)((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'/'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null),'path'),array()), 'encq').'" target="_blank">
+                    '.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/'.htmlentities((string)((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null), ENT_QUOTES, 'UTF-8').'/tracks/'.htmlentities((string)((isset($in['data']['tracks']['id']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'/'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),((isset($in['page']['language']) && is_array($in['page'])) ? $in['page']['language'] : null),'path'),array()), 'encq').'
+                  </a>
+                </div>
+              </div>
                <div class="row margin-bottom-10">
-                <div class="col-md-6">
-                  <label for="coordenadas">'.htmlentities((string)((isset($in['labels']['resort_name']) && is_array($in['labels'])) ? $in['labels']['resort_name'] : null), ENT_QUOTES, 'UTF-8').'</label>
-                  <input type="text" name="resort_name" class="form-control" value="'.htmlentities((string)((isset($in['data']['settings']['resort_name']) && is_array($in['data']['settings'])) ? $in['data']['settings']['resort_name'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
+                <div class="col-xs-6">
+                  <label for="coordenadas">'.htmlentities((string)((isset($in['labels']['coordenada']) && is_array($in['labels'])) ? $in['labels']['coordenada'] : null), ENT_QUOTES, 'UTF-8').':</label>
+                  <input type="text" name="coordinates" class="form-control" value="'.htmlentities((string)((isset($in['data']['tracks']['coordinates']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['coordinates'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
                 </div>
-                <div class="col-md-6">
-                  <label for="coordenadas">'.htmlentities((string)((isset($in['labels']['kilometros']) && is_array($in['labels'])) ? $in['labels']['kilometros'] : null), ENT_QUOTES, 'UTF-8').'</label>
-                  <input type="text" name="km" class="form-control" value="'.htmlentities((string)((isset($in['data']['settings']['km']) && is_array($in['data']['settings'])) ? $in['data']['settings']['km'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
+                <div class="col-xs-6">
+                  <label for="timeofyear">'.htmlentities((string)((isset($in['labels']['timeofyear']) && is_array($in['labels'])) ? $in['labels']['timeofyear'] : null), ENT_QUOTES, 'UTF-8').':</label>
+                  <select name="timeofyear" class="form-control" data-field>
+                      <option value="'.htmlentities((string)((isset($in['data']['tracks']['timeofyear']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['timeofyear'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['data']['tracks']['timeofyear']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['timeofyear'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                      <option value="'.htmlentities((string)((isset($in['labels']['winter']) && is_array($in['labels'])) ? $in['labels']['winter'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['winter']) && is_array($in['labels'])) ? $in['labels']['winter'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                      <option value="'.htmlentities((string)((isset($in['labels']['summer']) && is_array($in['labels'])) ? $in['labels']['summer'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['summer']) && is_array($in['labels'])) ? $in['labels']['summer'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                  </select>
                 </div>
               </div>
-              <div class="row margin-top-20">
-                <fieldset>
-                  <div class="col-md-12">
-                    <legend class="font-m margin-bottom-15">'.htmlentities((string)((isset($in['labels']['map_settings']) && is_array($in['labels'])) ? $in['labels']['map_settings'] : null), ENT_QUOTES, 'UTF-8').'</legend>
-                  </div>
-                  <div class="col-md-4">
-                    <label for="map_latitude">'.htmlentities((string)((isset($in['labels']['latitude']) && is_array($in['labels'])) ? $in['labels']['latitude'] : null), ENT_QUOTES, 'UTF-8').'</label>
-                    <input type="text" name="map_latitude" class="form-control" value="'.htmlentities((string)((isset($in['data']['settings']['map_latitude']) && is_array($in['data']['settings'])) ? $in['data']['settings']['map_latitude'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
-                  </div>
-                  <div class="col-md-4">
-                    <label for="map_longitude">'.htmlentities((string)((isset($in['labels']['longitude']) && is_array($in['labels'])) ? $in['labels']['longitude'] : null), ENT_QUOTES, 'UTF-8').'</label>
-                    <input type="text" name="map_longitude" class="form-control" value="'.htmlentities((string)((isset($in['data']['settings']['map_longitude']) && is_array($in['data']['settings'])) ? $in['data']['settings']['map_longitude'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
-                  </div>
-                  <div class="col-md-4">
-                    <label for="zoom">'.htmlentities((string)((isset($in['labels']['zoom']) && is_array($in['labels'])) ? $in['labels']['zoom'] : null), ENT_QUOTES, 'UTF-8').'</label>
-                    <input type="text" name="map_zoom" class="form-control" value="'.htmlentities((string)((isset($in['data']['settings']['map_zoom']) && is_array($in['data']['settings'])) ? $in['data']['settings']['map_zoom'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
-                  </div>
-                </fieldset>
+              <div class="row margin-bottom-10">
+               <div class="col-xs-6">
+                 <label for="tipo">'.htmlentities((string)((isset($in['labels']['tipo']) && is_array($in['labels'])) ? $in['labels']['tipo'] : null), ENT_QUOTES, 'UTF-8').':</label>
+                 <select name="tipo" class="form-control" data-field>
+                     <option value="'.htmlentities((string)((isset($in['data']['tracks']['tipo']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['tipo'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['data']['tracks']['tipo']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['tipo'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['green']) && is_array($in['labels'])) ? $in['labels']['green'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['green']) && is_array($in['labels'])) ? $in['labels']['green'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['blue']) && is_array($in['labels'])) ? $in['labels']['blue'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['blue']) && is_array($in['labels'])) ? $in['labels']['blue'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['red']) && is_array($in['labels'])) ? $in['labels']['red'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['red']) && is_array($in['labels'])) ? $in['labels']['red'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['black']) && is_array($in['labels'])) ? $in['labels']['black'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['black']) && is_array($in['labels'])) ? $in['labels']['black'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['freeride']) && is_array($in['labels'])) ? $in['labels']['freeride'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['freeride']) && is_array($in['labels'])) ? $in['labels']['freeride'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                     <option value="'.htmlentities((string)((isset($in['labels']['route']) && is_array($in['labels'])) ? $in['labels']['route'] : null), ENT_QUOTES, 'UTF-8').'">'.htmlentities((string)((isset($in['labels']['route']) && is_array($in['labels'])) ? $in['labels']['route'] : null), ENT_QUOTES, 'UTF-8').'</option>
+                 </select>
+               </div>
+               <div class="col-xs-6">
+                 <label for="urlinfo">'.htmlentities((string)((isset($in['labels']['urlinfo']) && is_array($in['labels'])) ? $in['labels']['urlinfo'] : null), ENT_QUOTES, 'UTF-8').':</label>
+                 <input type="text" name="url_info" class="form-control" value="'.htmlentities((string)((isset($in['data']['tracks']['url_info']) && is_array($in['data']['tracks'])) ? $in['data']['tracks']['url_info'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
+               </div>
               </div>
+              <ul class="nav nav-tabs">
+'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '                  <li role="presentation" class="'.$cx['funcs']['ch']($cx, 'equals', array(array(((isset($cx['sp_vars']['index']) && is_array($cx['sp_vars'])) ? $cx['sp_vars']['index'] : null),0,'active'),array()), 'encq').'">
+                    <a href="#" data-tab="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
+                      '.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').'
+                    </a>
+                  </li>
+';}).'              </ul>
+
+'.$cx['funcs']['sec']($cx, ((isset($in['page']['languages']) && is_array($in['page'])) ? $in['page']['languages'] : null), $in, false, function($cx, $in) {return '                <div class="row language-content" data-content="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" data-row data-model="track_translations" data-fk="language" data-fk-value="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'">
+
+                  <input type="hidden" name="id" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),$in,'id'),array()), 'encq').'" data-field="id" data-field />
+
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="title">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['track_title']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['track_title'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
+                    <input type="text" class="form-control" id="title" name="title" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['page_title']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['page_title'] : null), ENT_QUOTES, 'UTF-8').'" value="'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),$in,'title'),array()), 'encq').'" data-field />
+                  </div>
+                  <div class="col-xs-12 margin-top-20">
+                    <label for="title">'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['content']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['content'] : null), ENT_QUOTES, 'UTF-8').' ('.$cx['funcs']['ch']($cx, 'language_name', array(array(((isset($cx['sp_vars']['root']['labels']) && is_array($cx['sp_vars']['root'])) ? $cx['sp_vars']['root']['labels'] : null),$in),array()), 'encq').')</label>
+                    <textarea class="form-control height-200" id="title" name="content" placeholder="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['content']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['content'] : null), ENT_QUOTES, 'UTF-8').'" data-field>'.htmlentities((string)((isset($cx['sp_vars']['root']['data']['content']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['content'] : null), ENT_QUOTES, 'UTF-8').''.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($cx['sp_vars']['root']['data']['track_translations']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['track_translations'] : null),$in,'content'),array()), 'encq').'</textarea>
+                  </div>
+                </div>
+';}).'
+'.$cx['funcs']['p']($cx, 'label_selector', array(array($in),array()), '              ').'
+              <div class="row margin-top-10" data-model="track_labels">
+                <div class="col-xs-12" id="label_container" data-model="track_labels" data-fk="track_id">
+'.$cx['funcs']['sec']($cx, ((isset($in['data']['track_labels']) && is_array($in['data'])) ? $in['data']['track_labels'] : null), $in, false, function($cx, $in) {return '                    <div class="label" data-label="'.htmlentities((string)((isset($in['label_id']) && is_array($in)) ? $in['label_id'] : null), ENT_QUOTES, 'UTF-8').'" data-selector="label_selector" data-row="" data-model="track_labels" data-fk="track_id" data-fk-value="'.htmlentities((string)((isset($cx['sp_vars']['root']['data']['tracks']['id']) && is_array($cx['sp_vars']['root']['data']['tracks'])) ? $cx['sp_vars']['root']['data']['tracks']['id'] : null), ENT_QUOTES, 'UTF-8').'" data-name="label_id" data-value="'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'">
+                      <input type="hidden" name="id" value="'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'" data-field />
+                      <input type="hidden" name="deleted" value="0" data-field />
+                      <span>'.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['label_translations']) && is_array($in)) ? $in['label_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'</span>
+                      <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="'.htmlentities((string)((isset($in['label_id']) && is_array($in)) ? $in['label_id'] : null), ENT_QUOTES, 'UTF-8').'" data-selector="label_selector">
+                        <i class="fa fa-times fa-lg"></i>
+                      </a>
+                    </div>
+';}).'                </div>
+              </div>
+
             </section>
           </div>
         </form>
+
       </div>
     </div>
   </div>

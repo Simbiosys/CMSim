@@ -22,7 +22,7 @@
     $info["all_labels"] = $all_labels;
 
     CMSView::render(array(
-        "template" => "private/piece_settings_detail",
+        "template" => "private/settings",
         "data" => $info,
         "page_navigation" => "settings",
         "layout" => "private.hbs",

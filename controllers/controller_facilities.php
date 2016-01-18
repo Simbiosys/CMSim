@@ -64,7 +64,7 @@
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/facilities/new", "facilities", "edit", function() {
     CMSView::render(array(
-        "template" => "private/piece_facilities_detail",
+        "template" => "private/facility_detail",
         "data" => array(),
         "page_navigation" => "facilities",
         "layout" => "private.hbs",
@@ -122,7 +122,7 @@
     $info["all_labels"] = $all_labels;
 
     CMSView::render(array(
-        "template" => "private/piece_facilities_detail",
+        "template" => "private/facility_detail",
         "data" => $info,
         "page_navigation" => "facilities",
         "layout" => "private.hbs",

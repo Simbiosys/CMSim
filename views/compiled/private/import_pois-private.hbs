@@ -25,31 +25,25 @@
           $language = $args[1];
           return isset($labels[$language]) ? $labels[$language] : $language;
         },
-            'get_type_translation' => function($args) {
-          $labels = $args[0];
+            'get_translation' => function($args) {
+          $list = $args[0];
           $language = $args[1];
-          $name = $args[2];
-          $element_type = $args[3];
+          $key = $args[2];
 
-          for ($i = 0; $i < count($labels); $i++) {
-            $item = $labels[$i];
-            $label = $item["labels"];
-            $translations = $item["label_translations"];
+          if (empty($list)) {
+            return "";
+          }
 
-            if ($label["id"] != $element_type) {
-              continue;
-            }
+          foreach ($list as $item) {
+            $item_language = isset($item["language"]) ? $item["language"] : NULL;
+            $item_value = isset($item[$key]) ? $item[$key] : NULL;
 
-            for ($j = 0; $j < count($translations); $j++) {
-              $translation = $translations[$j];
-
-              if ($translation["language"] != $language) {
-                continue;
-              }
-
-              return $translation[$name];
+            if ($item_language == $language) {
+              return $item_value;
             }
           }
+
+          return "";
         },
 ),
         'blockhelpers' => array(),
@@ -328,27 +322,6 @@
   <div class="inner-body">
 
 '.$cx['funcs']['p']($cx, 'resort_left_bar', array(array($in),array()), '    ').'
-    <section class="search-form">
-      <form method="GET" action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/search" class="margin-bottom-20">
-        <div class="input-group search-box">
-          <input type="text" name="s" class="form-control border-none" placeholder="'.htmlentities((string)((isset($in['labels']['do_search']) && is_array($in['labels'])) ? $in['labels']['do_search'] : null), ENT_QUOTES, 'UTF-8').'">
-          <span class="input-group-btn">
-            <button class="btn btn-blank" type="submit">
-              <i class="fa fa-search fa-lg"></i>
-            </button>
-          </span>
-        </div>
-
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null))) ? '        <div class="search-filter">
-          '.htmlentities((string)((isset($in['labels']['search_results_for']) && is_array($in['labels'])) ? $in['labels']['search_results_for'] : null), ENT_QUOTES, 'UTF-8').': <strong>'.htmlentities((string)((isset($in['data']['search']) && is_array($in['data'])) ? $in['data']['search'] : null), ENT_QUOTES, 'UTF-8').'</strong>
-          <a href="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois" class="pull-right">
-            <i class="fa fa-times fa-lg"></i>
-          </a>
-        </div>
-' : '').'
-      </form>
-    </section>
-
     <div class="search-padding">
       <div class="padding-top-10 padding-left-15 padding-right-20">
         <form method="POST" data-model="pois" action="'.htmlentities((string)((isset($in['page']['host']) && is_array($in['page'])) ? $in['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/import" enctype="multipart/form-data">
@@ -389,68 +362,60 @@
           <div class="width-container">
             <section class="content-body">
 
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['message']) && is_array($in['data'])) ? $in['data']['message'] : null))) ? '                <div class="row">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['import']['success']) && is_array($in['data']['import'])) ? $in['data']['import']['success'] : null))) ? '                <div class="row">
                   <div class="col-md-12">
-                    <p class="margin-top-10 margin-bottom-0 text-center">
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['success']) && is_array($in['data'])) ? $in['data']['success'] : null))) ? '                        <i class="fa fa-check fa-2x vertical-align-middle margin-right-20 import-success"></i>
+                    <p class="margin-top-10 margin-bottom-15 text-center">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['import']['success']) && is_array($in['data']['import'])) ? $in['data']['import']['success'] : null))) ? '                        <i class="fa fa-check fa-2x vertical-align-middle margin-right-20 import-success"></i>
+                        <span class="import-text">
+                          '.htmlentities((string)((isset($in['labels']['import_successfully']) && is_array($in['labels'])) ? $in['labels']['import_successfully'] : null), ENT_QUOTES, 'UTF-8').'
+                        </span>
 ' : '                        <i class="fa fa-times fa-2x vertical-align-middle margin-right-20 import-fail"></i>
 ').'                      <span class="import-text">
-                        '.htmlentities((string)((isset($in['data']['message']) && is_array($in['data'])) ? $in['data']['message'] : null), ENT_QUOTES, 'UTF-8').'
+                        '.htmlentities((string)((isset($in['data']['import']['message']) && is_array($in['data']['import'])) ? $in['data']['import']['message'] : null), ENT_QUOTES, 'UTF-8').'
                       </span>
                     </p>
                   </div>
                 </div>
 ' : '').'
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['results']) && is_array($in['data'])) ? $in['data']['results'] : null))) ? '                <div class="row margin-bottom-10 text-right">
-                  <div class="col-md-12">
-                    <strong>'.htmlentities((string)((isset($in['data']['results_size']) && is_array($in['data'])) ? $in['data']['results_size'] : null), ENT_QUOTES, 'UTF-8').'</strong> '.htmlentities((string)((isset($in['labels']['imported_items']) && is_array($in['labels'])) ? $in['labels']['imported_items'] : null), ENT_QUOTES, 'UTF-8').'
-                  </div>
+              <div class="row margin-bottom-20">
+                <div class="col-md-12 text-right">
+                  <strong>'.htmlentities((string)((isset($in['labels']['last_import']) && is_array($in['labels'])) ? $in['labels']['last_import'] : null), ENT_QUOTES, 'UTF-8').'</strong>: '.htmlentities((string)((isset($in['data']['last_import_elements']['import']['creation']) && is_array($in['data']['last_import_elements']['import'])) ? $in['data']['last_import_elements']['import']['creation'] : null), ENT_QUOTES, 'UTF-8').'
                 </div>
+              </div>
 
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['data']['to_delete']) && is_array($in['data'])) ? $in['data']['to_delete'] : null))) ? '                  <div class="row">
-                    <h3 class="col-md-12 margin-top-10 margin-bottom-5">
-                      '.htmlentities((string)((isset($in['labels']['items_to_delete']) && is_array($in['labels'])) ? $in['labels']['items_to_delete'] : null), ENT_QUOTES, 'UTF-8').'
-                    </h3>
-                    <p class="col-md-12 margin-top-10 margin-bottom-5">
-                      '.htmlentities((string)((isset($in['data']['to_delete_size']) && is_array($in['data'])) ? $in['data']['to_delete_size'] : null), ENT_QUOTES, 'UTF-8').' '.htmlentities((string)((isset($in['labels']['to_delete_description']) && is_array($in['labels'])) ? $in['labels']['to_delete_description'] : null), ENT_QUOTES, 'UTF-8').'
-                    </p>
-                    <div class="col-md-12 margin-top-10 margin-bottom-5">
-                      <form action="'.htmlentities((string)((isset($in['page']['manager']) && is_array($in['page'])) ? $in['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/import/delete" method="post">
-'.$cx['funcs']['sec']($cx, ((isset($in['data']['to_delete']) && is_array($in['data'])) ? $in['data']['to_delete'] : null), $in, true, function($cx, $in) {return '                          <input type="hidden" name="pois['.htmlentities((string)((isset($cx['sp_vars']['index']) && is_array($cx['sp_vars'])) ? $cx['sp_vars']['index'] : null), ENT_QUOTES, 'UTF-8').']" value="'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'" />
-';}).'                        <p class="text-right">
-                          <input class="btn btn-danger" type="submit" value="'.htmlentities((string)((isset($in['labels']['delete']) && is_array($in['labels'])) ? $in['labels']['delete'] : null), ENT_QUOTES, 'UTF-8').'" />
-                        </p>
-                      </form>
-                    </div>
-                  </div>
+              <ul class="nav nav-tabs">
+                  <li role="presentation" class="active">
+                    <a href="#" data-tab="imported">
+                      '.htmlentities((string)((isset($in['labels']['imported_items']) && is_array($in['labels'])) ? $in['labels']['imported_items'] : null), ENT_QUOTES, 'UTF-8').'
+                    </a>
+                  </li>
+                  <li role="presentation" class="">
+                    <a href="#" data-tab="other">
+                      '.htmlentities((string)((isset($in['labels']['other_items']) && is_array($in['labels'])) ? $in['labels']['other_items'] : null), ENT_QUOTES, 'UTF-8').'
+                    </a>
+                  </li>
+              </ul>
 
-                  <div class="row">
-                    <div class="col-md-12">
+              <div class="padding-top-20 padding-left-15 padding-right-15" data-content="imported">
 
-                    </div>
-                  </div>
-' : '').'
-                <div class="row">
-                  <h3 class="col-md-12 margin-top-10 margin-bottom-5">
-                    '.htmlentities((string)((isset($in['labels']['results']) && is_array($in['labels'])) ? $in['labels']['results'] : null), ENT_QUOTES, 'UTF-8').'
-                  </h3>
-                </div>
-
-                <div class="row margin-bottom-15 result-legend">
+                <div class="row margin-bottom-10 text-center">
                   <div class="col-md-4">
-
+                    <input type="checkbox" id="check_created" checked />
+                    <label for="check_created" class="margin-left-5">
+                      <i class="fa fa-asterisk fa-lg status-created"></i> '.htmlentities((string)((isset($in['labels']['created']) && is_array($in['labels'])) ? $in['labels']['created'] : null), ENT_QUOTES, 'UTF-8').'
+                    </label>
                   </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-star fa-lg status-created margin-right-5"></i> '.htmlentities((string)((isset($in['labels']['created']) && is_array($in['labels'])) ? $in['labels']['created'] : null), ENT_QUOTES, 'UTF-8').'
+                  <div class="col-md-4">
+                    <input type="checkbox" id="check_refresh" checked />
+                    <label for="check_refresh" class="margin-left-5">
+                      <i class="fa fa-refresh fa-lg status-updated"></i> '.htmlentities((string)((isset($in['labels']['updated']) && is_array($in['labels'])) ? $in['labels']['updated'] : null), ENT_QUOTES, 'UTF-8').'
+                    </label>
                   </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-refresh fa-lg status-updated margin-right-5"></i> '.htmlentities((string)((isset($in['labels']['updated']) && is_array($in['labels'])) ? $in['labels']['updated'] : null), ENT_QUOTES, 'UTF-8').'
-                  </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-trash-o fa-lg status-deleted margin-right-5"></i> '.htmlentities((string)((isset($in['labels']['deleted']) && is_array($in['labels'])) ? $in['labels']['deleted'] : null), ENT_QUOTES, 'UTF-8').'
-                  </div>
-                  <div class="col-md-2">
-                    <i class="fa fa-bars fa-lg status-equal margin-right-5"></i> '.htmlentities((string)((isset($in['labels']['equal']) && is_array($in['labels'])) ? $in['labels']['equal'] : null), ENT_QUOTES, 'UTF-8').'
+                  <div class="col-md-4">
+                    <input type="checkbox" id="check_equal" checked />
+                    <label for="check_equal" class="margin-left-5">
+                      <i class="fa fa-bars fa-lg status-equal"></i> '.htmlentities((string)((isset($in['labels']['equal']) && is_array($in['labels'])) ? $in['labels']['equal'] : null), ENT_QUOTES, 'UTF-8').'
+                    </label>
                   </div>
                 </div>
 
@@ -459,53 +424,103 @@
                     <table class="table">
                       <thead>
                         <tr>
-                          <th>
+                          <th class="width-10">
+
+                          </th>
+                          <th class="width-30">
                             '.htmlentities((string)((isset($in['labels']['identifier']) && is_array($in['labels'])) ? $in['labels']['identifier'] : null), ENT_QUOTES, 'UTF-8').'
                           </th>
-                          <th>
-                            '.htmlentities((string)((isset($in['labels']['geometry_type']) && is_array($in['labels'])) ? $in['labels']['geometry_type'] : null), ENT_QUOTES, 'UTF-8').'
+                          <th class="width-45">
+                            '.htmlentities((string)((isset($in['labels']['name']) && is_array($in['labels'])) ? $in['labels']['name'] : null), ENT_QUOTES, 'UTF-8').'
                           </th>
-                          <th>
-                            '.htmlentities((string)((isset($in['labels']['element_type']) && is_array($in['labels'])) ? $in['labels']['element_type'] : null), ENT_QUOTES, 'UTF-8').'
-                          </th>
-                          <th class="text-center">
+                          <th class="width-15">
                             '.htmlentities((string)((isset($in['labels']['status']) && is_array($in['labels'])) ? $in['labels']['status'] : null), ENT_QUOTES, 'UTF-8').'
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-'.$cx['funcs']['sec']($cx, ((isset($in['data']['results']) && is_array($in['data'])) ? $in['data']['results'] : null), $in, false, function($cx, $in) {return '                          <tr>
-                            <td>
-                              <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['host']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">'.htmlentities((string)((isset($in['identifier']) && is_array($in)) ? $in['identifier'] : null), ENT_QUOTES, 'UTF-8').'</a>
-                            </td>
-                            <td>
-                              <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['host']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">'.htmlentities((string)((isset($in['geometry_type']) && is_array($in)) ? $in['geometry_type'] : null), ENT_QUOTES, 'UTF-8').'</a>
-                            </td>
-                            <td>
-                              <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['host']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">'.$cx['funcs']['ch']($cx, 'get_type_translation', array(array(((isset($cx['sp_vars']['root']['data']['all_labels']) && is_array($cx['sp_vars']['root']['data'])) ? $cx['sp_vars']['root']['data']['all_labels'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name',((isset($in['element_type']) && is_array($in)) ? $in['element_type'] : null)),array()), 'encq').'</a>
-                            </td>
-                            <td class="text-center">
-                              <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['host']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['host'] : null), ENT_QUOTES, 'UTF-8').'/manager/pois/'.htmlentities((string)((isset($in['id']) && is_array($in)) ? $in['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
-'.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['created']) && is_array($in['status'])) ? $in['status']['created'] : null))) ? '                                <abbr title="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['created']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['created'] : null), ENT_QUOTES, 'UTF-8').'">
-                                  <i class="fa fa-star fa-lg status-created"></i>
-                                </abbr>
-' : '').''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['updated']) && is_array($in['status'])) ? $in['status']['updated'] : null))) ? '                                <abbr title="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['updated']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['updated'] : null), ENT_QUOTES, 'UTF-8').'">
-                                  <i class="fa fa-refresh fa-lg status-updated"></i>
-                                </abbr>
-' : '').''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['deleted']) && is_array($in['status'])) ? $in['status']['deleted'] : null))) ? '                                <abbr title="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['deleted']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['deleted'] : null), ENT_QUOTES, 'UTF-8').'">
-                                  <i class="fa fa-trash-o fa-lg status-deleted"></i>
-                                </abbr>
-' : '').''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['equal']) && is_array($in['status'])) ? $in['status']['equal'] : null))) ? '                                <abbr title="'.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['equal']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['equal'] : null), ENT_QUOTES, 'UTF-8').'">
-                                  <i class="fa fa-bars fa-lg status-equal"></i>
-                                </abbr>
-' : '').'                              </a>
-                            </td>
-                          </tr>
+'.$cx['funcs']['sec']($cx, ((isset($in['data']['last_import_elements']['pois']) && is_array($in['data']['last_import_elements'])) ? $in['data']['last_import_elements']['pois'] : null), $in, false, function($cx, $in) {return '                        <tr class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['pois']['deletion']) && is_array($in['pois'])) ? $in['pois']['deletion'] : null))) ? ' line-through ' : '').'"
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['previous']) && is_array($in['status'])) ? $in['status']['previous'] : null))) ? ''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['equal']) && is_array($in['status'])) ? $in['status']['equal'] : null))) ? '                              data-status="equal"
+' : '                              data-status="updated"
+').'' : '                            data-status="created"
+').'                        >
+                          <td class="text-center vertical-align-middle">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['previous']) && is_array($in['status'])) ? $in['status']['previous'] : null))) ? ''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['equal']) && is_array($in['status'])) ? $in['status']['equal'] : null))) ? '                                <i class="fa fa-bars fa-lg status-equal"></i>
+' : '                                <i class="fa fa-refresh fa-lg status-updated"></i>
+').'' : '                              <i class="fa fa-asterisk fa-lg status-created"></i>
+').'                          </td>
+                          <td class="vertical-align-middle">
+                            <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['manager']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
+                              '.htmlentities((string)((isset($in['pois']['identifier']) && is_array($in['pois'])) ? $in['pois']['identifier'] : null), ENT_QUOTES, 'UTF-8').'
+                            </a>
+                          </td>
+                          <td class="vertical-align-middle">
+                            <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['manager']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
+                              '.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['poi_translations']) && is_array($in)) ? $in['poi_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'
+                            </a>
+                          </td>
+                          <td class="vertical-align-middle">
+                            <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['manager']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
+'.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['previous']) && is_array($in['status'])) ? $in['status']['previous'] : null))) ? ''.(($cx['funcs']['ifvar']($cx, ((isset($in['status']['equal']) && is_array($in['status'])) ? $in['status']['equal'] : null))) ? '                                  '.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['equal']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['equal'] : null), ENT_QUOTES, 'UTF-8').'
+' : '                                  '.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['updated']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['updated'] : null), ENT_QUOTES, 'UTF-8').'
+                                  <ul>
+'.$cx['funcs']['sec']($cx, ((isset($in['status']['different']) && is_array($in['status'])) ? $in['status']['different'] : null), $in, false, function($cx, $in) {return '                                      <li>'.htmlentities((string)$in, ENT_QUOTES, 'UTF-8').'</li>
+';}).'                                  </ul>
+').'' : '                                '.htmlentities((string)((isset($cx['sp_vars']['root']['labels']['created']) && is_array($cx['sp_vars']['root']['labels'])) ? $cx['sp_vars']['root']['labels']['created'] : null), ENT_QUOTES, 'UTF-8').'
+').'                            </a>
+                          </td>
+                        </tr>
 ';}).'                      </tbody>
                     </table>
                   </div>
                 </div>
-' : '').'
+              </div>
+
+              <div class="padding-top-20 padding-left-15 padding-right-15" data-content="other">
+                <div class="row">
+                  <div class="col-md-12">
+                    <p class="margin-bottom-20">
+                      '.htmlentities((string)((isset($in['labels']['other_items_description']) && is_array($in['labels'])) ? $in['labels']['other_items_description'] : null), ENT_QUOTES, 'UTF-8').'
+                    </p>
+                    <table class="table">
+                      <thead>
+                        <tr>
+                          <th class="width-30">
+                            '.htmlentities((string)((isset($in['labels']['identifier']) && is_array($in['labels'])) ? $in['labels']['identifier'] : null), ENT_QUOTES, 'UTF-8').'
+                          </th>
+                          <th class="width-45">
+                            '.htmlentities((string)((isset($in['labels']['name']) && is_array($in['labels'])) ? $in['labels']['name'] : null), ENT_QUOTES, 'UTF-8').'
+                          </th>
+                          <th class="width-15">
+                            <a href="#" id="btn_delete_elements" class="btn btn-danger width-100">
+                              <i class="fa fa-trash-o"></i> '.htmlentities((string)((isset($in['labels']['delete']) && is_array($in['labels'])) ? $in['labels']['delete'] : null), ENT_QUOTES, 'UTF-8').'
+                            </a>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+'.$cx['funcs']['sec']($cx, ((isset($in['data']['last_import_elements']['other_pois']) && is_array($in['data']['last_import_elements'])) ? $in['data']['last_import_elements']['other_pois'] : null), $in, false, function($cx, $in) {return '                        <tr class="'.(($cx['funcs']['ifvar']($cx, ((isset($in['pois']['deletion']) && is_array($in['pois'])) ? $in['pois']['deletion'] : null))) ? ' line-through ' : '').'" data-delete-row="'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'">
+                          <td class="vertical-align-middle">
+                            <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['manager']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
+                              '.htmlentities((string)((isset($in['pois']['identifier']) && is_array($in['pois'])) ? $in['pois']['identifier'] : null), ENT_QUOTES, 'UTF-8').'
+                            </a>
+                          </td>
+                          <td class="vertical-align-middle">
+                            <a href="'.htmlentities((string)((isset($cx['sp_vars']['root']['page']['manager']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['manager'] : null), ENT_QUOTES, 'UTF-8').'/pois/'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" target="_blank">
+                              '.$cx['funcs']['ch']($cx, 'get_translation', array(array(((isset($in['poi_translations']) && is_array($in)) ? $in['poi_translations'] : null),((isset($cx['sp_vars']['root']['page']['language']) && is_array($cx['sp_vars']['root']['page'])) ? $cx['sp_vars']['root']['page']['language'] : null),'name'),array()), 'encq').'
+                            </a>
+                          </td>
+                          <td class="vertical-align-middle text-center">
+                            <input type="checkbox" data-delete="'.htmlentities((string)((isset($in['pois']['id']) && is_array($in['pois'])) ? $in['pois']['id'] : null), ENT_QUOTES, 'UTF-8').'" />
+                          </td>
+                        </tr>
+';}).'                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+
             </section>
           </div>
       </div>
@@ -513,6 +528,7 @@
   </div>
 </section>
 <script src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/js/labels.js?'.htmlentities((string)((isset($in['page']['version']) && is_array($in['page'])) ? $in['page']['version'] : null), ENT_QUOTES, 'UTF-8').'"></script>
+<script src="'.htmlentities((string)((isset($in['page']['web']) && is_array($in['page'])) ? $in['page']['web'] : null), ENT_QUOTES, 'UTF-8').'/js/import.js?'.htmlentities((string)((isset($in['page']['version']) && is_array($in['page'])) ? $in['page']['version'] : null), ENT_QUOTES, 'UTF-8').'"></script>
 
       </section>
     </main>

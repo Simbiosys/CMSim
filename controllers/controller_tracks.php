@@ -20,7 +20,7 @@
     $model = new tracksModel();
 
     CMSView::render(array(
-        "template" => "public/piece_tracks_detail",
+        "template" => "public/track_detail",
         "data" => $model->find($piece),
         "page_navigation" => "tracks",
         "layout" => "public.hbs"
@@ -92,7 +92,7 @@
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/tracks/new", "tracks", "edit", function() {
     CMSView::render(array(
-        "template" => "private/piece_tracks_detail",
+        "template" => "private/track_detail",
         "data" => array(),
         "page_navigation" => "tracks",
         "layout" => "private.hbs",
@@ -150,7 +150,7 @@
     $info["all_labels"] = $all_labels;
 
     CMSView::render(array(
-        "template" => "private/piece_tracks_detail",
+        "template" => "private/track_detail",
         "data" => $info,
         "page_navigation" => "tracks",
         "layout" => "private.hbs",

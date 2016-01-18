@@ -239,5 +239,10 @@
   "accomodation": "accomodation",
   "wardrobe": "wardrobe",
   "setpoint": "setpoint",
-  "singular_place": "singular_place"
+  "singular_place": "singular_place",
+  "identifier": "Identifier",
+  "timeofyear": "Season",
+  "type": "Type",
+  "geometry_type": "Geometry Type",
+  "coordinates": "Coordinates"
 }

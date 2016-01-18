@@ -52,6 +52,10 @@
         "imported" => array(
           "type" => "boolean",
           "default" => 0
+        ),
+        "import_id" => array(
+          "type" => "integer",
+          "null" => TRUE
         )
       );
 
@@ -112,6 +116,158 @@
         return $data;
       }
 
+      public function get_all_from_last_import() {
+        $model_imports = new PoiModelImports();
+        $imports = $model_imports->get_all(array(
+          "limit" => 1
+        ));
+
+        $last_import = NULL;
+        $pois = array();
+
+        if (!empty($imports) && count($imports) > 0) {
+          $last_import = $imports[0]["poi_imports"];
+        }
+
+        if ($last_import) {
+          $import_id = $last_import["id"];
+
+          $pois = $this->get_all_with_deleted("import_id = '$import_id'");
+        }
+
+        $ids = array();
+
+        for ($i = 0; $i < count($pois); $i++) {
+          $id = $pois[$i]["pois"]["id"];
+          $pois[$i]["status"] = $this->compare_with_previous($id, $pois[$i]);
+
+          array_push($ids, $id);
+        }
+
+        $ids = implode(",", $ids);
+        $other_pois = $this->get_all("id NOT IN ($ids)");
+
+        return array(
+          "import" => $last_import,
+          "pois" => $pois,
+          "other_pois" => $other_pois
+        );
+      }
+
+      public function compare_with_previous($id, $item = NULL) {
+        $comparison = array(
+          "pois" => array(
+            "multiple" => FALSE,
+            "linking" => NULL,
+            "exclude" => array(
+              "id",
+              "creation",
+              "deletion",
+              "updating",
+              "deleted",
+              "imported"
+            )
+          ),
+          "poi_translations" => array(
+            "multiple" => TRUE,
+            "linking" => "language",
+            "exclude" => array(
+              "id",
+              "creation",
+              "deletion",
+              "updating",
+              "deleted",
+              "imported",
+              "poi_id"
+            )
+          )
+        );
+
+        $status = array(
+          "previous" => NULL,
+          "equal" => TRUE,
+          "different" => array()
+        );
+
+        if (empty($item)) {
+          $item = $this->find($id);
+
+          if (empty($item)) {
+            return $status;
+          }
+        }
+
+        $identifier = $item["pois"]["identifier"];
+        $previous = $this->get_all_with_deleted(array(
+          "condition" => "identifier = '$identifier' AND id <> '$id'",
+          "limit" => 1
+        ));
+
+        if (count($previous) == 0) {
+          return $status;
+        }
+
+        $previous = $previous[0];
+        $status["previous"] = $previous;
+
+        $equal = TRUE;
+        $different = array();
+
+        foreach ($item as $entity => $data) {
+          $comparison_options = $comparison[$entity];
+          $multiple = $comparison_options["multiple"];
+          $linking = $comparison_options["linking"];
+          $exclude = $comparison_options["exclude"];
+
+          $grouped = array();
+
+          if (!$multiple) {
+            $data = array(
+              $data
+            );
+          }
+          else {
+            foreach ($previous[$entity] as $row) {
+              $key = $row[$linking];
+              $grouped[$key] = $row;
+            }
+          }
+
+          foreach ($data as $row) {
+            $compared = NULL;
+
+            if (!$multiple) {
+              $compared = $previous[$entity];
+            }
+            else {
+              $key = $row[$linking];
+              $compared = $grouped[$key];
+            }
+
+            foreach ($row as $key => $value) {
+              if (in_array($key, $exclude)) {
+                continue;
+              }
+
+              $other_value = $compared[$key];
+
+              if ($value != $other_value) {
+                $equal = FALSE;
+
+                if (!in_array($key, $different)) {
+                  array_push($different, $key);
+                }
+              }
+            }
+          }
+        }
+
+        $status["equal"] = $equal;
+        $status["different"] = $different;
+
+        return $status;
+      }
+
       public function import($file) {
         $labels = CMSView::get_labels();
         $obj = json_decode($file, TRUE);
@@ -137,7 +293,9 @@
           );
         }
 
-        $results = array();
+        $import_model = new PoiModelImports();
+        $import = $import_model->create();
+        $import_id = $import["main"]["message"];
 
         $all_pois = $this->get_all();
         $all_pois_objects = array();
@@ -196,13 +354,6 @@
           $names = $properties["name"];
           $descriptions = $properties["description"];
 
-          $status = array(
-            "created" => FALSE,
-            "deleted" => FALSE,
-            "updated" => FALSE,
-            "equal" => FALSE
-          );
-
           $all_pois_ids[$identifier] = TRUE;
 
           $translations = array();
@@ -230,12 +381,7 @@
           // To store element's labels
           $labels = array();
 
-          if (count($existing) == 0) {
-            $status["created"] = TRUE;
-          }
-          else {
-            $updated = TRUE;
-
+          if (count($existing) > 0) {
             foreach ($existing as $element) {
               if (!isset($element["pois"])) {
                 continue;
@@ -300,7 +446,8 @@
               "url_info" => $url_info,
               "geometry_type" => $geometry_type,
               "imported" => 1,
-              "coordinates" => json_encode($geometry_coordinates)
+              "coordinates" => json_encode($geometry_coordinates),
+              "import_id" => $import_id
             ),
             "poi_translations" => $translations
           );
@@ -310,108 +457,15 @@
           }
 
           $inserted = $this->create($new_poi);
-
-          // Check if updated
-
-          if ($updated) {
-            foreach ($existing as $element) {
-              if (!isset($element["pois"])) {
-                continue;
-              }
-
-              $fields = $element["pois"];
-              $fields_to_exclude = array("id", "creation", "customer_id", "deleted");
-
-              $equal = TRUE;
-
-              foreach ($fields as $field_name => $field_value) {
-                if (in_array($field_name, $fields_to_exclude)) {
-                  continue;
-                }
-
-                $new_field_value = $new_poi["pois"][$field_name];
-
-                if ($field_value != $new_field_value) {
-                  $equal = FALSE;
-                  break;
-                }
-              }
-
-              $translations = $element["poi_translations"];
-              $translations_by_language = array();
-
-              foreach ($translations as $translation) {
-                $language = $translation["language"];
-
-                $translations_by_language[$language] = $translation;
-              }
-
-              $new_translations = $new_poi["poi_translations"];
-              $fields_to_check = array("name", "description");
-
-              foreach ($new_translations as $new_translation) {
-                $language = $new_translation["language"];
-                $translation = $translations_by_language[$language];
-
-                foreach ($fields_to_check as $field) {
-                  if ($new_translation[$field] != $translation[$field]) {
-                    $equal = FALSE;
-                    break;
-                  }
-                }
-              }
-            }
-
-            if ($equal) {
-              $status["equal"] = TRUE;
-            }
-            else {
-              $status["updated"] = TRUE;
-            }
-          }
-
-          array_push($results, array(
-            "id" => $inserted["main"]["message"],
-            "type" => $type,
-            "geometry_type" => $geometry_type,
-            "identifier" => $identifier,
-            "element_type" => $type_id,
-            "status" => $status
-          ));
-        }
-
-        // To delete
-        $to_delete = array();
-
-        foreach ($all_pois_ids as $poi => $value) {
-          if (!$value) {
-            $poi_data = $all_pois_objects[$poi]["pois"];
-            $poi_data["status"] = array(
-              "deleted" => TRUE
-            );
-
-            array_push($to_delete, $poi_data["id"]);
-            array_push($results, $poi_data);
-          }
         }
 
         // Labels
         $model = new LabelModel();
-        $all_labels = $model->get_all();
 
         $return_data = array(
           "success" => TRUE,
           "message" => $labels["import_successfully"],
-          "results" => $results,
-          "results_size" => count($results),
-          "all_labels" => $all_labels
         );
-
-        if (count($to_delete) > 0) {
-          $return_data["to_delete"] = $to_delete;
-          $return_data["to_delete_size"] = count($to_delete);
-        }
-
         return $return_data;
       }
   }
@@ -453,40 +507,6 @@
   }
 
 ////////////////////////////////////////////////////////////////////////////////
-//                              Coordinates
-////////////////////////////////////////////////////////////////////////////////
-/*
-  class PoiModelCoordinates extends \Singular\Model {
-    protected $table = "poi_coordinates";
-
-    protected $fields = array(
-      "id" => array(
-        "type" => "integer",
-        "null" => FALSE,
-        "auto_increment" => TRUE
-      ),
-      "poi_id" => array(
-        "type" => "integer",
-        "null" => FALSE
-      ),
-      "latitude" => array(
-        "type" => "double",
-        "null" => FALSE
-      ),
-      "longitude" => array(
-        "type" => "double",
-        "null" => FALSE
-      ),
-      "sort" => array(
-        "type" => "integer",
-        "null" => FALSE
-      )
-    );
-
-    protected $primary_key = "id";
-  }
-*/
-////////////////////////////////////////////////////////////////////////////////
 //                                 Labels
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -523,67 +543,21 @@
     protected $primary_key = "id";
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
-  //                                 POI type
-  ////////////////////////////////////////////////////////////////////////////////
-/*
-    class PoiModelTypes extends \Singular\Model {
-      protected $table = "poi_types";
+////////////////////////////////////////////////////////////////////////////////
+//                                 Import
+////////////////////////////////////////////////////////////////////////////////
 
-      protected $fields = array(
-        "id" => array(
-          "type" => "integer",
-          "null" => FALSE,
-          "auto_increment" => TRUE
-        ),
-        "identifier" => array(
-          "type" => "string",
-          "size" => 40,
-          "null" => FALSE
-        )
-      );
+  class PoiModelImports extends \Singular\Model {
+    protected $table = "poi_imports";
+    protected $order = array("creation DESC");
 
-      protected $dependencies = array(
-        "poi_type_translations" => array(
-          "entity" => "PoiModelTypeTranslations",
-          "key" => "poi_id",
-          "filter" => NULL,
-          "order" => "",
-          "dependent" => FALSE // Cascade delete
-        )
-      );
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
+      )
+    );
 
-      protected $primary_key = "id";
-    }
-
-    ////////////////////////////////////////////////////////////////////////////////
-    //                              POI Type Translations
-    ////////////////////////////////////////////////////////////////////////////////
-
-      class PoiModelTypeTranslations extends \Singular\Model {
-        protected $table = "poi_type_translations";
-
-        protected $fields = array(
-          "id" => array(
-            "type" => "integer",
-            "null" => FALSE,
-            "auto_increment" => TRUE
-          ),
-          "poi_id" => array(
-            "type" => "integer",
-            "null" => FALSE
-          ),
-          "name" => array(
-            "type" => "string",
-            "size" => 200,
-            "null" => FALSE
-          ),
-          "language" => array(
-            "type" => "string",
-            "size" => "3"
-          )
-        );
-
-        protected $primary_key = "id";
-      }
-*/
+    protected $primary_key = "id";
+  }
