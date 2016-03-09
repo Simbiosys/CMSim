@@ -10,6 +10,21 @@
         },
         "/^name_([A-z]{2})$/" => function($matches, $value, &$ret) {
           $ret["name"][$matches[1]] = $value;
+        },
+        "/^(slope_type)$/" => function($matches, $value, &$ret) {
+          $ret["sub_type"] = $value;
+        },
+        "/^(route_type)$/" => function($matches, $value, &$ret) {
+          $ret["sub_type"] = $value;
+        },
+        "/^(lift_type)$/" => function($matches, $value, &$ret) {
+          $ret["sub_type"] = $value;
+        },
+        "/^(area_type)$/" => function($matches, $value, &$ret) {
+          $ret["sub_type"] = $value;
+        },
+        "/^(slope_difficulty)$/" => function($matches, $value, &$ret) {
+          $ret["difficulty"] = $value;
         }
       );
 
@@ -27,13 +42,18 @@
         foreach ($feature["properties"] as $key => $value) {
           $found = FALSE;
 
-          foreach ($conversion as $regex => $function) {
+          if(strcmp($key,"description") == 0){
+            $found = TRUE;
+          }
+          else{
+            foreach ($conversion as $regex => $function) {
 
-            if (preg_match($regex, $key, $matches) == 1) {
-              $function($matches, $value, $properties);
+              if (preg_match($regex, $key, $matches) == 1) {
+                $function($matches, $value, $properties);
 
-              $found = TRUE;
-              break;
+                $found = TRUE;
+                break;
+              }
             }
           }
 
