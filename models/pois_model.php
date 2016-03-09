@@ -1,6 +1,6 @@
 <?php
 
-  class PoisModel extends TranslatedLabelledModel {
+  class PoisModel extends TranslatedModel {
       protected $table = "pois";
       protected $query_fields = array("id", "customer_id", "identifier", "creation", "coordinates", "url_info", "time_of_year", "element_type", "geometry_type", "coordinates", "deletion", "deleted", "imported");
       protected $order = array("creation DESC");
@@ -245,7 +245,7 @@
             }
 
             foreach ($row as $key => $value) {
-              if (in_array($key, $exclude)) {
+              if (!$exclude || in_array($key, $exclude)) {
                 continue;
               }
 

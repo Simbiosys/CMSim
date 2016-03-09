@@ -1,6 +1,6 @@
 <?php
 
-class PageModel extends TranslatedLabelledModel {
+class PageModel extends TranslatedModel {
       protected $table = "pages";
       protected $query_fields = array("id", "template", "visibility", "customer_id");
       protected $order = array("creation ASC");

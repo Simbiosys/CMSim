@@ -1,11 +1,11 @@
 <?php
 
-  class tracksModel extends TranslatedLabelledModel {
+  class TracksModel extends TranslatedModel {
       protected $table = "tracks";
-      protected $query_fields = array("id", "customer_id", "creation", "tipo", "coordinates", "url_info", "timeofyear");
+      protected $query_fields = array("id", "customer_id", "identifier", "creation", "coordinates", "url_info", "time_of_year", "element_type", "sub_type", "difficulty", "geometry_type", "coordinates", "deletion", "deleted", "imported");
       protected $order = array("creation ASC");
       protected $filter = NULL;
-      protected $search_fields = array("track_translations.title", "track_translations.content");
+      protected $search_fields = array("track_translations.name", "track_translations.description");
 
       protected $filtered_language_entity = "track_translations";
 
@@ -19,30 +19,50 @@
           "type" => "integer",
           "null" => FALSE
         ),
-        "tipo" => array(
+        "identifier" => array(
           "type" => "string",
-          "size" => 400,
+          "size" => 40,
           "null" => FALSE
         ),
-        "coordinates" => array(
-          "type" => "string",
-          "size" => 400,
+        "element_type" => array(
+          "type" => "integer",
           "null" => FALSE
+        ),
+        "sub_type" => array(
+          "type" => "integer",
+          "null" => FALSE
+        ),
+        "difficulty" => array(
+          "type" => "integer",
+          "null" => FALSE
+        ),
+        "time_of_year" => array(
+          "type" => "string",
+          "size" => 40,
+          "null" => TRUE
         ),
         "url_info" => array(
           "type" => "string",
           "size" => 400,
-          "null" => FALSE
+          "null" => TRUE
         ),
-        "timeofyear" => array(
+        "geometry_type" => array(
           "type" => "string",
-          "size" => 400,
+          "size" => 20,
           "null" => FALSE
         ),
-      "creation" => array(
-          "type" => "timestamp",
-          "null" => FALSE,
-          "default" => "CURRENT_TIMESTAMP"
+        "coordinates" => array(
+          "type" => "string",
+          "size" => 10000,
+          "null" => FALSE
+        ),
+        "imported" => array(
+          "type" => "boolean",
+          "default" => 0
+        ),
+        "import_id" => array(
+          "type" => "integer",
+          "null" => TRUE
         )
       );
 
@@ -50,16 +70,18 @@
 
       protected $dependencies = array(
         "track_translations" => array(
-          "entity" => "trackModelTranslations",
+          "entity" => "TrackModelTranslations",
           "key" => "track_id",
           "filter" => NULL,
+          "deletion" => "1 = 1", // Get deleted
           "order" => "",
           "dependent" => TRUE // Cascade delete
         ),
         "track_labels" => array(
-          "entity" => "trackModelLabels",
+          "entity" => "TrackModelLabels",
           "key" => "track_id",
           "filter" => NULL,
+          "deletion" => "1 = 1", // Get deleted
           "order" => "",
           "dependent" => TRUE // Cascade delete
         )
@@ -81,6 +103,440 @@
         return $this->get_all($condition);
       }
 
+      public function get_all_with_deleted($condition) {
+        $deletion = $this->deletion;
+        $this->deletion = "1 = 1"; // Change default deletion behaviour to get all items (also deleted ones)
+
+        $data = $this->get_all($condition);
+        $this->deletion = $deletion;
+
+        return $data;
+      }
+
+      public function find_with_deleted($id) {
+        $deletion = $this->deletion;
+        $this->deletion = "1 = 1"; // Change default deletion behaviour to get all items (also deleted ones)
+
+        $data = $this->find($id);
+        $this->deletion = $deletion;
+
+        return $data;
+      }
+
+      public function get_all_from_last_import() {
+        $model_imports = new TrackModelImports();
+        $imports = $model_imports->get_all(array(
+          "limit" => 1
+        ));
+
+        $last_import = NULL;
+
+        if (!empty($imports) && count($imports) > 0) {
+          $last_import = $imports[0]["track_imports"];
+        }
+
+        if ($last_import) {
+          $import_id = $last_import["id"];
+
+          $tracks = $this->get_all_with_deleted("import_id = '$import_id'");
+        }
+
+        $ids = array();
+
+        for ($i = 0; $i < count($tracks); $i++) {
+          $id = $tracks[$i]["tracks"]["id"];
+          $tracks[$i]["status"] = $this->compare_with_previous($id, $tracks[$i]);
+
+          array_push($ids, $id);
+        }
+
+        $ids = implode(",", $ids);
+        $other_tracks = $this->get_all("id NOT IN ($ids)");
+
+        return array(
+          "import" => $last_import,
+          "tracks" => $tracks,
+          "other_tracks" => $other_tracks
+        );
+      }
+
+      public function compare_with_previous($id, $item = NULL) {
+        $comparison = array(
+          "tracks" => array(
+            "multiple" => FALSE,
+            "linking" => NULL,
+            "exclude" => array(
+              "id",
+              "creation",
+              "deletion",
+              "updating",
+              "deleted",
+              "imported"
+            )
+          ),
+          "track_translations" => array(
+            "multiple" => TRUE,
+            "linking" => "language",
+            "exclude" => array(
+              "id",
+              "creation",
+              "deletion",
+              "updating",
+              "deleted",
+              "imported",
+              "track_id"
+            )
+          )
+        );
+
+        $status = array(
+          "previous" => NULL,
+          "equal" => TRUE,
+          "different" => array()
+        );
+
+        if (empty($item)) {
+          $item = $this->find($id);
+
+          if (empty($item)) {
+            return $status;
+          }
+        }
+
+        $identifier = $item["tracks"]["identifier"];
+        $previous = $this->get_all_with_deleted(array(
+          "condition" => "identifier = '$identifier' AND id <> '$id'",
+          "limit" => 1
+        ));
+
+        if (count($previous) == 0) {
+          return $status;
+        }
+
+        $previous = $previous[0];
+        $status["previous"] = $previous;
+
+        $equal = TRUE;
+        $different = array();
+
+        foreach ($item as $entity => $data) {
+          $comparison_options = $comparison[$entity];
+          $multiple = $comparison_options["multiple"];
+          $linking = $comparison_options["linking"];
+          $exclude = $comparison_options["exclude"];
+
+          $grouped = array();
+
+          if (!$multiple) {
+            $data = array(
+              $data
+            );
+          }
+          else {
+            foreach ($previous[$entity] as $row) {
+              $key = $row[$linking];
+              $grouped[$key] = $row;
+            }
+          }
+
+          foreach ($data as $row) {
+            $compared = NULL;
+
+            if (!$multiple) {
+              $compared = $previous[$entity];
+            }
+            else {
+              $key = $row[$linking];
+              $compared = $grouped[$key];
+            }
+
+            foreach ($row as $key => $value) {
+              if (!$exclude || in_array($key, $exclude)) {
+                continue;
+              }
+
+              $other_value = $compared[$key];
+
+              if ($value != $other_value) {
+                $equal = FALSE;
+
+                if (!in_array($key, $different)) {
+                  array_push($different, $key);
+                }
+              }
+            }
+          }
+        }
+
+        $status["equal"] = $equal;
+        $status["different"] = $different;
+
+        return $status;
+      }
+
+      public function import($file) {
+        $labels = CMSView::get_labels();
+        $obj = json_decode($file, TRUE);
+
+        if (!$obj) {
+          return array(
+            "success" => FALSE,
+            "message" => $labels["bad_file"]
+          );
+        }
+
+        if (!array_key_exists("type", $obj) || $obj["type"] != "FeatureCollection") {
+          return array(
+            "success" => FALSE,
+            "message" => $labels["missing_type"]
+          );
+        }
+
+        if (!array_key_exists("features", $obj)) {
+          return array(
+            "success" => FALSE,
+            "message" => $labels["missing_features"]
+          );
+        }
+
+        $import_model = new TrackModelImports();
+        $import = $import_model->create();
+        $import_id = $import["main"]["message"];
+
+        $all_tracks = $this->get_all();
+        $all_tracks_objects = array();
+        $all_tracks_ids = array();
+
+        for ($i = 0; $i < count($all_tracks); $i++) {
+          $track = $all_tracks[$i];
+
+          if (isset($track["track"])) {
+            $identifier = $track["track"]["identifier"];
+            $all_tracks_ids[$identifier] = FALSE;
+            $all_tracks_objects[$identifier] = $track;
+          }
+        }
+
+        // Find customer importer
+        $customer_id = AppAuthentication::get_user_customer();
+        $model = new CustomerModel();
+        $customer = $model->find($customer_id);
+
+        $importer_class = NULL;
+
+        if ($customer) {
+          $customer_identifier = $customer["customers"]["identifier"];
+
+          if ($customer_identifier) {
+            $importer_name = $customer_identifier . "_importer.php";
+            $root = \Singular\Configuration::get_root();
+            $importer_path = "$root/customer/importers/$importer_name";
+
+            if (file_exists($importer_path)) {
+              include_once($importer_path);
+              $importer_class = ucfirst($customer_identifier) . "_importer";
+            }
+          }
+        }
+
+        if ($importer_class) {
+          $obj = call_user_func(array($importer_class, 'format'), $obj);
+        }
+
+        $features = $obj["features"];
+
+        foreach ($features as $feature) {
+          $type = $feature["type"];
+
+          $geometry = $feature["geometry"];
+          $geometry_type = $geometry["type"];
+          $geometry_coordinates = $geometry["coordinates"];
+
+          $properties = $feature["properties"];
+          $identifier = $properties["id"];
+          $element_type = $properties["element_type"];
+          $sub_type = $properties["sub_type"];
+          $difficulty = $properties["difficulty"];
+          $time_of_year = $properties["time_of_year"];
+          $url_info = $properties["url_info"];
+          $names = $properties["name"];
+          $descriptions = $properties["description"];
+
+          $all_tracks_ids[$identifier] = TRUE;
+
+          $translations = array();
+
+          foreach ($names as $language => $name) {
+            $description = array_key_exists($language, $descriptions) ? $descriptions[$language] : "";
+
+            array_push($translations, array(
+              "name" => $name,
+              "description" => $description,
+              "language" => $language
+            ));
+          }
+
+          if (strtolower($geometry_type) == "point") {
+            $geometry_coordinates = array(array($geometry_coordinates));
+          }
+          else if (strtolower($geometry_type) == "linestring") {
+            $geometry_coordinates = array($geometry_coordinates);
+          }
+
+          $existing = $this->get_all("identifier = '$identifier' AND deleted = 0");
+          $updated = FALSE;
+
+          // To store element's labels
+          $labels = array();
+
+          if (count($existing) > 0) {
+            foreach ($existing as $element) {
+              if (!isset($element["tracks"])) {
+                continue;
+              }
+
+              // We need to insert existing labels into new object
+              if ($element["track_labels"]) {
+                foreach ($element["track_labels"] as $label) {
+                  array_push($labels, array(
+                    "label_id" => $label["label_id"])
+                  );
+                }
+              }
+
+              $id = $element["tracks"]["id"];
+              $this->delete($id);
+            }
+          }
+
+          // Element type
+
+          $model = new LabelModel();
+          $existing_labels = $model->get_all("identifier = '$element_type' AND deleted = 0");
+          $languages = \Singular\Configuration::get_available_languages();
+          $type_id = NULL;
+
+          $label_translations = array();
+
+          for ($i = 0; $i < count($languages); $i++) {
+            $language = $languages[$i];
+
+            array_push($label_translations, array(
+              "name" => $element_type,
+              "description" => $element_type,
+              "language" => $language
+            ));
+          }
+
+          if (count($existing_labels) == 0) {
+            $inserted = $model->create(array(
+              "labels" => array(
+                "identifier" => $element_type,
+                "parent_id" => 0,
+                "customer_id" => $customer_id
+              ),
+              "label_translations" => $label_translations
+            ));
+
+            $type_id = $inserted["main"]["message"];
+          }
+          else {
+            $first = $existing_labels[0];
+            $type_id = $first["labels"]["id"];
+          }
+
+          // Element subtype
+          $existing_labels = $model->get_all("identifier = '$sub_type' AND deleted = 0");
+          $subtype_id = NULL;
+
+          $label_translations = array();
+
+          for ($i = 0; $i < count($languages); $i++) {
+            $language = $languages[$i];
+
+            array_push($label_translations, array(
+              "name" => $sub_type,
+              "description" => $sub_type,
+              "language" => $language
+            ));
+          }
+
+          if (count($existing_labels) == 0) {
+            $inserted = $model->create(array(
+              "labels" => array(
+                "identifier" => $sub_type,
+                "parent_id" => 0,
+                "customer_id" => $customer_id
+              ),
+              "label_translations" => $label_translations
+            ));
+
+            $subtype_id = $inserted["main"]["message"];
+          }
+          else {
+            $first = $existing_labels[0];
+            $subtype_id = $first["labels"]["id"];
+          }
+
+          // Difficulty
+          $difficulty_id = $difficulty;
+
+          if(strcmp($element_type,"route") == 0){
+            switch ($difficulty) {
+              case 'low':
+                $difficulty_id = 0;
+                break;
+              case 'low-medium':
+                $difficulty_id = 1;
+                break;
+              case 'medium':
+                $difficulty_id = 2;
+                break;
+              case 'medium-hard':
+                $difficulty_id = 3;
+                break;
+              case 'hard':
+                $difficulty_id = 4;
+                break;
+              default:
+                $difficulty_id = 0;
+                break;
+            }
+          }
+
+          $new_track = array(
+            "tracks" => array(
+              "customer_id" => $customer_id,
+              "identifier" => $identifier,
+              "element_type" => $type_id,
+              "sub_type" => $subtype_id,
+              "difficulty" => $difficulty_id,
+              "time_of_year" => $time_of_year,
+              "url_info" => $url_info,
+              "geometry_type" => $geometry_type,
+              "imported" => 1,
+              "coordinates" => json_encode($geometry_coordinates),
+              "import_id" => $import_id
+            ),
+            "track_translations" => $translations
+          );
+
+          if (count($labels) > 0) {
+            $new_track["track_labels"] = $labels;
+          }
+
+          $inserted = $this->create($new_track);
+        }
+
+        // Labels
+        $model = new LabelModel();
+
+        $return_data = array(
+          "success" => TRUE,
+          "message" => $labels["import_successfully"],
+        );
+        return $return_data;
+      }
 
   }
 
@@ -88,7 +544,7 @@
 //                              Translations
 ////////////////////////////////////////////////////////////////////////////////
 
-  class trackModelTranslations extends \Singular\Model {
+  class TrackModelTranslations extends \Singular\Model {
     protected $table = "track_translations";
 
     protected $fields = array(
@@ -101,13 +557,15 @@
         "type" => "integer",
         "null" => FALSE
       ),
-      "title" => array(
+      "name" => array(
         "type" => "string",
         "size" => 200,
         "null" => FALSE
       ),
-      "content" => array(
-        "type" => "binary"
+      "description" => array(
+        "type" => "string",
+        "size" => 200,
+        "null" => FALSE
       ),
       "language" => array(
         "type" => "string",
@@ -149,6 +607,25 @@
         "filter" => NULL,
         "order" => "",
         "dependent" => FALSE // Cascade delete
+      )
+    );
+
+    protected $primary_key = "id";
+  }
+
+////////////////////////////////////////////////////////////////////////////////
+//                                 Import
+////////////////////////////////////////////////////////////////////////////////
+
+  class TrackModelImports extends \Singular\Model {
+    protected $table = "track_imports";
+    protected $order = array("creation DESC");
+
+    protected $fields = array(
+      "id" => array(
+        "type" => "integer",
+        "null" => FALSE,
+        "auto_increment" => TRUE
       )
     );
 

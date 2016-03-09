@@ -1,6 +1,6 @@
 <?php
 
-  class InformationModel extends TranslatedLabelledModel {
+  class InformationModel extends TranslatedModel {
       protected $table = "informations";
       protected $query_fields = array("id", "customer_id", "creation");
       protected $order = array("creation ASC");

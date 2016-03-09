@@ -1,6 +1,6 @@
 <?php
 
-  class SettingsModel extends TranslatedLabelledModel {
+  class SettingsModel extends TranslatedModel {
       protected $table = "settings";
       protected $query_fields = array("id", "customer_id", "creation", "km", "resort_name", "map_latitude", "map_longitude", "map_zoom");
       protected $order = array("creation ASC");

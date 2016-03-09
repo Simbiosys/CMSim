@@ -1,8 +1,14 @@
+<input type="hidden" id="name" value="{{get_translation @root.data.area_translations page.language 'name'}}" />
+<input type="hidden" id="latitude" value="{{page.settings.map_latitude}}" />
+<input type="hidden" id="longitude" value="{{page.settings.map_longitude}}" />
+<input type="hidden" id="zoom" value="{{page.settings.map_zoom}}" />
+<input type="hidden" id="deleted" value="{{data.areas.deleted}}" />
+
 <section class="width-container">
   <div class="inner-body">
 
     {{> resort_left_bar}}
-    
+
     <section class="search-form">
       <form method="GET" action="{{page.host}}/manager/areas/search" class="margin-bottom-20">
         <div class="input-group search-box">
@@ -46,16 +52,18 @@
                   {{labels.new_areas}}
                 {{/if}}
               </h1>
-              <nav class="pull-right">
-                {{#if data.areas.id}}
-                <a href="{{page.host}}/manager/areas/{{data.areas.id}}/delete" class="btn btn-cancel margin-right-8">
-                  <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
-                </a>
-                {{/if}}
-                <button type="submit" class="btn btn-default">
-                  <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
-                </button>
-              </nav>
+              {{#if (is_false data.areas.deleted)}}
+                <nav class="pull-right">
+                  {{#if data.areas.id}}
+                  <a href="{{page.host}}/manager/areas/{{data.areas.id}}/delete" class="btn btn-cancel margin-right-8">
+                    <i class="fa fa-trash-o fa-lg cancel-icon"></i> {{labels.delete}}
+                  </a>
+                  {{/if}}
+                  <button type="submit" class="btn btn-default">
+                    <i class="fa fa-floppy-o fa-lg"></i> {{labels.save}}
+                  </button>
+                </nav>
+              {{/if}}
             </div>
           </header>
 
@@ -64,85 +72,174 @@
           <div class="width-container">
             <section class="content-body">
 
+              {{#if (is_true data.areas.deleted)}}
               <div class="row">
-                <div class="col-xs-12 margin-bottom-20">
-                  URL:
-                  <a href="{{page.host}}/{{page.language}}/areas/{{data.areas.id}}/{{get_translation @root.data.area_translations page.language 'path'}}" target="_blank">
-                    {{page.host}}/{{page.language}}/areas/{{data.areas.id}}/{{get_translation @root.data.area_translations page.language 'path'}}
-                  </a>
+                <div class="col-md-12">
+                  <div class="alert alert-danger text-center overflow-hidden font-l">
+                    <i class="fa fa-trash-o fa-lg vertical-align-middle pull-left margin-top-3"></i> {{labels.deleted_item}} ({{date data.areas.deletion}})
+                  </div>
                 </div>
               </div>
-               <div class="row margin-bottom-10">
-                <div class="col-xs-6">
-                  <label for="coordenadas">{{labels.coordenada}}:</label>
-                  <input type="text" name="coordinates" class="form-control" value="{{data.areas.coordinates}}" data-field />
-                </div>
-                <div class="col-xs-6">
-                  <label for="timeofyear">{{labels.timeofyear}}:</label>
-                  <select name="timeofyear" class="form-control" data-field>
-                      <option value="{{data.areas.timeofyear}}">{{data.areas.timeofyear}}</option>
-                      <option value="{{labels.winter}}">{{labels.winter}}</option>
-                      <option value="{{labels.summer}}">{{labels.summer}}</option>
-                  </select>
-                </div>
-              </div>
+              {{/if}}
+
               <div class="row margin-bottom-10">
-               <div class="col-xs-6">
-                 <label for="tipo">{{labels.tipo}}:</label>
-                 <select name="tipo" class="form-control" data-field>
-                     <option value="{{data.areas.tipo}}">{{data.areas.tipo}}</option>
-                     <option value="{{labels.stationarea}}">{{labels.stationarea}}</option>
-                     <option value="{{labels.freeride_area}}">{{labels.freeride_area}}</option>
-                     <option value="{{labels.beginners_area}}">{{labels.beginners_area}}</option>
+                <div class="col-md-6">
+                  <label for="identifier">{{labels.identifier}}:</label>
+                  <input type="text" name="identifier" class="form-control" value="{{data.areas.identifier}}" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}} />
+                </div>
+               <div class="col-md-6">
+                 <label for="timeofyear">{{labels.geometry_type}}:</label>
+                 <select name="geometry_type" id="geometry_type" class="form-control" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}}>
+                   <option value="" >{{labels.select_geometry}}</option>
+                   <option value="Point" {{select_equals data.areas.geometry_type 'Point'}}>{{labels.point}}</option>
+                   <option value="LineString" {{select_equals data.areas.geometry_type 'LineString'}}>{{labels.line}}</option>
+                   <option value="Polygon" {{select_equals data.areas.geometry_type 'Polygon'}}>{{labels.polygon}}</option>
                  </select>
                </div>
-               <div class="col-xs-6">
-                 <label for="urlinfo">{{labels.urlinfo}}:</label>
-                 <input type="text" name="url_info" class="form-control" value="{{data.areas.url_info}}" data-field />
+              </div>
+
+              <div class="row margin-top-10">
+               <div class="col-xs-12">
+                 <label for="coordinates" class="margin-0 margin-bottom-10">{{labels.coordinates}}</label>
                </div>
-              </div>
-              <ul class="nav nav-tabs">
-                {{#page.languages}}
-                  <li role="presentation" class="{{equals @index 0 'active'}}">
-                    <a href="#" data-tab="{{this}}">
-                      {{language_name @root.labels this}}
-                    </a>
-                  </li>
-                {{/page.languages}}
-              </ul>
+             </div>
 
-              {{#page.languages}}
-                <div class="row language-content" data-content="{{this}}" data-row data-model="area_translations" data-fk="language" data-fk-value="{{this}}">
+             <div class="row">
+               <div class="col-xs-12">
+                 <div id="map" class="map" data-map="coordinates"></div>
+               </div>
+               <div class="col-xs-12">
+                 <textarea id="coordinates" name="coordinates" class="form-control margin-top-15 height-100" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}}>{{data.areas.coordinates}}</textarea>
+               </div>
+             </div>
 
-                  <input type="hidden" name="id" value="{{get_translation @root.data.area_translations this 'id'}}" data-field="id" data-field />
+             <div class="row margin-bottom-15 margin-top-10">
+               <div class="col-md-4">
+                 <label for="element_type">{{labels.element_type}}</label>
+                 <select id="element_type" name="element_type" class="form-control" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}}>
+                   {{#data.all_labels}}
+                     <option value="{{labels.id}}" {{select_equals labels.id @root.data.areas.element_type}}>{{get_translation label_translations @root.page.language 'name'}}</option>
+                   {{/data.all_labels}}
+                 </select>
+               </div>
+               <div class="col-md-4">
+                 <label for="sub_type">{{labels.element_type}}</label>
+                 <select id="sub_type" name="sub_type" class="form-control" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}}>
+                   {{#data.all_labels}}
+                     <option value="{{labels.id}}" {{select_equals labels.id @root.data.areas.sub_type}}>{{get_translation label_translations @root.page.language 'name'}}</option>
+                   {{/data.all_labels}}
+                 </select>
+               </div>
+             </div>
 
-                  <div class="col-xs-12 margin-top-20">
-                    <label for="title">{{@root.labels.area_title}} ({{language_name @root.labels this}})</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.area_translations this 'title'}}" data-field />
-                  </div>
-                  <div class="col-xs-12 margin-top-20">
-                    <label for="title">{{@root.labels.content}} ({{language_name @root.labels this}})</label>
-                    <textarea class="form-control height-200" id="title" name="content" placeholder="{{@root.labels.content}}" data-field>{{@root.data.content}}{{get_translation @root.data.area_translations this 'content'}}</textarea>
-                  </div>
+             <div class="row margin-bottom-15 margin-top-10">
+               <div class="col-md-4">
+                 <label for="timeofyear">{{labels.timeofyear}}:</label>
+                 <select name="time_of_year" class="form-control" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}}>
+                     <option value="all" {{select_equals data.areas.time_of_year 'all'}}>{{labels.all}}</option>
+                     <option value="winter" {{select_equals data.areas.time_of_year 'winter'}}>{{labels.winter}}</option>
+                     <option value="summer" {{select_equals data.areas.time_of_year 'summer'}}>{{labels.summer}}</option>
+                 </select>
+               </div>
+                <div class="col-md-4">
+                  <label for="urlinfo">{{labels.urlinfo}}:</label>
+                  <input type="text" name="url_info" class="form-control" value="{{data.areas.url_info}}" data-field {{#if (is_true data.areas.deleted)}}disabled{{/if}} />
                 </div>
-              {{/page.languages}}
+             </div>
 
-              {{> label_selector}}
+             <ul class="nav nav-tabs">
+               {{#page.languages}}
+                 <li role="presentation" class="{{equals @index 0 'active'}}">
+                   <a href="#" data-tab="{{this}}">
+                     {{language_name @root.labels this}}
+                   </a>
+                 </li>
+               {{/page.languages}}
+             </ul>
 
-              <div class="row margin-top-10" data-model="area_labels">
-                <div class="col-xs-12" id="label_container" data-model="area_labels" data-fk="area_id">
-                  {{#data.area_labels}}
-                    <div class="label" data-label="{{label_id}}" data-selector="label_selector" data-row="" data-model="area_labels" data-fk="area_id" data-fk-value="{{@root.data.areas.id}}" data-name="label_id" data-value="{{id}}">
-                      <input type="hidden" name="id" value="{{id}}" data-field />
-                      <input type="hidden" name="deleted" value="0" data-field />
-                      <span>{{get_translation label_translations @root.page.language 'name'}}</span>
-                      <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="{{label_id}}" data-selector="label_selector">
-                        <i class="fa fa-times fa-lg"></i>
-                      </a>
-                    </div>
-                  {{/data.area_labels}}
-                </div>
-              </div>
+             {{#page.languages}}
+               <div class="row language-content" data-content="{{this}}" data-row data-model="area_translations" data-fk="language" data-fk-value="{{this}}">
+
+                 <input type="hidden" name="id" value="{{get_translation @root.data.area_translations this 'id'}}" data-field="id" data-field />
+
+                 <div class="col-xs-12 margin-top-20">
+                   <label for="name">{{@root.labels.area_title}} ({{language_name @root.labels this}})</label>
+                   <input type="text" class="form-control" id="name" name="name" placeholder="{{@root.labels.page_title}}" value="{{get_translation @root.data.area_translations this 'name'}}" data-field {{#if (is_true @root.data.area.deleted)}}disabled{{/if}} />
+                 </div>
+                 <div class="col-xs-12 margin-top-20">
+                   <label for="description">{{@root.labels.description}} ({{language_name @root.labels this}})</label>
+                   <textarea class="form-control height-200" id="description" name="description" placeholder="{{@root.labels.description}}" data-field {{#if (is_true @root.data.areas.deleted)}}disabled{{/if}}>{{@root.data.description}}{{get_translation @root.data.area_translations this 'description'}}</textarea>
+                 </div>
+               </div>
+             {{/page.languages}}
+
+             {{#if (is_false @root.data.areas.deleted)}}
+               {{> label_selector}}
+             {{/if}}
+
+             <div class="row margin-top-10" data-model="area_labels">
+               <div class="col-xs-12" id="label_container" data-model="area_labels" data-fk="area_id">
+                 {{#data.area_labels}}
+                   <div class="label" data-label="{{label_id}}" data-selector="label_selector" data-row="" data-model="area_labels" data-fk="area_id" data-fk-value="{{@root.data.areas.id}}" data-name="label_id" data-value="{{id}}">
+                     <input type="hidden" name="id" value="{{id}}" data-field />
+                     <input type="hidden" name="deleted" value="0" data-field />
+                     <span>{{get_translation label_translations @root.page.language 'name'}}</span>
+
+                     {{#if (is_false @root.data.areas.deleted)}}
+                       <a href="javascript:void(0)" class="vertical-align-middle" data-remove-label="{{label_id}}" data-selector="label_selector">
+                         <i class="fa fa-times fa-lg"></i>
+                       </a>
+                     {{/if}}
+                   </div>
+                 {{/data.area_labels}}
+               </div>
+             </div>
+
+             <div class="row">
+               <div class="col-md-12">
+                 <h3>{{labels.other_versions}}</h3>
+                 <table class="table text-center">
+                   <thead>
+                     <tr>
+                       <th class="text-center">
+                         {{labels.deleted}}
+                       </th>
+                       <th class="text-center">
+                         {{labels.deletion}}
+                       </th>
+                       <th class="text-center">
+                         {{labels.imported}}
+                       </th>
+                     </tr>
+                   </thead>
+                   <tbody>
+                     {{#extra.other_areas}}
+                       <tr {{#if areas.deletion}} class="line-through" {{/if}}>
+                         <td>
+                           <a href="{{@root.page.manager}}/areas/{{areas.id}}">
+                             {{yes areas.deleted @root.labels}}
+                           </a>
+                         </td>
+                         <td>
+                           <a href="{{@root.page.manager}}/areas/{{areas.id}}">
+                             {{#if areas.deletion}}
+                               {{areas.deletion}}
+                             {{else}}
+                               {{@root.labels.active_item}}
+                             {{/if}}
+                           </a>
+                         </td>
+                         <td class="font-l">
+                           <a href="{{@root.page.manager}}/areas/{{areas.id}}">
+                             {{{check areas.imported}}}
+                           </a>
+                         </td>
+                       </tr>
+                     {{/extra.other_areas}}
+                   </tbody>
+                 </table>
+               </div>
+             </div>
 
             </section>
           </div>
@@ -151,5 +248,8 @@
     </div>
   </div>
 </section>
+
 <script src="{{page.web}}/js/labels.js?{{page.version}}"></script>
 <script src="{{page.web}}/js/singular/form.js?{{page.version}}"></script>
+<script src="{{page.web}}/js/map.js?{{page.version}}"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDY0hBFWTPaNEztQPLHxyRiGSEsBuF8sSY&signed_in=false&callback=init"></script>

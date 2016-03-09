@@ -34,14 +34,19 @@
   //////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////////////////////////////////////////////////
-  //                                   trackS
+  //                                   TRACKS
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/tracks(/page/:page)", "tracks", "list", function($page = 1) {
-    $model = new tracksModel();
+    $model = new TracksModel();
     $pagination = get_pagination($page);
 
     $count = $model->number($pagination["condition"]);
     $next = $pagination["next"];
+    $limit = $pagination["limit"];
+    $pages = ceil($count/$limit);
+
+    $label_model = new LabelModel();
+    $all_labels = $label_model->get_all();
 
     CMSView::render(array(
         "template" => "private/tracks",
@@ -49,7 +54,10 @@
           "results" => $model->get_all_filtered_by_language($pagination),
           "page" => $pagination["page"],
           "previous" => $pagination["page"] > 1 ? $pagination["page"] - 1 : NULL,
-          "next" => $next < $count ? $pagination["page"] + 1 : NULL
+          "next" => $next < $count ? $pagination["page"] + 1 : NULL,
+          "count" => $count,
+          "pages" => $pages,
+          "all_labels" => $all_labels
         ),
         "page_navigation" => "tracks",
         "layout" => "private.hbs",
@@ -63,7 +71,7 @@
   //                                   SEARCH
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/tracks/search(/page/:page)", "tracks", "list", function($page = 1) {
-    $model = new tracksModel();
+    $model = new TracksModel();
     $pagination = get_pagination($page);
     $search = \Singular\Controller::get_get_variable("s");
 
@@ -88,12 +96,17 @@
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  //                              NEW PIECE OF tracks
+  //                              IMPORT TRACKS
   //////////////////////////////////////////////////////////////////////////////
-  \Singular\Controller::get_private("/manager/tracks/new", "tracks", "edit", function() {
+  \Singular\Controller::get_private("/manager/tracks/import", "tracks", "edit", function() {
+    $model_tracks = new TracksModel();
+    $tracks = $model_tracks->get_all_from_last_import();
+
     CMSView::render(array(
-        "template" => "private/track_detail",
-        "data" => array(),
+        "template" => "private/import_tracks",
+        "data" => array(
+          "last_import_elements" => $tracks
+        ),
         "page_navigation" => "tracks",
         "layout" => "private.hbs",
         "extra" => array(
@@ -103,7 +116,72 @@
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  //                           NEW PIECE OF tracks (POST)
+  //                              IMPORT TRACKS (POST)
+  //////////////////////////////////////////////////////////////////////////////
+  \Singular\Controller::post_private("/manager/tracks/import", "tracks", "edit", function() {
+    $file = $_FILES["file_to_import"]["tmp_name"];
+    $contents = file_get_contents($file);
+
+    $model_tracks = new TracksModel();
+    $response = $model_tracks->import($contents);
+    $tracks = $model_tracks->get_all_from_last_import();
+
+    CMSView::render(array(
+        "template" => "private/import_tracks",
+        "data" => array(
+          "last_import_elements" => $tracks,
+          "import" => $response
+        ),
+        "page_navigation" => "tracks",
+        "layout" => "private.hbs",
+        "extra" => array(
+          "top" => array( "resort" => TRUE )
+        )
+    ));
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
+  //                              IMPORT TRACKS (DELETE)
+  //////////////////////////////////////////////////////////////////////////////
+  \Singular\Controller::post_private("/manager/tracks/import/delete", "tracks", "edit", function() {
+    \Singular\Controller::set_content_type("application/json");
+    $ids = \Singular\Controller::get_post_variable("tracks");
+
+    $model = new TracksModel();
+
+    for ($i = 0; $i < count($ids); $i++) {
+      $id = $ids[$i];
+
+      $model->delete($id);
+    }
+
+    echo json_encode(array(
+      "success" => TRUE
+    ));
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
+  //                              NEW PIECE OF TRACKS
+  //////////////////////////////////////////////////////////////////////////////
+  \Singular\Controller::get_private("/manager/tracks/new", "tracks", "edit", function() {
+    $model = new LabelModel();
+    $all_labels = $model->get_all();
+
+    CMSView::render(array(
+        "template" => "private/track_detail",
+        "data" => array(
+          "all_labels" => $all_labels
+        ),
+        "page_navigation" => "tracks",
+        "layout" => "private.hbs",
+        "extra" => array(
+          "top" => array( "resort" => TRUE )
+        )
+    ));
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
+  //                           NEW PIECE OF TRACKS (POST)
   //////////////////////////////////////////////////////////////////////////////
 
   \Singular\Controller::post_private("/manager/tracks/new", "tracks", "edit", function() {
@@ -111,7 +189,7 @@
     $customer = AppAuthentication::get_user_customer();
     $data["tracks"]["customer_id"] = $customer;
 
-    $model = new tracksModel();
+    $model = new TracksModel();
 
     $result = $model->create($data);
     $main_result = isset($result["main"]) ? $result["main"] : NULL;
@@ -138,16 +216,19 @@
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  //                                tracks DETAIL
+  //                                TRACKS DETAIL
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/tracks/:piece", "tracks", "edit", function($piece) {
     $model = new LabelModel();
     $all_labels = $model->get_all();
 
-    $model = new tracksModel();
+    $model = new TracksModel();
     $info = $model->find($piece);
+    $identifier = $info["tracks"]["identifier"];
 
     $info["all_labels"] = $all_labels;
+
+    $other_tracks = $model->get_all_with_deleted("identifier = '$identifier' AND id <> '$piece'");
 
     CMSView::render(array(
         "template" => "private/track_detail",
@@ -155,20 +236,21 @@
         "page_navigation" => "tracks",
         "layout" => "private.hbs",
         "extra" => array(
-          "top" => array( "resort" => TRUE )
+          "top" => array( "resort" => TRUE ),
+          "other_tracks" => $other_tracks
         )
     ));
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  //                                tracks UPDATE
+  //                                TRACKS UPDATE
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::post_private("/manager/tracks/:piece/save", "tracks", "edit", function($piece) {
     $data = \Singular\Controller::get_post();
     $customer = AppAuthentication::get_user_customer();
     $data["tracks"]["customer_id"] = $customer;
 
-    $model = new tracksModel();
+    $model = new TracksModel();
     $model->update($piece, $data);
 
     \Singular\Controller::flash(array(
@@ -180,10 +262,10 @@
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  //                                tracks DELETE
+  //                                TRACKS DELETE
   //////////////////////////////////////////////////////////////////////////////
   \Singular\Controller::get_private("/manager/tracks/:piece/delete", "tracks", "edit", function($piece) {
-    $model = new tracksModel();
+    $model = new TracksModel();
     $model->delete($piece);
 
     \Singular\Controller::flash(array(

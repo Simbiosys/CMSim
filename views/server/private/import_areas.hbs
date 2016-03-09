@@ -1,0 +1,236 @@
+<section class="width-container">
+  <div class="inner-body">
+    {{> resort_left_bar}}
+
+    <div class="search-padding">
+      <div class="padding-top-10 padding-left-15 padding-right-20">
+        <form method="POST" data-model="areas" action="{{page.host}}/manager/areas/import" enctype="multipart/form-data">
+          <header class="navbar-form navigation-bar width-container" role="">
+            <div class="width-container">
+              <a href="{{page.host}}/manager/areas" class="pull-left">
+                <i class="fa fa-angle-left fa-3x return-back"></i>
+              </a>
+              <h1 class="page_title pull-left">
+                {{labels.import}} {{labels.areas}}
+              </h1>
+              <nav class="pull-right">
+
+              </nav>
+            </div>
+          </header>
+
+          <input type="hidden" name="id" id="id" value="{{data.areas.id}}" data-field />
+
+          <div class="width-container">
+            <section class="content-body">
+
+              <div class="row margin-bottom-10">
+                <div class="col-xs-9">
+                  <input type="file" name="file_to_import" class="form-control" value="" data-field />
+                </div>
+                <div class="col-xs-3">
+                  <button type="submit" class="btn btn-default width-100">
+                    <i class="fa fa-level-down fa-lg cancel-icon"></i> {{labels.import}}
+                  </button>
+                </div>
+              </div>
+
+            </section>
+          </div>
+        </form>
+
+        <div class="width-container">
+          <section class="content-body">
+            {{#if data.import.success}}
+              <div class="row">
+                <div class="col-md-12">
+                  <p class="margin-top-10 margin-bottom-15 text-center">
+                    {{#if data.import.success}}
+                      <i class="fa fa-check fa-2x vertical-align-middle margin-right-20 import-success"></i>
+                      <span class="import-text">
+                        {{labels.import_successfully}}
+                      </span>
+                    {{else}}
+                      <i class="fa fa-times fa-2x vertical-align-middle margin-right-20 import-fail"></i>
+                    {{/if}}
+                    <span class="import-text">
+                      {{data.import.message}}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            {{/if}}
+
+            <div class="row margin-bottom-20">
+              <div class="col-md-12 text-right">
+                <strong>{{labels.last_import}}</strong>: {{data.last_import_elements.import.creation}}
+              </div>
+            </div>
+
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active">
+                  <a href="#" data-tab="imported">
+                    {{labels.imported_items}}
+                  </a>
+                </li>
+                <li role="presentation" class="">
+                  <a href="#" data-tab="other">
+                    {{labels.other_items}}
+                  </a>
+                </li>
+            </ul>
+
+            <div class="padding-top-20 padding-left-15 padding-right-15" data-content="imported">
+              <div class="row margin-bottom-10 text-center">
+                <div class="col-md-4">
+                  <input type="checkbox" id="check_created" checked />
+                  <label for="check_created" class="margin-left-5">
+                    <i class="fa fa-asterisk fa-lg status-created"></i> {{labels.created}}
+                  </label>
+                </div>
+                <div class="col-md-4">
+                  <input type="checkbox" id="check_refresh" checked />
+                  <label for="check_refresh" class="margin-left-5">
+                    <i class="fa fa-refresh fa-lg status-updated"></i> {{labels.updated}}
+                  </label>
+                </div>
+                <div class="col-md-4">
+                  <input type="checkbox" id="check_equal" checked />
+                  <label for="check_equal" class="margin-left-5">
+                    <i class="fa fa-bars fa-lg status-equal"></i> {{labels.equal}}
+                  </label>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th class="width-10">
+
+                        </th>
+                        <th class="width-30">
+                          {{labels.identifier}}
+                        </th>
+                        <th class="width-45">
+                          {{labels.name}}
+                        </th>
+                        <th class="width-15">
+                          {{labels.status}}
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#data.last_import_elements.areas}}
+                      <tr class="{{#if areas.deletion}} line-through {{/if}}"
+                        {{#if status.previous}}
+                          {{#if status.equal}}
+                            data-status="equal"
+                          {{else}}
+                            data-status="updated"
+                          {{/if}}
+                        {{else}}
+                          data-status="created"
+                        {{/if}}
+                      >
+                        <td class="text-center vertical-align-middle">
+                          {{#if status.previous}}
+                            {{#if status.equal}}
+                              <i class="fa fa-bars fa-lg status-equal"></i>
+                            {{else}}
+                              <i class="fa fa-refresh fa-lg status-updated"></i>
+                            {{/if}}
+                          {{else}}
+                            <i class="fa fa-asterisk fa-lg status-created"></i>
+                          {{/if}}
+                        </td>
+                        <td class="vertical-align-middle">
+                          <a href="{{@root.page.manager}}/areas/{{areas.id}}" target="_blank">
+                            {{areas.identifier}}
+                          </a>
+                        </td>
+                        <td class="vertical-align-middle">
+                          <a href="{{@root.page.manager}}/areas/{{areas.id}}" target="_blank">
+                            {{get_translation area_translations @root.page.language 'name'}}
+                          </a>
+                        </td>
+                        <td class="vertical-align-middle">
+                          <a href="{{@root.page.manager}}/areas/{{areas.id}}" target="_blank">
+                            {{#if status.previous}}
+                              {{#if status.equal}}
+                                {{@root.labels.equal}}
+                              {{else}}
+                                {{@root.labels.updated}}
+                                <ul>
+                                  {{#status.different}}
+                                    <li>{{this}}</li>
+                                  {{/status.different}}
+                                </ul>
+                              {{/if}}
+                            {{else}}
+                              {{@root.labels.created}}
+                            {{/if}}
+                          </a>
+                        </td>
+                      </tr>
+                      {{/data.last_import_elements.areas}}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="padding-top-20 padding-left-15 padding-right-15" data-content="other">
+              <div class="row">
+                <div class="col-md-12">
+                  <p class="margin-bottom-20">
+                    {{labels.other_items_description}}
+                  </p>
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th class="width-30">
+                          {{labels.identifier}}
+                        </th>
+                        <th class="width-45">
+                          {{labels.name}}
+                        </th>
+                        <th class="width-15">
+                          <a href="#" id="btn_delete_elements" class="btn btn-danger width-100">
+                            <i class="fa fa-trash-o"></i> {{labels.delete}}
+                          </a>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {{#data.last_import_elements.other_areas}}
+                      <tr class="{{#if areas.deletion}} line-through {{/if}}" data-delete-row="{{areas.id}}">
+                        <td class="vertical-align-middle">
+                          <a href="{{@root.page.manager}}/areas/{{areas.id}}" target="_blank">
+                            {{areas.identifier}}
+                          </a>
+                        </td>
+                        <td class="vertical-align-middle">
+                          <a href="{{@root.page.manager}}/areas/{{areas.id}}" target="_blank">
+                            {{get_translation area_translations @root.page.language 'name'}}
+                          </a>
+                        </td>
+                        <td class="vertical-align-middle text-center">
+                          <input type="checkbox" data-delete="{{areas.id}}" />
+                        </td>
+                      </tr>
+                      {{/data.last_import_elements.other_areas}}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="{{page.web}}/js/labels.js?{{page.version}}"></script>
+<script src="{{page.web}}/js/import.js?{{page.version}}"></script>

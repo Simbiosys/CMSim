@@ -1,6 +1,6 @@
 <?php
 
-  class MediaModel extends TranslatedLabelledModel {
+  class MediaModel extends TranslatedModel {
       protected $table = "media";
       protected $query_fields = array("*");
       protected $order = array("creation ASC");

@@ -1,7 +1,13 @@
-{{> resort_left_bar}}
+<input type="hidden" id="name" value="{{get_translation @root.data.track_translations page.language 'name'}}" />
+<input type="hidden" id="latitude" value="{{page.settings.map_latitude}}" />
+<input type="hidden" id="longitude" value="{{page.settings.map_longitude}}" />
+<input type="hidden" id="zoom" value="{{page.settings.map_zoom}}" />
 
 <section class="width-container">
   <div class="inner-body">
+
+    {{> resort_left_bar}}
+
     <section class="search-form">
       <form method="GET" action="{{page.host}}/manager/facilities/search" class="margin-bottom-20">
         <div class="input-group search-box">
@@ -31,6 +37,7 @@
           <div class="">
             <h1 class="page_title pull-left">{{labels.facilities}}</h1>
             <nav class="pull-right">
+              <a href="{{page.host}}/manager/facilities/import" class="btn btn-default margin-right-10"><i class="fa fa-level-down"></i> {{labels.import}}</a>
               <a href="{{page.host}}/manager/facilities/new" class="btn btn-default">{{labels.new_facilities}}</a>
             </nav>
           </div>
@@ -41,31 +48,37 @@
             <table class="table table-multiline">
               <thead>
                 <tr>
-                  <th class="width-25">{{labels.facilities_abrevia}}</th>
-                  <th class="width-25">{{@root.labels.tipo}}</th>
-                  <th class="width-25">{{@root.labels.coordenada}}</th>
-                  <th class="width-25">{{@root.labels.labels}}</th>
+                  <th class="width-15">{{labels.identifier}}</th>
+                  <th class="width-20">{{labels.facility_title}}</th>
+                  <th class="width-15">{{labels.type}}</th>
+                  <th class="width-35">{{labels.coordinates}}</th>
+                  <th class="width-15">{{labels.labels}}</th>
                 </tr>
               </thead>
               <tbody>
                 {{#data.results}}
                   <tr>
-                    <td class="width-25">
+                    <td class="width-15">
                       <a href="{{@root.page.host}}/manager/facilities/{{facilities.id}}">
-                        {{{hightlight (get_translation facility_translations @root.page.language 'title') @root.data.search}}}
+                        {{facilities.identifier}}
                       </a>
                     </td>
-                    <td class="width-25">
+                    <td class="width-20">
                       <a href="{{@root.page.host}}/manager/facilities/{{facilities.id}}">
-                        {{facilities.tipo}}
+                        {{{hightlight (get_translation facility_translations @root.page.language 'name') @root.data.search}}}
                       </a>
                     </td>
-                    <td class="width-25">
+                    <td class="width-15">
                       <a href="{{@root.page.host}}/manager/facilities/{{facilities.id}}">
-                        {{facilities.coordinates}}
+                        {{get_type_translation @root.data.all_labels @root.page.language 'name' facilities.element_type}}
                       </a>
                     </td>
-                    <td class="width-25">
+                    <td class="width-35">
+                      <input type="hidden" id="map-{{facilities.id}}" value="{{facilities.coordinates}}" />
+                      <input type="hidden" id="type-map-{{facilities.id}}" value="{{facilities.geometry_type}}" />
+                      <div class="map-small" data-map="map-{{facilities.id}}" data-small></div>
+                    </td>
+                    <td class="width-15">
                       {{#facility_labels}}
                       <a href="{{@root.page.host}}/manager/news/{{facilities.id}}" class="label small font-xs">
                         {{get_translation label_translations @root.page.language 'name'}}
@@ -87,7 +100,7 @@
                 <i class="fa fa-angle-left fa-2x page-before"></i>
               </a>
               <span class="pagination-page">
-                {{labels.page}} {{data.page}} {{labels.out_of}} {{data.count}}
+                {{data.count}} {{labels.results}} - {{labels.page}} {{data.page}} {{labels.out_of}} {{data.pages}}
               </span>
               {{#if data.search}}
               <a {{#if data.next}} href="{{page.host}}/manager/facilities/search/page/{{data.next}}?s={{data.search}}" {{else}} href="javascript:void(0)" {{/if}}
@@ -105,3 +118,6 @@
     </div>
   </div>
 </section>
+
+<script src="{{page.web}}/js/map.js?{{page.version}}"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDY0hBFWTPaNEztQPLHxyRiGSEsBuF8sSY&signed_in=false&callback=init"></script>

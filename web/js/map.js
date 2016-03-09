@@ -80,6 +80,9 @@ function Map(identifier, isSmall) {
 
     marker.setMap(map);
 
+    // Center map in point
+    global.map.setCenter(coordinate);
+
     global.active = marker;
 
     google.maps.event.addListener(marker, 'dragend', function(evt) {
@@ -116,6 +119,9 @@ function Map(identifier, isSmall) {
     var line = new google.maps.Polyline(data);
 
     line.setMap(map);
+
+    // Center map in first point
+    global.map.setCenter(coordinates[0]);
 
     global.active = line;
 

@@ -1,6 +1,6 @@
 <?php
 
-  class LabelModel extends TranslatedLabelledModel {
+  class LabelModel extends TranslatedModel {
       protected $table = "labels";
       protected $query_fields = array("id", "customer_id", "creation", "parent_id", "identifier");
       protected $order = array("creation ASC");

@@ -40,10 +40,15 @@
     $page_limit = intval($page_limit);
     $start *= $page_limit;
 
+    // Filter by customer ID
+    $customer = AppAuthentication::get_user_customer();
+    $condition = "customer_id = '$customer'";
+
     return array(
       "start" => $start,
       "limit" => $page_limit,
       "page" => intval($page),
-      "next" => $start + $page_limit
+      "next" => $start + $page_limit,
+      "condition" => $condition
     );
   }
